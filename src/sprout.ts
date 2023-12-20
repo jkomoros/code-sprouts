@@ -1,10 +1,12 @@
 import {
     fileExists,
+    fileFetch,
     joinPath
 } from './fetcher.js';
 
 import {
-    Path
+    Path,
+    sproutConfigSchema
 } from './types.js';
 
 //Relative to the sprout root
@@ -18,11 +20,15 @@ export class Sprout {
     }
 
     //throws if invalid
-    validate() : void {
+    async validate() : Promise<void> {
         const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
-        if (!fileExists(sproutConfigPath)) {
+        if (!await fileExists(sproutConfigPath)) {
             throw new Error(`Config file ${sproutConfigPath} not found`);
         }
+        const configData = await fileFetch(sproutConfigPath);
+        //Tnis will throw if invalid shape.
+        const config = sproutConfigSchema.parse(JSON.parse(configData));
+        if (!config) throw new Error('No config');
         //TODO: validate shape
     }
 }
