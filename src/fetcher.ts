@@ -34,7 +34,7 @@ export const listSprouts = async (basePaths : string[] = [SPROUT_EXAMPLE_DIR]) :
     for (const folder of basePaths) {
         for (const entry of readdirSync(folder, {withFileTypes: true})) {
             if (!entry.isDirectory()) continue;
-            result.push(entry.name);
+            result.push(joinPath(folder, entry.name));
         }
     }
     return result;
