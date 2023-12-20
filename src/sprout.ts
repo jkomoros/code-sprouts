@@ -78,4 +78,12 @@ export class Sprout {
         await this.baseInstructions();
         await this.schemaText();
     }
+
+    //Returns the next prompt to return.
+    async prompt() : Promise<string> {
+        const baseInstructions = await this.baseInstructions();
+        const schemaText = await this.schemaText();
+        return `${baseInstructions}
+${schemaText}`;
+    }
 }
