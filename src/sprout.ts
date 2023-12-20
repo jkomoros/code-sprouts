@@ -13,10 +13,12 @@ import {
 
 //Relative to the sprout root
 const SPROUT_CONFIG_PATH = 'config.json';
+const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
 
 export class Sprout {
     _path : Path
     _config?: SproutConfig
+    _baseInstructions? : string
 
     constructor(path : Path) {
         this._path = path;
@@ -42,9 +44,22 @@ export class Sprout {
         return this._config;
     }
 
+    async baseInstructions() : Promise<string> {
+        if (this._baseInstructions === undefined) {
+            const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
+            if (!await fileExists(sproutInstructionsPath)) {
+                throw new Error(`${this.name}: Instruction file ${sproutInstructionsPath} not found`);
+            }
+            this._baseInstructions = await fileFetch(sproutInstructionsPath);
+        }
+        if (this._baseInstructions === undefined) throw new Error(`${this.name}: No instructions`);
+        return this._baseInstructions;
+    }
+
     //throws if invalid
     async validate() : Promise<void> {
         //Will throw if invalid
         await this.config();
+        await this.baseInstructions();
     }
 }
