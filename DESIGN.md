@@ -34,6 +34,8 @@ Directory structure:
             - (An optional list of sub_instructions, which will be compiled. The name of the file is the name of the sub_instruction. The LLM can request more info on each one in a turn)
         - endpoints/
             - (Something zod-shaped for things into and out of)
+  - sprouts/
+    (Not checked into version contorl, the place for someone to define their own sprouts)
 
 TODO - Have a way to have zod-shaped endpoints that are validated by Zod.
 TODO - figure out a way to include images.
