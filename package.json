@@ -1,0 +1,14 @@
+{
+    "name": "code-sprout",
+    "license": "Apache-2.0",
+    "repository": "jkomoros/code-sprout",
+    "type": "module",
+    "scripts": {
+      "start": "tsc --watch --preserveWatchOutput"
+    },
+    "dependencies": {},
+    "devDependencies": {
+      "typescript": "^4.7.2"
+    }
+  }
+  
