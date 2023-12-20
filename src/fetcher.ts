@@ -28,7 +28,7 @@ export const joinPath = (...parts : string[]) : Path => {
     return join(...parts);
 };
 
-export const listSprouts = (basePaths : string[] = [SPROUT_EXAMPLE_DIR]) : Path[] => {
+export const listSprouts = async (basePaths : string[] = [SPROUT_EXAMPLE_DIR]) : Promise<Path[]> => {
     //TODO: in a browser fetch context this will have to use a prebuilt listing file.
     const result : Path[] = [];
     for (const folder of basePaths) {
