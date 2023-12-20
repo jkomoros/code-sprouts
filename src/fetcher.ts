@@ -4,12 +4,15 @@ import {
 
 import {
     readFileSync,
-    existsSync
+    existsSync,
+    readdirSync
 } from 'fs';
 
 import {
     join
 } from 'path';
+
+const SPROUT_EXAMPLE_DIR = 'examples';
 
 export const fileFetch = async (path : Path) : Promise<string> => {
     //TODO: have a node and fetch-based version.
@@ -23,4 +26,16 @@ export const fileExists = async (path : Path) : Promise<boolean> => {
 
 export const joinPath = (...parts : string[]) : Path => {
     return join(...parts);
+};
+
+export const listSprouts = (basePaths : string[] = [SPROUT_EXAMPLE_DIR]) : Path[] => {
+    //TODO: in a browser fetch context this will have to use a prebuilt listing file.
+    const result : Path[] = [];
+    for (const folder of basePaths) {
+        for (const entry of readdirSync(folder, {withFileTypes: true})) {
+            if (!entry.isDirectory()) continue;
+            result.push(entry.name);
+        }
+    }
+    return result;
 };
