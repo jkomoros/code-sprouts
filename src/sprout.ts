@@ -1,6 +1,14 @@
 import {
+    fileExists,
+    joinPath
+} from './fetcher.js';
+
+import {
     Path
 } from './types.js';
+
+//Relative to the sprout root
+const SPROUT_CONFIG_PATH = 'config.json';
 
 export class Sprout {
     _path : Path
@@ -11,6 +19,10 @@ export class Sprout {
 
     //throws if invalid
     validate() : void {
-        //TODO: implement
+        const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
+        if (!fileExists(sproutConfigPath)) {
+            throw new Error(`Config file ${sproutConfigPath} not found`);
+        }
+        //TODO: validate shape
     }
 }
