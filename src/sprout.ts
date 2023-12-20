@@ -64,6 +64,7 @@ export class Sprout {
             if (!await fileExists(sproutSchemaPath)) {
                 throw new Error(`${this.name}: Schema file ${sproutSchemaPath} not found`);
             }
+            //TODO: validate this is valid typescript
             this._schemaText = await fileFetch(sproutSchemaPath);
         }
         if (this._schemaText === undefined) throw new Error(`${this.name}: No schema`);
