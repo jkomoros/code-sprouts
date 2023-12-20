@@ -41,6 +41,7 @@ export class Sprout {
             //Tnis will throw if invalid shape.
             const config = sproutConfigSchema.parse(JSON.parse(configData));
             if (!config) throw new Error(`${this.name}: No config`);
+            this._config = config;
         }
         if (!this._config) throw new Error(`${this.name}: Couldn't create sprout`);
         return this._config;
