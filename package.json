@@ -7,7 +7,9 @@
         "start": "tsc --watch --preserveWatchOutput"
     },
     "dependencies": {
+        "@polymath-ai/ai": "^0.0.5",
         "eslint": "^8.56.0",
+        "gpt-tok": "^0.0.1",
         "ts-command-line-args": "^2.5.1",
         "zod": "^3.22.4"
     },
