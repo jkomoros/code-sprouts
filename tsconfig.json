@@ -2,6 +2,7 @@
     "compilerOptions": {
       "target": "es2019",
       "module": "es2020",
+      "moduleResolution": "Node",
       "lib": ["es2020", "DOM", "DOM.Iterable"],
       "declaration": true,
       "outDir": "build/",
