@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "eslint": "^8.56.0",
+        "ts-command-line-args": "^2.5.1",
         "zod": "^3.22.4"
     },
     "devDependencies": {
