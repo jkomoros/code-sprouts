@@ -1,76 +1,82 @@
 import {
-    listSprouts
+	listSprouts
 } from './fetcher.js';
 
 import {
-    z
+	z
 } from 'zod';
 
 import {
-    pathSchema
+	pathSchema
 } from './types.js';
 
 import {
-    parse
+	parse
 } from 'ts-command-line-args';
 
 import {
-    Sprout
+	Sprout
 } from './sprout.js';
 
 import {
-    AIProvider
+	AIProvider
 } from './llm.js';
 
 import {
-    env
+	env
 } from 'process';
 
+import {
+	config as dotEnvConfig
+} from 'dotenv';
+
+dotEnvConfig();
+
 const cliOptions = z.object({
-    sprout: z.optional(pathSchema),
-    help: z.optional(z.boolean())
+	sprout: z.optional(pathSchema),
+	help: z.optional(z.boolean())
 });
 
 type CLIOptions = z.infer<typeof cliOptions>;
 
 const main = async (opts : CLIOptions) : Promise<void> => {
-    if (opts.sprout) {
-        const ai = new AIProvider('openai.com:gpt-4', {
-            //TODO: allow specifiying in a secret.CONFIG.json object too.
-            openai_api_key: env.OPENAI_API_KEY
-        });
-        const sprout = new Sprout(opts.sprout, ai);
-        await sprout.validate();
-        console.log(await sprout.prompt());
-        return;
-    }
-    const sproutPaths = await listSprouts();
-    for (const path of sproutPaths) {
-        console.log(path);
-    }
-}
+	if (opts.sprout) {
+		const ai = new AIProvider('openai.com:gpt-4', {
+			//TODO: allow specifiying in a secret.CONFIG.json object too.
+			openai_api_key: env.OPENAI_API_KEY
+		});
+		const sprout = new Sprout(opts.sprout, ai);
+		await sprout.validate();
+		console.log(await sprout.prompt());
+		return;
+	}
+	const sproutPaths = await listSprouts();
+	for (const path of sproutPaths) {
+		console.log(path);
+	}
+};
 
 (async() => {
-    const opts = parse<CLIOptions>({
-        sprout: {
-            type: String,
-            optional: true,
-            defaultOption: true,
-            description: 'The sprout to run (path from the current working directory)'
-        },
-        help: {
-            type: Boolean,
-            optional: true,
-            alias: 'h',
-            description: 'Print this usage guide'
-        }
-    }, {
-        headerContentSections: [{
+	const opts = parse<CLIOptions>({
+		sprout: {
+			type: String,
+			optional: true,
+			defaultOption: true,
+			description: 'The sprout to run (path from the current working directory)'
+		},
+		help: {
+			type: Boolean,
+			optional: true,
+			alias: 'h',
+			description: 'Print this usage guide'
+		}
+	}, {
+		headerContentSections: [{
 			header: 'code-sprout',
 			content: 'Runs sprouts'
 		}],
 		helpArg: 'help'
-    });
+	});
 
 	await main(opts);
 })();
