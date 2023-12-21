@@ -9,10 +9,12 @@ import {
 } from './llm.js';
 
 import {
+	ConversationTurn,
 	Path,
 	SproutConfig,
 	SproutName,
 	SproutState,
+	converationTurnSchema,
 	sproutConfigSchema
 } from './types.js';
 
@@ -131,5 +133,12 @@ ${CONVERSATION_TURN_SCHEMA}`;
 
 	provideUserResponse(response : string) : void {
 		this._userMessages.push(response);
+	}
+
+	async conversationTurn() : Promise<ConversationTurn> {
+		if (!this._aiProvider) throw new Error('No AI provider');
+		const prompt = await this.prompt();
+		const response = await this._aiProvider.prompt(prompt);
+		return converationTurnSchema.parse(JSON.parse(response));
 	}
 }
