@@ -36,6 +36,7 @@ dotEnvConfig();
 
 const cliOptions = z.object({
 	sprout: z.optional(pathSchema),
+	verbose: z.optional(z.boolean()),
 	help: z.optional(z.boolean())
 });
 
@@ -43,10 +44,14 @@ type CLIOptions = z.infer<typeof cliOptions>;
 
 //This is not a method on sprout because Sprout doesn't  know how to get or give
 //input to the surrounding context.
-const runSprout = async (sprout : Sprout) : Promise<void> => {
+const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => {
 	//TODO: allow an exit
 	const active = true;
 	while(active) {
+		if (opts.verbose) {
+			//TODO: allow caching this or computing once
+			console.info(await sprout.prompt());
+		}
 		const turn = await sprout.conversationTurn();
 		console.log(`Bot:\n${turn.userMessage}`);
 		//TODO: wait for the user's input, then provide to the prompt, then 
@@ -68,7 +73,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 		});
 		const sprout = new Sprout(opts.sprout, ai);
 		await sprout.validate();
-		await runSprout(sprout);
+		await runSprout(sprout, opts);
 		return;
 	}
 	const sproutPaths = await listSprouts();
@@ -90,6 +95,12 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 			optional: true,
 			alias: 'h',
 			description: 'Print this usage guide'
+		},
+		verbose: {
+			type: Boolean,
+			optional: true,
+			alias: 'v',
+			description: 'Whether to show debug output'
 		}
 	}, {
 		headerContentSections: [{
