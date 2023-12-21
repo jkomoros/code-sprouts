@@ -9,6 +9,7 @@
     "dependencies": {
         "@polymath-ai/ai": "^0.0.5",
         "dotenv": "^16.3.1",
+        "enquirer": "^2.4.1",
         "eslint": "^8.56.0",
         "gpt-tok": "^0.0.1",
         "ts-command-line-args": "^2.5.1",

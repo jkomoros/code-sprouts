@@ -3,6 +3,8 @@
       "target": "es2019",
       "module": "es2020",
       "moduleResolution": "Node",
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
       "lib": ["es2020", "DOM", "DOM.Iterable"],
       "declaration": true,
       "outDir": "build/",

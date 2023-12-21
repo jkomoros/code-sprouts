@@ -30,6 +30,8 @@ import {
 	config as dotEnvConfig
 } from 'dotenv';
 
+import enquirer from 'enquirer';
+
 dotEnvConfig();
 
 const cliOptions = z.object({
@@ -48,8 +50,12 @@ const runSprout = async (sprout : Sprout) : Promise<void> => {
 		const turn = await sprout.conversationTurn();
 		console.log(turn.userMessage);
 		//TODO: wait for the user's input, then provide to the prompt, then 
-		const userInput = 'TODO: actually import the user input';
-		sprout.provideUserResponse(userInput);
+		const userInput = await enquirer.prompt<{userResponse:string}>({
+			type: 'input',
+			name: 'userResponse',
+			message: 'Your response:'
+		});
+		sprout.provideUserResponse(userInput.userResponse);
 	}
 
 };
