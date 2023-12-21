@@ -39,3 +39,11 @@ export const modelProvider = z.enum([
 ]);
 
 export type ModelProvider = z.infer<typeof modelProvider>;
+
+//TODO: note that sprout.ts:ConversationTurnSchema needs to match this shape.
+const converationTurnSchema = z.object({
+	userMessage: z.string().describe('The message that will be shown to the user'),
+	//TODO: also allow JSON Patch (RFC 6902) 
+});
+
+export type ConversationTurn = z.infer<typeof converationTurnSchema>;

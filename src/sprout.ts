@@ -21,6 +21,12 @@ const SPROUT_CONFIG_PATH = 'config.json';
 const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
 const SPROUT_SCHEMA_PATH = 'schema.ts';
 
+//A manual conversion of types.ts:conversationTurnSchema
+const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
+  //The message that will be shown to the user.
+  userMessage: string
+}`;
+
 export class Sprout {
 	_path : Path;
 	_config?: SproutConfig;
@@ -117,7 +123,10 @@ Your current state is:
 ${JSON.stringify(emptyObject, null, '\t')}
 
 The last message from the user is:
-${this._userMessages.length ? this._userMessages.slice(-1, 1) : '<INITIAL>'}`;
+${this._userMessages.length ? this._userMessages.slice(-1, 1) : '<INITIAL>'}
+
+You should respond with a JSON object matching this schema:
+${CONVERSATION_TURN_SCHEMA}`;
 	}
 
 	provideUserResponse(response : string) : void {
