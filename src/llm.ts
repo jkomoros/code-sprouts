@@ -5,7 +5,7 @@ import {
 
 import {
 	CompletionModelID,
-    Environment,
+	Environment,
 	ModelProvider,
 	modelProvider
 } from './types.js';
@@ -47,13 +47,13 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 
 type ProviderInfo = {
 	defaultCompletionModel: CompletionModelID,
-    apiKeyVar : keyof Environment
+	apiKeyVar : keyof Environment
 }
 
 export const INFO_BY_PROVIDER : {[name in ModelProvider]: ProviderInfo} = {
 	'openai.com': {
 		defaultCompletionModel: 'openai.com:gpt-3.5-turbo',
-        apiKeyVar: 'openai_api_key'
+		apiKeyVar: 'openai_api_key'
 	}
 };
 
@@ -86,19 +86,19 @@ export const computeTokenCount = async (text : string, model : CompletionModelID
 
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
-    _model : CompletionModelID
-    _env : Environment
+	_model : CompletionModelID;
+	_env : Environment;
 
-    constructor(model : CompletionModelID, env : Environment) {
-        this._model = model;
-        this._env = env;
-    }
+	constructor(model : CompletionModelID, env : Environment) {
+		this._model = model;
+		this._env = env;
+	}
 
-    async prompt(text : string) : Promise<string> {
-        return computePrompt(text, this._model, this._env);
-    }
+	async prompt(text : string) : Promise<string> {
+		return computePrompt(text, this._model, this._env);
+	}
 
-    async tokenCount(text : string) : Promise<number> {
-        return computeTokenCount(text, this._model);
-    }
+	async tokenCount(text : string) : Promise<number> {
+		return computeTokenCount(text, this._model);
+	}
 }

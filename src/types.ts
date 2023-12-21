@@ -1,5 +1,5 @@
 import {
-    z
+	z
 } from 'zod';
 
 export const pathSchema = z.string();
@@ -11,13 +11,13 @@ const sproutName = z.string();
 export type SproutName = z.infer<typeof sproutName>;
 
 export const sproutConfigSchema = z.object({
-    version: z.literal(0)
+	version: z.literal(0)
 });
 
 export type SproutConfig = z.infer<typeof sproutConfigSchema>;
 
 const environmentSchema = z.object({
-    openai_api_key : z.string().optional()
+	openai_api_key : z.string().optional()
 });
 
 export type Environment = z.infer<typeof environmentSchema>;
