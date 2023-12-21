@@ -42,8 +42,16 @@ type CLIOptions = z.infer<typeof cliOptions>;
 //This is not a method on sprout because Sprout doesn't  know how to get or give
 //input to the surrounding context.
 const runSprout = async (sprout : Sprout) : Promise<void> => {
-	//TODO: actually do turns
-	console.log(await sprout.prompt());
+	//TODO: allow an exit
+	const active = true;
+	while(active) {
+		const turn = await sprout.conversationTurn();
+		console.log(turn.userMessage);
+		//TODO: wait for the user's input, then provide to the prompt, then 
+		const userInput = 'TODO: actually import the user input';
+		sprout.provideUserResponse(userInput);
+	}
+
 };
 
 const main = async (opts : CLIOptions) : Promise<void> => {
