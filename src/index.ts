@@ -39,6 +39,13 @@ const cliOptions = z.object({
 
 type CLIOptions = z.infer<typeof cliOptions>;
 
+//This is not a method on sprout because Sprout doesn't  know how to get or give
+//input to the surrounding context.
+const runSprout = async (sprout : Sprout) : Promise<void> => {
+	//TODO: actually do turns
+	console.log(await sprout.prompt());
+};
+
 const main = async (opts : CLIOptions) : Promise<void> => {
 	if (opts.sprout) {
 		const ai = new AIProvider('openai.com:gpt-4', {
@@ -47,7 +54,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 		});
 		const sprout = new Sprout(opts.sprout, ai);
 		await sprout.validate();
-		console.log(await sprout.prompt());
+		await runSprout(sprout);
 		return;
 	}
 	const sproutPaths = await listSprouts();
