@@ -10,6 +10,9 @@ const sproutName = z.string();
 
 export type SproutName = z.infer<typeof sproutName>;
 
+//The state a given sprout defines. This library doesn't really care too much as long as it's JSONable.
+export type SproutState = unknown;
+
 export const sproutConfigSchema = z.object({
 	version: z.literal(0)
 });

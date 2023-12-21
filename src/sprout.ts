@@ -12,11 +12,9 @@ import {
 	Path,
 	SproutConfig,
 	SproutName,
+	SproutState,
 	sproutConfigSchema
 } from './types.js';
-
-//The state a given sprout defines. TODO: make this more tight.
-type SproutState = unknown;
 
 //Relative to the sprout root
 const SPROUT_CONFIG_PATH = 'config.json';
