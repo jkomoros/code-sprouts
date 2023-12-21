@@ -27,10 +27,12 @@ export class Sprout {
 	_baseInstructions? : string;
 	_schemaText? : string;
 	_aiProvider? : AIProvider;
+	_userMessages : string[];
 
 	constructor(path : Path, ai? : AIProvider) {
 		this._path = path;
 		this._aiProvider = ai;
+		this._userMessages = [];
 	}
 
 	get name() : SproutName {
@@ -112,6 +114,13 @@ You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
 Your current state is:
-${JSON.stringify(emptyObject, null, '\t')}`;
+${JSON.stringify(emptyObject, null, '\t')}
+
+The last message from the user is:
+${this._userMessages.length ? this._userMessages.slice(-1, 1) : '<INITIAL>'}`;
+	}
+
+	provideUserResponse(response : string) : void {
+		this._userMessages.push(response);
 	}
 }
