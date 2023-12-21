@@ -18,6 +18,14 @@ import {
     Sprout
 } from './sprout.js';
 
+import {
+    AIProvider
+} from './llm.js';
+
+import {
+    env
+} from 'process';
+
 const cliOptions = z.object({
     sprout: z.optional(pathSchema),
     help: z.optional(z.boolean())
@@ -27,7 +35,11 @@ type CLIOptions = z.infer<typeof cliOptions>;
 
 const main = async (opts : CLIOptions) : Promise<void> => {
     if (opts.sprout) {
-        const sprout = new Sprout(opts.sprout);
+        const ai = new AIProvider('openai.com:gpt-4', {
+            //TODO: allow specifiying in a secret.CONFIG.json object too.
+            openai_api_key: env.OPENAI_API_KEY
+        });
+        const sprout = new Sprout(opts.sprout, ai);
         await sprout.validate();
         console.log(await sprout.prompt());
         return;

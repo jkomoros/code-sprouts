@@ -2,6 +2,7 @@ import {
 	openai
 } from '@polymath-ai/ai';
 
+//TODO: streaming prompt response too
 export const computePromptOpenAI = async (modelName : string, apiKey : string, prompt : string) : Promise<string> => {
 	const response = await fetch(openai(apiKey).chatCompletion({
 		model: modelName,

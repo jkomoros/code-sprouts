@@ -83,3 +83,22 @@ export const computeTokenCount = async (text : string, model : CompletionModelID
 	}
 	return -1;
 };
+
+//Wrap them in one object to pass around instead of passing around state everywhere else.
+export class AIProvider {
+    _model : CompletionModelID
+    _env : Environment
+
+    constructor(model : CompletionModelID, env : Environment) {
+        this._model = model;
+        this._env = env;
+    }
+
+    async prompt(text : string) : Promise<string> {
+        return computePrompt(text, this._model, this._env);
+    }
+
+    async tokenCount(text : string) : Promise<number> {
+        return computeTokenCount(text, this._model);
+    }
+}

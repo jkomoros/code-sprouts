@@ -10,4 +10,8 @@ Install dependencies with `npm install`.
 
 Open a terminal window and run `npm run start`.
 
+Set an environment variable with your OPENAI_API_KEY:
+
+`export OPENAI_API_KEY=<YOUR KEY HERE>`
+
 Run the tool with `node build/src/index.js`
