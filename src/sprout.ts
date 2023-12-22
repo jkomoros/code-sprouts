@@ -18,6 +18,8 @@ import {
 	sproutConfigSchema
 } from './types.js';
 
+import fastJSONPatch from 'fast-json-patch';
+
 //Relative to the sprout root
 const SPROUT_CONFIG_PATH = 'config.json';
 const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
@@ -167,6 +169,12 @@ Provide a patch to update the state object based on the users's last message and
 		if (debugLogger) debugLogger(`Raw Turn: ${response}`);
 		const turn = converationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
+		const oldState = await this.lastState();
+		//TODO: fix typing to not need this cast
+		//eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const newState = fastJSONPatch.applyPatch(oldState, turn.patch as any).newDocument;
+		this._states.push(newState);
+		if (debugLogger) debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
 		return turn.userMessage;
 	}
 }
