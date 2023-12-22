@@ -9,7 +9,7 @@ import {
 } from './llm.js';
 
 import {
-	ConversationTurn,
+	Logger,
 	Path,
 	SproutConfig,
 	SproutName,
@@ -135,10 +135,24 @@ ${CONVERSATION_TURN_SCHEMA}`;
 		this._userMessages.push(response);
 	}
 
-	async conversationTurn() : Promise<ConversationTurn> {
+	/*
+		conversationTurn does the next LLM turn of a discussion, as visible to a
+		user.
+
+		It prompts the LLM with the current state and last received user message
+		(via provideUserResponse).
+
+		It returns the next message to show to the user. The calling context
+		should display it to the user, pass any new response from a user via
+		provideUserResponse, and then call conversationTurn() again.
+	*/
+	async conversationTurn(debugLogger? : Logger) : Promise<string> {
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const prompt = await this.prompt();
+		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
 		const response = await this._aiProvider.prompt(prompt);
-		return converationTurnSchema.parse(JSON.parse(response));
+		const turn = converationTurnSchema.parse(JSON.parse(response));
+		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
+		return turn.userMessage;
 	}
 }

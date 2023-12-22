@@ -48,12 +48,9 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	//TODO: allow an exit
 	const active = true;
 	while(active) {
-		if (opts.verbose) {
-			//TODO: allow caching this or computing once
-			console.info(await sprout.prompt());
-		}
-		const turn = await sprout.conversationTurn();
-		console.log(`Bot:\n${turn.userMessage}`);
+		const logger = opts.verbose ? console.info : undefined;
+		const message = await sprout.conversationTurn(logger);
+		console.log(`Bot:\n${message}`);
 		//TODO: wait for the user's input, then provide to the prompt, then 
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
