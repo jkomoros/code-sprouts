@@ -35,7 +35,7 @@ const copyOpSchema = z.object({
 const testOpSchema = z.object({
 	op: z.literal('test'),
 	path: z.string(),
-	value: z.undefined(),
+	value: z.unknown(),
 });
 
 // Union schema for any JSON Patch operation

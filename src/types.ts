@@ -1,7 +1,10 @@
 import {
 	z
 } from 'zod';
-import { jsonPatchRFC6902Schema } from './types_json_patch';
+
+import {
+	jsonPatchRFC6902Schema
+} from './types_json_patch.js';
 
 export const pathSchema = z.string();
 
