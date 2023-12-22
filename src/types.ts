@@ -57,9 +57,7 @@ export type CompletionInfo = {
 //note that sprout.ts:ConversationTurnSchema needs to match this shape.
 export const converationTurnSchema = z.object({
 	userMessage: z.string().describe('The message that will be shown to the user'),
-	patch : z.optional(
-		jsonPatchRFC6902Schema.describe('If provided, a patch to apply to the current state object to update it for the next turn')
-	)
+	patch : jsonPatchRFC6902Schema.describe('The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].')
 	//TODO: add a userConcludedConversation boolean, as a way for the LLM to report that the user requested conversation to be over.
 });
 

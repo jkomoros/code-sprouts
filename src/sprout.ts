@@ -27,8 +27,8 @@ const SPROUT_SCHEMA_PATH = 'schema.ts';
 const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
   //The message that will be shown to the user.
   userMessage: string
-  //If provided, a patch to apply to the current state object to update it for the next turn
-  patch? : JSONPatchRFC6902
+  //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
+  patch : JSONPatchRFC6902
 }`;
 
 export class Sprout {
