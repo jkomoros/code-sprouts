@@ -1,6 +1,7 @@
 import {
 	z
 } from 'zod';
+import { jsonPatchRFC6902Schema } from './types_json_patch';
 
 export const pathSchema = z.string();
 
@@ -56,7 +57,9 @@ export type CompletionInfo = {
 //note that sprout.ts:ConversationTurnSchema needs to match this shape.
 export const converationTurnSchema = z.object({
 	userMessage: z.string().describe('The message that will be shown to the user'),
-	//TODO: also allow JSON Patch (RFC 6902)
+	patch : z.optional(
+		jsonPatchRFC6902Schema.describe('If provided, a patch to apply to the current state object to update it for the next turn')
+	)
 	//TODO: add a userConcludedConversation boolean, as a way for the LLM to report that the user requested conversation to be over.
 });
 
