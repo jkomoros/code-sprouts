@@ -38,11 +38,13 @@ export class Sprout {
 	_schemaText? : string;
 	_aiProvider? : AIProvider;
 	_userMessages : string[];
+	_states: SproutState[];
 
 	constructor(path : Path, ai? : AIProvider) {
 		this._path = path;
 		this._aiProvider = ai;
 		this._userMessages = [];
+		this._states = [];
 	}
 
 	get name() : SproutName {
@@ -110,12 +112,19 @@ ${schemaText}
 		return JSON.parse(rawJSON);
 	}
 
+	async lastState() : Promise<SproutState> {
+		if (this._states.length == 0) {
+			this._states.push(await this.starterState());
+		}
+		return this._states[this._states.length -1];
+	}
+
 	//Returns the next prompt to return.
 	async prompt() : Promise<string> {
 		const baseInstructions = await this.baseInstructions();
 		const schemaText = await this.schemaText();
 
-		const emptyObject = await this.starterState();
+		const state = await this.lastState();
 
 		//TODO: manage state and responses as diffs.
 		return `${baseInstructions}
@@ -124,7 +133,7 @@ You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
 Your current state is:
-${JSON.stringify(emptyObject, null, '\t')}
+${JSON.stringify(state, null, '\t')}
 
 The last message from the user is:
 ${this._userMessages.length ? this._userMessages.slice(-1, 1) : '<INITIAL>'}
