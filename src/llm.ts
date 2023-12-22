@@ -4,9 +4,11 @@ import {
 } from './openai.js';
 
 import {
+	CompletionInfo,
 	CompletionModelID,
 	Environment,
 	ModelProvider,
+	PromptOptions,
 	modelProvider
 } from './types.js';
 
@@ -18,11 +20,6 @@ export const extractModel = (model : CompletionModelID) : [name : ModelProvider,
 	const parts = model.split(':');
 	if (parts.length != 2) throw new Error('Model didn\'t have : as expected');
 	return [modelProvider.parse(parts[0]), parts[1]];
-};
-
-type CompletionInfo = {
-	maxTokens: number;	
-	compute: (modelName : string, apiKey : string, prompt : string) => Promise<string>
 };
 
 export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInfo } = {
@@ -42,6 +39,11 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 	'openai.com:gpt-4-32k': {
 		maxTokens: 32768,
 		compute: computePromptOpenAI
+	},
+	'openai.com:gpt-4-1106-preview': {
+		maxTokens: 8192,
+		compute: computePromptOpenAI,
+		supportsJSONResponseFormat: true
 	}
 };
 
@@ -57,7 +59,7 @@ export const INFO_BY_PROVIDER : {[name in ModelProvider]: ProviderInfo} = {
 	}
 };
 
-export const computePrompt = async (prompt : string, model: CompletionModelID, env : Environment) : Promise<string> => {
+export const computePrompt = async (prompt : string, model: CompletionModelID, env : Environment, opts : PromptOptions = {}) : Promise<string> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
@@ -67,7 +69,7 @@ export const computePrompt = async (prompt : string, model: CompletionModelID, e
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
 
-	return modelInfo.compute(modelName, apiKey, prompt);
+	return modelInfo.compute(modelName, apiKey, prompt, modelInfo, opts);
 };
 
 export const computeTokenCount = async (text : string, model : CompletionModelID) : Promise<number> => {
@@ -88,14 +90,16 @@ export const computeTokenCount = async (text : string, model : CompletionModelID
 export class AIProvider {
 	_model : CompletionModelID;
 	_env : Environment;
+	_opts: PromptOptions;
 
-	constructor(model : CompletionModelID, env : Environment) {
+	constructor(model : CompletionModelID, env : Environment, opts : PromptOptions = {}) {
 		this._model = model;
 		this._env = env;
+		this._opts = opts;
 	}
 
-	async prompt(text : string) : Promise<string> {
-		return computePrompt(text, this._model, this._env);
+	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
+		return computePrompt(text, this._model, this._env, {...this._opts, ...opts});
 	}
 
 	async tokenCount(text : string) : Promise<number> {

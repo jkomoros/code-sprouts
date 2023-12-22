@@ -150,7 +150,7 @@ ${CONVERSATION_TURN_SCHEMA}`;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
-		const response = await this._aiProvider.prompt(prompt);
+		const response = await this._aiProvider.prompt(prompt, {jsonResponse: true});
 		const turn = converationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 		return turn.userMessage;

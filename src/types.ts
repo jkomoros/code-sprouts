@@ -29,7 +29,8 @@ export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',
 	'openai.com:gpt-3.5-turbo-16k',
 	'openai.com:gpt-4',
-	'openai.com:gpt-4-32k'
+	'openai.com:gpt-4-32k',
+	'openai.com:gpt-4-1106-preview'
 ]);
 
 export type CompletionModelID = z.infer<typeof completionModelID>;
@@ -39,6 +40,16 @@ export const modelProvider = z.enum([
 ]);
 
 export type ModelProvider = z.infer<typeof modelProvider>;
+
+export type PromptOptions = {
+	jsonResponse? : boolean
+};
+
+export type CompletionInfo = {
+	maxTokens: number;	
+	compute: (modelName : string, apiKey : string, prompt : string, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<string>,
+	supportsJSONResponseFormat?: boolean
+};
 
 //TODO: use function calling instead.
 
