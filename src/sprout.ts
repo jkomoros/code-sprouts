@@ -155,6 +155,7 @@ Provide a patch to update the state object based on the users's last message and
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
 		const response = await this._aiProvider.prompt(prompt, {jsonResponse: true});
+		if (debugLogger) debugLogger(`Raw Turn: ${response}`);
 		const turn = converationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 		return turn.userMessage;
