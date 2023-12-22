@@ -104,7 +104,7 @@ export class Sprout {
 		const prompt = `Return the JSON of a default/empty object conforming to this typescript schema (following comments on defaults):
 ${schemaText}
 `;
-		const rawJSON = await this._aiProvider.prompt(prompt);
+		const rawJSON = await this._aiProvider.prompt(prompt, {jsonResponse: true});
 		return JSON.parse(rawJSON);
 	}
 

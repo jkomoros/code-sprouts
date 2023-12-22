@@ -64,7 +64,7 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 
 const main = async (opts : CLIOptions) : Promise<void> => {
 	if (opts.sprout) {
-		const ai = new AIProvider('openai.com:gpt-4', {
+		const ai = new AIProvider('openai.com:gpt-4-1106-preview', {
 			//TODO: allow specifiying in a secret.CONFIG.json object too.
 			openai_api_key: env.OPENAI_API_KEY
 		});
