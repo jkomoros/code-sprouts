@@ -5,6 +5,7 @@ import {
 import {
 	jsonPatchRFC6902Schema
 } from './types_json_patch.js';
+import OpenAI from 'openai';
 
 export const pathSchema = z.string();
 
@@ -49,8 +50,8 @@ export type PromptOptions = {
 	jsonResponse? : boolean
 };
 
-//TODO: type this in a way that you can do something with
-export type PromptStream = unknown;
+//TODO: make this a generic type, not relying on OpenAI's structure
+export type PromptStream = AsyncIterable<OpenAI.ChatCompletionChunk>;
 
 export type CompletionInfo = {
 	maxTokens: number;	
