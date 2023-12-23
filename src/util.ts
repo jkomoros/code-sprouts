@@ -87,7 +87,8 @@ export const completeAndParseJSON = (partialJSON : string) : unknown => {
 				finalString += '';
 				break;
 			case 'start-key':
-				finalString += '"":null';
+				//It can be an empty object
+				finalString += '';
 				break;
 			case 'continue-key':
 				//The string was already closed in an earlier iteration

@@ -28,4 +28,9 @@ describe('test completeAndParseJSON', () => {
 		expect(() => completeAndParseJSON(input)).not.toThrow();
 	});
 
+	it('should not throw for starter object that is inside an object', () => {
+		const input = '{"a":{';
+		expect(() => completeAndParseJSON(input)).not.toThrow();
+	});
+
 });
