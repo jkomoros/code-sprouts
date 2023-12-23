@@ -4,6 +4,12 @@ import {
 
 describe('test completeAndParseJSON', () => {
   it('should not throw an error', () => {
-    expect(() => completeAndParseJSON('')).not.toThrow();
+    const input = '';
+    expect(() => completeAndParseJSON(input)).not.toThrow();
   });
+
+  it('should not throw for starter object', () => {
+    const input = '{';
+    expect(() => completeAndParseJSON(input)).not.toThrow();
+  })
 });
