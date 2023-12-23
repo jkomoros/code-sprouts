@@ -49,9 +49,13 @@ export type PromptOptions = {
 	jsonResponse? : boolean
 };
 
+//TODO: type this in a way that you can do something with
+export type PromptStream = unknown;
+
 export type CompletionInfo = {
 	maxTokens: number;	
 	compute: (modelName : string, apiKey : string, prompt : string, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<string>,
+	computeStream?: (modelName : string, apiKey : string, prompt : string, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<PromptStream>,
 	supportsJSONResponseFormat?: boolean
 };
 

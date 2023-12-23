@@ -1,5 +1,6 @@
 import {
 	computePromptOpenAI,
+	computePromptStreamOpenAI,
 	computeTokenCountOpenAI
 } from './openai.js';
 
@@ -9,6 +10,7 @@ import {
 	Environment,
 	ModelProvider,
 	PromptOptions,
+	PromptStream,
 	modelProvider
 } from './types.js';
 
@@ -22,27 +24,32 @@ export const extractModel = (model : CompletionModelID) : [name : ModelProvider,
 	return [modelProvider.parse(parts[0]), parts[1]];
 };
 
+const BASE_OPENAI_COMPLETION_INFO = {
+	compute: computePromptOpenAI,
+	computeStream: computePromptStreamOpenAI
+};
+
 export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInfo } = {
 	'openai.com:gpt-3.5-turbo': {
-		maxTokens: 4096,
-		compute: computePromptOpenAI
+		...BASE_OPENAI_COMPLETION_INFO,
+		maxTokens: 4096
 	},
 	'openai.com:gpt-3.5-turbo-16k': {
+		...BASE_OPENAI_COMPLETION_INFO,
 		//According to gpt-3.5-turbo-16k
 		maxTokens: 16384,
-		compute: computePromptOpenAI
 	},
 	'openai.com:gpt-4': {
-		maxTokens: 8192,
-		compute: computePromptOpenAI
+		...BASE_OPENAI_COMPLETION_INFO,
+		maxTokens: 8192
 	},
 	'openai.com:gpt-4-32k': {
-		maxTokens: 32768,
-		compute: computePromptOpenAI
+		...BASE_OPENAI_COMPLETION_INFO,
+		maxTokens: 32768
 	},
 	'openai.com:gpt-4-1106-preview': {
+		...BASE_OPENAI_COMPLETION_INFO,
 		maxTokens: 8192,
-		compute: computePromptOpenAI,
 		supportsJSONResponseFormat: true
 	}
 };
@@ -70,6 +77,21 @@ export const computePrompt = async (prompt : string, model: CompletionModelID, e
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
 
 	return modelInfo.compute(modelName, apiKey, prompt, modelInfo, opts);
+};
+
+export const computeStream = async (prompt : string, model: CompletionModelID, env : Environment, opts: PromptOptions = {}) : Promise<PromptStream> => {
+	//Throw if the completion model is not a valid value
+
+	const [provider, modelName] = extractModel(model);
+
+	const apiKey = env[INFO_BY_PROVIDER[provider].apiKeyVar];
+	if (!apiKey) throw new Error ('Unset API key');
+
+	const modelInfo = COMPLETIONS_BY_MODEL[model];
+
+	if (!modelInfo.computeStream) throw new Error(`${modelName} does not support streaming`);
+
+	return modelInfo.computeStream(modelName, apiKey, prompt, modelInfo, opts);
 };
 
 export const computeTokenCount = async (text : string, model : CompletionModelID) : Promise<number> => {
@@ -100,6 +122,10 @@ export class AIProvider {
 
 	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
 		return computePrompt(text, this._model, this._env, {...this._opts, ...opts});
+	}
+
+	async promptStream(text : string, opts: PromptOptions = {}) : Promise<PromptStream> {
+		return computeStream(text, this._model, this._env, {...this._opts, ...opts});
 	}
 
 	async tokenCount(text : string) : Promise<number> {
