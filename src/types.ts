@@ -72,3 +72,6 @@ export const converationTurnSchema = z.object({
 export type ConversationTurn = z.infer<typeof converationTurnSchema>;
 
 export type Logger = (...messages : string[]) => void;
+
+//Logs each input with no newlines.
+export type StreamLogger = (input : string) => void;

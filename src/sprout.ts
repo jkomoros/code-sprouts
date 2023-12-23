@@ -14,6 +14,7 @@ import {
 	SproutConfig,
 	SproutName,
 	SproutState,
+	StreamLogger,
 	converationTurnSchema,
 	sproutConfigSchema
 } from './types.js';
@@ -162,7 +163,7 @@ Provide a patch to update the state object based on the users's last message and
 		should display it to the user, pass any new response from a user via
 		provideUserResponse, and then call conversationTurn() again.
 	*/
-	async conversationTurn(debugLogger? : Logger) : Promise<string> {
+	async conversationTurn(streamLogger? : StreamLogger, debugLogger? : Logger) : Promise<string> {
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
@@ -171,8 +172,13 @@ Provide a patch to update the state object based on the users's last message and
 		for await (const chunk of stream) {
 			if (chunk.choices.length == 0) throw new Error('No choices');
 			const choice = chunk.choices[0];
-			response += choice.delta.content || '';
+			const content = choice.delta.content || '';
+			response += content;
+			//TODO: this is actually wrong, I want to log the final user message to screen.
+			if (streamLogger) streamLogger(content);
 		}
+		//Add a newline at the end for the next line
+		if (streamLogger) streamLogger('\n');
 		if (debugLogger) debugLogger(`Raw Turn: ${response}`);
 		const turn = converationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);

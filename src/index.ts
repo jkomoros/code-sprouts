@@ -23,7 +23,8 @@ import {
 } from './llm.js';
 
 import {
-	env
+	env,
+	stdout
 } from 'process';
 
 import {
@@ -42,6 +43,10 @@ const cliOptions = z.object({
 
 type CLIOptions = z.infer<typeof cliOptions>;
 
+const streamLogger = (input : string) : void => {
+	stdout.write(input);
+};
+
 //This is not a method on sprout because Sprout doesn't  know how to get or give
 //input to the surrounding context.
 const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => {
@@ -49,7 +54,8 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	const active = true;
 	while(active) {
 		const logger = opts.verbose ? console.info : undefined;
-		const message = await sprout.conversationTurn(logger);
+		const message = await sprout.conversationTurn(streamLogger, logger);
+		//TODO: this is kind of duplicative
 		console.log(`Bot:\n${message}`);
 		//TODO: wait for the user's input, then provide to the prompt, then 
 		const userInput = await enquirer.prompt<{userResponse:string}>({
