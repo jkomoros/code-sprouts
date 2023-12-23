@@ -95,7 +95,7 @@ export const completeAndParseJSON = (partialJSON : string) : unknown => {
 				finalString += ':null';
 				break;
 			case 'value':
-				finalString += 'null';
+				finalString += '';
 				break;
 			default:
 				assertUnreachable(next);
