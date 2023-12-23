@@ -2,8 +2,10 @@ export const assertUnreachable = (x : never) : never => {
 	throw new Error('Exhaustiveness check failed: ' + String(x));
 };
 
-//TODO: test this
 export const completeAndParseJSON = (partialJSON : string) : unknown => {
+
+	//TODO: this logic is extremely complex. There's likely more tests to be added and edge cases :grimace:
+
 	if (!partialJSON) return null;
 	const thingsToTerminate : ('"' | ']' | '}')[] = [];
 	let previousCharWasEscape = false;
@@ -11,10 +13,6 @@ export const completeAndParseJSON = (partialJSON : string) : unknown => {
 	//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.
 	const objectExpectsNext : ('start-key' | 'continue-key' | 'value' | 'colon' | 'comma')[] = [];
 	
-	//TODO: this doesn't work. 
-	//the problem is that in an object context we need to know if the string we're in is a key or the value.
-	//A way to handle this is to look at the first thingsToTerminate, and if it's '}' then we need to know if we have a key but no value.
-
 	for (const char of partialJSON) {
 		let charIsEscape = false;
 		switch(char) {
