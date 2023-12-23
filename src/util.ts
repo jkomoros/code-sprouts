@@ -127,6 +127,9 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 			default:
 				assertUnreachable(next);
 			}
+		} else if (char == '"') {
+			//We need to do an extra ending quote otherwise it won't terminate the string
+			if (item.lastCharIsEscape) finalString += '"';
 		}
 		finalString += char;
 	}
