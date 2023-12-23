@@ -54,10 +54,7 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	const active = true;
 	while(active) {
 		const logger = opts.verbose ? console.info : undefined;
-		const message = await sprout.conversationTurn(streamLogger, logger);
-		//TODO: this is kind of duplicative
-		console.log(`Bot:\n${message}`);
-		//TODO: wait for the user's input, then provide to the prompt, then 
+		await sprout.conversationTurn(streamLogger, logger);
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',
