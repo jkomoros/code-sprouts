@@ -63,4 +63,21 @@ describe('test parsePartialJSON', () => {
 		expect(() => parsePartialJSON(input)).not.toThrow();
 	});
 
+	it('iteratively handles a long and complex bit of json', () => {
+		const input = `{
+			"userMessage": "This is a great thing",
+			"patch": [
+				{
+					"op": "add",
+					"path": "/blammo",
+					"value": 3
+				}
+			]
+		}`;
+		for (let i = 0; i < input.length; i++) {
+			const str = input.slice(0,i);
+			expect(() => parsePartialJSON(str)).not.toThrow();
+		}
+	});
+
 });
