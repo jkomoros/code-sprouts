@@ -67,7 +67,7 @@ export const converationTurnSchema = z.object({
 	userMessage: z.string().describe('The message that will be shown to the user'),
 	patch : jsonPatchRFC6902Schema.describe('The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].')
 	//TODO: add a userConcludedConversation boolean, as a way for the LLM to report that the user requested conversation to be over.
-});
+}).strict();
 
 export type ConversationTurn = z.infer<typeof converationTurnSchema>;
 
