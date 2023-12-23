@@ -128,7 +128,6 @@ ${schemaText}
 
 		const state = await this.lastState();
 
-		//TODO: manage state and responses as diffs.
 		return `${baseInstructions}
 
 You will manage your state in an object conforming to the following schema:
