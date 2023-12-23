@@ -63,20 +63,30 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 };
 
 const main = async (opts : CLIOptions) : Promise<void> => {
-	if (opts.sprout) {
-		const ai = new AIProvider('openai.com:gpt-4-1106-preview', {
-			//TODO: allow specifiying in a secret.CONFIG.json object too.
-			openai_api_key: env.OPENAI_API_KEY
+	
+	let sproutName = opts.sprout;
+	
+	if (!sproutName) {
+
+		const sproutPaths = await listSprouts();
+		const input = await enquirer.prompt<{sprout: string}>({
+			type: 'select',
+			name: 'sprout',
+			message: 'Sprout to run',
+			choices: sproutPaths
 		});
-		const sprout = new Sprout(opts.sprout, ai);
-		await sprout.validate();
-		await runSprout(sprout, opts);
-		return;
+		sproutName = input.sprout;
 	}
-	const sproutPaths = await listSprouts();
-	for (const path of sproutPaths) {
-		console.log(path);
-	}
+
+	if (!sproutName) throw new Error('no sprout provided');
+
+	const ai = new AIProvider('openai.com:gpt-4-1106-preview', {
+		//TODO: allow specifiying in a secret.CONFIG.json object too.
+		openai_api_key: env.OPENAI_API_KEY
+	});
+	const sprout = new Sprout(sproutName, ai);
+	await sprout.validate();
+	await runSprout(sprout, opts);
 };
 
 (async() => {
