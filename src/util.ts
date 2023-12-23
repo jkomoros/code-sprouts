@@ -78,7 +78,8 @@ export const completeAndParseJSON = (partialJSON : string) : unknown => {
 	let finalString = partialJSON;
 	for (const char of thingsToTerminate) {
 		if (char == '}') {
-			const next = objectExpectsNext[0];
+			const next = objectExpectsNext.shift();
+			if (!next) throw new Error('Empty objectExpectsNext');
 			switch(next) {
 			case 'colon':
 				finalString += ':null';
