@@ -58,4 +58,9 @@ describe('test parsePartialJSON', () => {
 		expect(() => parsePartialJSON(input)).not.toThrow();
 	});
 
+	it('should not throw for realistic partial object with trailing comma and start key', () => {
+		const input = '{\n"userMessage": "a",\n"';
+		expect(() => parsePartialJSON(input)).not.toThrow();
+	});
+
 });

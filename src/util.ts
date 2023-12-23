@@ -49,7 +49,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 				}
 			} else {
 				thingsToTerminate.unshift('"');
-				if (objectExpectsNext[0] == 'start-optional-key') objectExpectsNext[0] = 'continue-key';
+				if (objectExpectsNext[0] == 'start-optional-key' || objectExpectsNext[0] == 'start-required-key') objectExpectsNext[0] = 'continue-key';
 			}
 			inString = !inString;
 			break;
