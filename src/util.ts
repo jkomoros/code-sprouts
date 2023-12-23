@@ -37,6 +37,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 		if (!inString && char.trim() && stack.length && stack[0].type == '}' && stack[0].expectsNext == 'start-value') stack[0].expectsNext = 'continue-value';
 		switch(char) {
 		case '\\':
+			//This can only happen within a string if it's valid json anyway
 			charIsEscape = true;
 			break;
 		case '"':

@@ -63,6 +63,11 @@ describe('test parsePartialJSON', () => {
 		expect(() => parsePartialJSON(input)).not.toThrow();
 	});
 
+	it('handles escaped strings right', () => {
+		const input = '{\n"userMessage": "a \\"b",\n"';
+		expect(() => parsePartialJSON(input)).not.toThrow();
+	});
+
 	it('iteratively handles a long and complex bit of json', () => {
 		const input = `{
 			"userMessage": "This is a great thing",
