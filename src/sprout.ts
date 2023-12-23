@@ -134,6 +134,8 @@ ${schemaText}
 You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
+Do not talk about the state object with a user; it is an implementation detail the user doesn't need to know about.
+
 Your current state is:
 ${JSON.stringify(state, null, '\t')}
 
