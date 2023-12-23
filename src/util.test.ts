@@ -12,4 +12,9 @@ describe('test completeAndParseJSON', () => {
     const input = '{';
     expect(() => completeAndParseJSON(input)).not.toThrow();
   })
+
+  it('should not throw for starter object that starts a key', () => {
+    const input = '{"';
+    expect(() => completeAndParseJSON(input)).not.toThrow();
+  })
 });
