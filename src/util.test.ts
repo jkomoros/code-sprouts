@@ -48,4 +48,9 @@ describe('test parsePartialJSON', () => {
 		expect(() => parsePartialJSON(input)).not.toThrow();
 	});
 
+	it('should not throw for realistic partial object', () => {
+		const input = '{\n"userMessage":';
+		expect(() => parsePartialJSON(input)).not.toThrow();
+	});
+
 });

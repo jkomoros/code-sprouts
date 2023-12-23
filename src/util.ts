@@ -20,10 +20,14 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 	let previousCharWasEscape = false;
 	let inString = false;
 	//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.
-	const objectExpectsNext : ('start-key' | 'continue-key' | 'value' | 'colon' | 'comma')[] = [];
+	const objectExpectsNext : ('start-key' | 'continue-key' | 'start-value' | 'continue-value' | 'colon' | 'comma')[] = [];
 	
 	for (const char of partialJSON) {
 		let charIsEscape = false;
+		//If we're not in a string, the character is not whitespace, we're in an
+		//object context, and we haven't started the value yet, note that it's
+		//now started.
+		if (!inString && char.trim() && thingsToTerminate[0] == '}' && objectExpectsNext[0] == 'start-value') objectExpectsNext[0] = 'continue-value';
 		switch(char) {
 		case '\\':
 			charIsEscape = true;
@@ -72,7 +76,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 		case ':':
 			if (inString) break;
 			if (thingsToTerminate[0] != '}') break;
-			objectExpectsNext[0] = 'value';
+			objectExpectsNext[0] = 'start-value';
 			break;
 		case ',':
 			if (inString) break;
@@ -102,7 +106,10 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 				//The string was already closed in an earlier iteration
 				finalString += ':null';
 				break;
-			case 'value':
+			case 'start-value':
+				finalString += 'null';
+				break;
+			case 'continue-value':
 				finalString += '';
 				break;
 			default:
