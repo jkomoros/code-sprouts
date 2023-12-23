@@ -23,6 +23,10 @@ It's useful for when a JSON response is streaming from an LLM and will be partia
 */
 export const parsePartialJSON = (partialJSON : string) : unknown => {
 
+	//TODO: allow a partial parsing when you know you're going to be calling
+	//this iteratively like we do in runSprout. It would have an inner function
+	//that returns a partial parse result.
+
 	//TODO: this logic is extremely complex. There's likely more tests to be added and edge cases :grimace:
 
 	if (!partialJSON) return null;
