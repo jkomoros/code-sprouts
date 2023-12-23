@@ -20,7 +20,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 	let previousCharWasEscape = false;
 	let inString = false;
 	//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.
-	const objectExpectsNext : ('start-key' | 'continue-key' | 'start-value' | 'continue-value' | 'colon' | 'comma')[] = [];
+	const objectExpectsNext : ('start-optional-key' | 'start-required-key' | 'continue-key' | 'start-value' | 'continue-value' | 'colon' | 'comma')[] = [];
 	
 	for (const char of partialJSON) {
 		let charIsEscape = false;
@@ -49,7 +49,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 				}
 			} else {
 				thingsToTerminate.unshift('"');
-				if (objectExpectsNext[0] == 'start-key') objectExpectsNext[0] = 'continue-key';
+				if (objectExpectsNext[0] == 'start-optional-key') objectExpectsNext[0] = 'continue-key';
 			}
 			inString = !inString;
 			break;
@@ -65,7 +65,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 		case '{':
 			if (inString) break;
 			thingsToTerminate.unshift('}');
-			objectExpectsNext.unshift('start-key');
+			objectExpectsNext.unshift('start-optional-key');
 			break;
 		case '}':
 			if (inString) break;
@@ -81,7 +81,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 		case ',':
 			if (inString) break;
 			if (thingsToTerminate[0] != '}') break;
-			objectExpectsNext[0] = 'start-key';
+			objectExpectsNext[0] = 'start-required-key';
 			break;
 		}
 		previousCharWasEscape = charIsEscape;
@@ -98,9 +98,12 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 			case 'comma':
 				finalString += '';
 				break;
-			case 'start-key':
+			case 'start-optional-key':
 				//It can be an empty object
 				finalString += '';
+				break;
+			case 'start-required-key':
+				finalString += '"":null';
 				break;
 			case 'continue-key':
 				//The string was already closed in an earlier iteration
