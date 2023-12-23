@@ -17,4 +17,15 @@ describe('test completeAndParseJSON', () => {
 		const input = '{"';
 		expect(() => completeAndParseJSON(input)).not.toThrow();
 	});
+
+	it('should not throw for starter object that starts a key with an item', () => {
+		const input = '{"a';
+		expect(() => completeAndParseJSON(input)).not.toThrow();
+	});
+
+	it('should not throw for starter object that has a complete key', () => {
+		const input = '{"a"';
+		expect(() => completeAndParseJSON(input)).not.toThrow();
+	});
+
 });
