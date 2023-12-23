@@ -138,8 +138,8 @@ Do not talk about the state object with a user; it is an implementation detail t
 Your current state is:
 ${JSON.stringify(state, null, '\t')}
 
-The last message from the user is:
-${this._userMessages.length ? this._userMessages.slice(-1, 1) : '<INITIAL>'}
+The last messages from the user (with the last message, which you should respond to, at the end):
+${this._userMessages.length ? this._userMessages.join('\n---\n') : '<INITIAL>'}
 
 You should respond with a JSON object matching this schema:
 ${CONVERSATION_TURN_SCHEMA}
