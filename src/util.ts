@@ -2,6 +2,16 @@ export const assertUnreachable = (x : never) : never => {
 	throw new Error('Exhaustiveness check failed: ' + String(x));
 };
 
+type expectedChar = {
+	type: ']'
+} | {
+	type: '"',
+	lastCharIsEscape: boolean
+} | {
+	type: '}',
+	expectsNext: 'start-optional-key' | 'start-required-key' | 'continue-key' | 'start-value' | 'continue-value' | 'colon' | 'comma'
+};
+
 /*
 
 parsePartialJSON accepts a partial JSON string and terminates it as quickly as possible to make it valid and tries to prase it.
@@ -16,18 +26,16 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 	//TODO: this logic is extremely complex. There's likely more tests to be added and edge cases :grimace:
 
 	if (!partialJSON) return null;
-	const thingsToTerminate : ('"' | ']' | '}')[] = [];
+	const stack : expectedChar[] = [];
 	let previousCharWasEscape = false;
 	let inString = false;
-	//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.
-	const objectExpectsNext : ('start-optional-key' | 'start-required-key' | 'continue-key' | 'start-value' | 'continue-value' | 'colon' | 'comma')[] = [];
-	
+	//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.	
 	for (const char of partialJSON) {
 		let charIsEscape = false;
 		//If we're not in a string, the character is not whitespace, we're in an
 		//object context, and we haven't started the value yet, note that it's
 		//now started.
-		if (!inString && char.trim() && thingsToTerminate[0] == '}' && objectExpectsNext[0] == 'start-value') objectExpectsNext[0] = 'continue-value';
+		if (!inString && char.trim() && stack.length && stack[0].type == '}' && stack[0].expectsNext == 'start-value') stack[0].expectsNext = 'continue-value';
 		switch(char) {
 		case '\\':
 			charIsEscape = true;
@@ -37,60 +45,61 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 			
 			if (inString) {
 				//Indirect because after .shift() typescript otherwise would still think thingsToTerminate[0] will be "\""
-				const currentLastThing = thingsToTerminate[0];
-				if (!thingsToTerminate.length || currentLastThing != '"') throw new Error('String was not terminated by string');
-				thingsToTerminate.shift();
-				if (thingsToTerminate[0] == '}') {
-					if (objectExpectsNext[0] == 'continue-key') {
-						objectExpectsNext[0] = 'colon';
+				const currentLastThing = stack[0];
+				if (!stack.length || currentLastThing.type != '"') throw new Error('String was not terminated by string');
+				stack.shift();
+				if (stack[0].type == '}') {
+					if (stack[0].expectsNext == 'continue-key') {
+						stack[0].expectsNext = 'colon';
 					} else {
-						objectExpectsNext[0] = 'comma';
+						stack[0].expectsNext = 'comma';
 					}
 				}
 			} else {
-				thingsToTerminate.unshift('"');
-				if (objectExpectsNext[0] == 'start-optional-key' || objectExpectsNext[0] == 'start-required-key') objectExpectsNext[0] = 'continue-key';
+				stack.unshift({type: '"', lastCharIsEscape: false});
+				for (const item of stack) {
+					if (item.type != '}') continue;
+					if (item.expectsNext == 'start-optional-key' || item.expectsNext == 'start-required-key') item.expectsNext = 'continue-key';
+				}
 			}
 			inString = !inString;
 			break;
 		case '[':
 			if (inString) break;
-			thingsToTerminate.unshift(']');
+			stack.unshift({type: ']'});
 			break;
 		case ']':
 			if (inString) break;
-			if (!thingsToTerminate.length || thingsToTerminate[0] != ']') throw new Error('Array not terminated');
-			thingsToTerminate.shift();
+			if (!stack.length || stack[0].type != ']') throw new Error('Array not terminated');
+			stack.shift();
 			break;
 		case '{':
 			if (inString) break;
-			thingsToTerminate.unshift('}');
-			objectExpectsNext.unshift('start-optional-key');
+			stack.unshift({type: '}', expectsNext: 'start-optional-key'});
 			break;
 		case '}':
 			if (inString) break;
-			if (!thingsToTerminate.length || thingsToTerminate[0] != '}') throw new Error('Object not terminated');
-			thingsToTerminate.shift();
-			objectExpectsNext.unshift();
+			if (!stack.length || stack[0].type != '}') throw new Error('Object not terminated');
+			stack.shift();
 			break;
 		case ':':
 			if (inString) break;
-			if (thingsToTerminate[0] != '}') break;
-			objectExpectsNext[0] = 'start-value';
+			if (stack[0].type != '}') break;
+			stack[0].expectsNext = 'start-value';
 			break;
 		case ',':
 			if (inString) break;
-			if (thingsToTerminate[0] != '}') break;
-			objectExpectsNext[0] = 'start-required-key';
+			if (stack[0].type != '}') break;
+			stack[0].expectsNext = 'start-required-key';
 			break;
 		}
 		previousCharWasEscape = charIsEscape;
 	}
 	let finalString = partialJSON;
-	for (const char of thingsToTerminate) {
+	for (const item of stack) {
+		const char = item.type;
 		if (char == '}') {
-			const next = objectExpectsNext.shift();
-			if (!next) throw new Error('Empty objectExpectsNext');
+			const next = item.expectsNext;
 			switch(next) {
 			case 'colon':
 				finalString += ':null';
