@@ -15,8 +15,9 @@ import {
 	SproutName,
 	SproutState,
 	StreamLogger,
-	converationTurnSchema,
-	sproutConfigSchema
+	partialConversationTurnSchema,
+	sproutConfigSchema,
+	strictConversationTurnSchema
 } from './types.js';
 
 import {
@@ -195,7 +196,7 @@ Provide a patch to update the state object based on the users's last message and
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
 		if (debugLogger && AGGRESSIVE_LOGGING) debugLogger(`Raw Turn: ${response}`);
-		const turn = converationTurnSchema.parse(JSON.parse(response));
+		const turn = strictConversationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 		const oldState = await this.lastState();
 		//TODO: fix typing to not need this cast
@@ -213,13 +214,13 @@ Provide a patch to update the state object based on the users's last message and
 */
 const userMessageChunk = (previousJSON : string, newChunk : string) : string => {
 	const previousCompletedJSON = parsePartialJSON(previousJSON);
-	const previousParseResult = converationTurnSchema.safeParse(previousCompletedJSON);
+	const previousParseResult = partialConversationTurnSchema.safeParse(previousCompletedJSON);
 	if (!previousParseResult.success) return '';
-	const previousUserMessage = previousParseResult.data.userMessage;
+	const previousUserMessage = previousParseResult.data.userMessage || '';
 	const newJSON = parsePartialJSON(previousJSON + newChunk);
-	const newParseResult = converationTurnSchema.safeParse(newJSON);
+	const newParseResult = partialConversationTurnSchema.safeParse(newJSON);
 	if (!newParseResult.success) return '';
-	const newUserMessage = newParseResult.data.userMessage;
+	const newUserMessage = newParseResult.data.userMessage || '';
 	if (newUserMessage.startsWith(previousUserMessage)) return newUserMessage.slice(previousUserMessage.length);
 	return newUserMessage;
 };
