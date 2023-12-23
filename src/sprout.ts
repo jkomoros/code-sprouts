@@ -34,6 +34,9 @@ const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
   patch : JSONPatchRFC6902
 }`;
 
+//Set true while debugging
+const AGGRESSIVE_LOGGING = false;
+
 export class Sprout {
 	_path : Path;
 	_config?: SproutConfig;
@@ -179,7 +182,7 @@ Provide a patch to update the state object based on the users's last message and
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
-		if (debugLogger) debugLogger(`Raw Turn: ${response}`);
+		if (debugLogger && AGGRESSIVE_LOGGING) debugLogger(`Raw Turn: ${response}`);
 		const turn = converationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 		const oldState = await this.lastState();
