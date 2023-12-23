@@ -166,7 +166,13 @@ Provide a patch to update the state object based on the users's last message and
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
-		const response = await this._aiProvider.prompt(prompt, {jsonResponse: true});
+		const stream = await this._aiProvider.promptStream(prompt, {jsonResponse: true});
+		let response = '';
+		for await (const chunk of stream) {
+			if (chunk.choices.length == 0) throw new Error('No choices');
+			const choice = chunk.choices[0];
+			response += choice.delta.content || '';
+		}
 		if (debugLogger) debugLogger(`Raw Turn: ${response}`);
 		const turn = converationTurnSchema.parse(JSON.parse(response));
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
