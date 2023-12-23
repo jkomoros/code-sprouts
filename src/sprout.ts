@@ -19,6 +19,10 @@ import {
 	sproutConfigSchema
 } from './types.js';
 
+import {
+	completeAndParseJSON
+} from './util.js';
+
 import fastJSONPatch from 'fast-json-patch';
 
 //Relative to the sprout root
@@ -177,8 +181,16 @@ Provide a patch to update the state object based on the users's last message and
 			const choice = chunk.choices[0];
 			const content = choice.delta.content || '';
 			response += content;
-			//TODO: this is actually wrong, I want to log the final user message to screen.
-			if (streamLogger) streamLogger(content);
+			if (streamLogger) {
+				//If we have a debugLogger then we are in debug mode and should
+				//log the raw token. But if we don't, log the net new
+				//userMessage token.
+				if (debugLogger) {
+					streamLogger(content);
+				} else {
+					streamLogger(userMessageChunk(response, content));
+				}
+			}
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
@@ -194,3 +206,20 @@ Provide a patch to update the state object based on the users's last message and
 		return turn.userMessage;
 	}
 }
+/*
+	Useful for handling a stream of new content. It returns the newChunk if it
+	is a printable part of userMessage or '' if the chunk that came in did not
+	change the behavior.
+*/
+const userMessageChunk = (previousJSON : string, newChunk : string) : string => {
+	const previousCompletedJSON = completeAndParseJSON(previousJSON);
+	const previousParseResult = converationTurnSchema.safeParse(previousCompletedJSON);
+	if (!previousParseResult.success) return '';
+	const previousUserMessage = previousParseResult.data.userMessage;
+	const newJSON = completeAndParseJSON(previousJSON + newChunk);
+	const newParseResult = converationTurnSchema.safeParse(newJSON);
+	if (!newParseResult.success) return '';
+	const newUserMessage = newParseResult.data.userMessage;
+	if (newUserMessage.startsWith(previousUserMessage)) return newUserMessage.slice(previousUserMessage.length);
+	return newUserMessage;
+};
