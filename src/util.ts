@@ -27,7 +27,6 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 
 	if (!partialJSON) return null;
 	const stack : expectedChar[] = [];
-	let previousCharWasEscape = false;
 	let inString = false;
 	//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.	
 	for (const char of partialJSON) {
@@ -41,7 +40,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 			charIsEscape = true;
 			break;
 		case '"':
-			if (previousCharWasEscape) break;
+			if (stack[0].type == '"' && stack[0].lastCharIsEscape) break;
 			
 			if (inString) {
 				//Indirect because after .shift() typescript otherwise would still think thingsToTerminate[0] will be "\""
@@ -93,7 +92,7 @@ export const parsePartialJSON = (partialJSON : string) : unknown => {
 			stack[0].expectsNext = 'start-required-key';
 			break;
 		}
-		previousCharWasEscape = charIsEscape;
+		if (stack.length && stack[0].type == '"') stack[0].lastCharIsEscape = charIsEscape;
 	}
 	let finalString = partialJSON;
 	for (const item of stack) {
