@@ -20,7 +20,7 @@ import {
 } from './types.js';
 
 import {
-	completeAndParseJSON
+	parsePartialJSON
 } from './util.js';
 
 import fastJSONPatch from 'fast-json-patch';
@@ -212,11 +212,11 @@ Provide a patch to update the state object based on the users's last message and
 	change the behavior.
 */
 const userMessageChunk = (previousJSON : string, newChunk : string) : string => {
-	const previousCompletedJSON = completeAndParseJSON(previousJSON);
+	const previousCompletedJSON = parsePartialJSON(previousJSON);
 	const previousParseResult = converationTurnSchema.safeParse(previousCompletedJSON);
 	if (!previousParseResult.success) return '';
 	const previousUserMessage = previousParseResult.data.userMessage;
-	const newJSON = completeAndParseJSON(previousJSON + newChunk);
+	const newJSON = parsePartialJSON(previousJSON + newChunk);
 	const newParseResult = converationTurnSchema.safeParse(newJSON);
 	if (!newParseResult.success) return '';
 	const newUserMessage = newParseResult.data.userMessage;

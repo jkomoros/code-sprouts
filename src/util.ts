@@ -2,7 +2,16 @@ export const assertUnreachable = (x : never) : never => {
 	throw new Error('Exhaustiveness check failed: ' + String(x));
 };
 
-export const completeAndParseJSON = (partialJSON : string) : unknown => {
+/*
+
+parsePartialJSON accepts a partial JSON string and terminates it as quickly as possible to make it valid and tries to prase it.
+
+For example, it will take a string like `{"abc":{"a`, complete it to `{"abc":{"a":null}}` and then parse it.
+
+It's useful for when a JSON response is streaming from an LLM and will be partial until it's done.
+
+*/
+export const parsePartialJSON = (partialJSON : string) : unknown => {
 
 	//TODO: this logic is extremely complex. There's likely more tests to be added and edge cases :grimace:
 
