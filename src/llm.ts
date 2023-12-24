@@ -171,7 +171,7 @@ export class AIProvider {
 		throw new Error('No model matches requirements');
 	}
 
-	private async extendPrompOptionsWithTokenCount(text: string, input : PromptOptions) : Promise<PromptOptions> {
+	private async extendPromptOptionsWithTokenCount(text: string, input : PromptOptions) : Promise<PromptOptions> {
 		//TODO: once there are multiple providers, we don't know which tokenCount to use for them if the model isn't provided.
 		const tokenCount = await this.tokenCount(text, input);
 		const result = {
@@ -187,14 +187,14 @@ export class AIProvider {
 
 	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPrompOptionsWithTokenCount(text, opts);
+		opts = await this.extendPromptOptionsWithTokenCount(text, opts);
 		const model = this.modelForOptions(opts);
 		return computePrompt(text, model, this._env, opts);
 	}
 
 	async promptStream(text : string, opts: PromptOptions = {}) : Promise<PromptStream> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPrompOptionsWithTokenCount(text, opts);
+		opts = await this.extendPromptOptionsWithTokenCount(text, opts);
 		const model = this.modelForOptions(opts);
 		return computeStream(text, model, this._env, opts);
 	}
