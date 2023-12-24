@@ -183,7 +183,9 @@ export class AIProvider {
 		return computeStream(text, model, this._env, opts);
 	}
 
-	async tokenCount(text : string) : Promise<number> {
-		return computeTokenCount(text, this.modelForOptions(this._opts));
+	async tokenCount(text : string, opts : PromptOptions = {}) : Promise<number> {
+		opts = mergeObjects(this._opts, opts);
+		const model = this.modelForOptions(opts);
+		return computeTokenCount(text, model);
 	}
 }
