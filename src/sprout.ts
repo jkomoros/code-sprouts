@@ -194,6 +194,7 @@ Provide a patch to update the state object based on the users's last message and
 		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
 			if (chunk.choices.length == 0) throw new Error('No choices');
+			if (debugLogger && AGGRESSIVE_LOGGING) debugLogger('Chunk:\n' + JSON.stringify(chunk, null, '\t'));
 			const choice = chunk.choices[0];
 			const content = choice.delta.content || '';
 			if (streamLogger) {
