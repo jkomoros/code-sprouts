@@ -10,13 +10,7 @@ Install dependencies with `npm install`.
 
 Open a terminal window and run `npm run start`.
 
-Create a `.env` file with the following contents:
-
-```
-OPENAI_API_KEY=<YOUR KEY HERE>
-```
-
-Run the tool with `node build/src/index.js`
+Run the tool with `node build/src/index.js`. The tool will ask for your OPENAI_API_KEY on first run if not set, and offer to save it in a `.env` file for you.
 
 ## Creating a Sprout
 

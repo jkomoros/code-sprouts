@@ -31,6 +31,10 @@ import {
 	config as dotEnvConfig
 } from 'dotenv';
 
+import {
+	appendFileSync
+} from 'fs';
+
 import enquirer from 'enquirer';
 
 dotEnvConfig();
@@ -65,8 +69,40 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 
 };
 
+const ensureOpenAIAPIKey = async () : Promise<string> => {
+	let key = env.OPENAI_API_KEY;
+	if (key) return key;
+	while (!key) {
+		const userInput = await enquirer.prompt<{apiKey: string}>({
+			type: 'input',
+			name: 'apiKey',
+			message: 'Please provide your OPENAI_API_KEY'
+		});
+		key = userInput.apiKey || '';
+	}
+
+	const saveInput = await enquirer.prompt<{save: boolean}>({
+		type: 'confirm',
+		name: 'save',
+		initial: true,
+		message: 'Do you want to save this key in a .env file so you don\'t have to provide it again next time?'
+	});
+
+	const save = saveInput.save || false;
+
+	if (save) {
+		//Prepend a '\n' just in case the env file doesn't end with one. Worst case it will have an extra line.
+		appendFileSync('.env', `\nOPENAI_API_KEY=${key}\n`);
+	}
+
+	return key;
+
+};
+
 const main = async (opts : CLIOptions) : Promise<void> => {
 	
+	const OPENAI_API_KEY = await ensureOpenAIAPIKey();
+
 	let sproutName = opts.sprout;
 	
 	if (!sproutName) {
@@ -84,8 +120,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	if (!sproutName) throw new Error('no sprout provided');
 
 	const ai = new AIProvider('openai.com:gpt-4-1106-preview', {
-		//TODO: allow specifiying in a secret.CONFIG.json object too.
-		openai_api_key: env.OPENAI_API_KEY
+		openai_api_key: OPENAI_API_KEY
 	});
 	const sprout = new Sprout(sproutName, ai);
 	await sprout.validate();
