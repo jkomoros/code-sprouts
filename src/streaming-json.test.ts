@@ -113,4 +113,21 @@ describe('test parseStreamingJSON', () => {
 		}
 	});
 
+	it('iteratively handles a long and complex bit of json number 3 including colon and comma', () => {
+		const input = `{
+			"userMessage": "This is a value: and another one,",
+			"patch": [
+				{
+					"op": "add",
+					"path": "/responses/-",
+					"value": "a"
+				}
+			]
+		}`;
+		for (let i = 0; i < input.length; i++) {
+			const str = input.slice(0,i);
+			expect(() => parseStreamingJSON(str)).not.toThrow();
+		}
+	});
+
 });
