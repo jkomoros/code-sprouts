@@ -3,6 +3,7 @@ import {
 	computePromptStreamOpenAI,
 	computeTokenCountOpenAI
 } from './openai.js';
+import { TypedObject } from './typed-object.js';
 
 import {
 	CompletionInfo,
@@ -120,6 +121,8 @@ export class AIProvider {
 	_env : Environment;
 	_opts: PromptOptions;
 
+	//TODO: provide a default models stack
+
 	constructor(model : CompletionModelID | CompletionModelID[], env : Environment, opts : PromptOptions = {}) {
 		if (typeof model == 'string') model = [model];
 		if (model.length == 0) throw new Error('At least one model must be provided');
@@ -128,9 +131,36 @@ export class AIProvider {
 		this._opts = opts;
 	}
 
-	modelForOptions(_opts : PromptOptions) : CompletionModelID {
-		//TODO: actually do more cascading based on required options in promptOptions.
-		return this._models[0];
+	modelForOptions(opts : PromptOptions) : CompletionModelID {
+		for (const model of this._models) {
+			const requirements = opts.modelRequirements;
+			if (!requirements) return model;
+			const modelInfo = COMPLETIONS_BY_MODEL[model];
+			let modelMatches = true;
+			for (const key of TypedObject.keys(requirements)) {
+				if (!modelMatches) break;
+				switch(key) {
+				case 'imageInput':
+					const requireImage = requirements.imageInput || false;
+					if (!requireImage) continue;
+					if (!modelInfo.supportsImages) {
+						modelMatches = false;
+					}
+					break;
+				case 'jsonResponse':
+					const requireJsonResponse = requirements.jsonResponse || false;
+					if (!requireJsonResponse) continue;
+					if (!modelInfo.supportsJSONResponseFormat) {
+						modelMatches = false;
+					}
+					break;
+				default:
+					assertUnreachable(key);
+				}
+			}
+			if (modelMatches) return model;
+		}
+		throw new Error('No model matches requirements');
 	}
 
 	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {

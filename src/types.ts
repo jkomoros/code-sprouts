@@ -48,7 +48,12 @@ export const modelProvider = z.enum([
 export type ModelProvider = z.infer<typeof modelProvider>;
 
 export type PromptOptions = {
-	jsonResponse? : boolean
+	jsonResponse? : boolean,
+	modelRequirements? : {
+		jsonResponse? : boolean,
+		imageInput?: boolean
+		//TODO: add minimumPromptLength = 'tiny' | 'small' | 'medium' | 'long'
+	}
 };
 
 //TODO: make this a generic type, not relying on OpenAI's structure
