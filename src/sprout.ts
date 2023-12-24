@@ -5,12 +5,13 @@ import {
 } from './fetcher.js';
 
 import {
-	AIProvider
+	AIProvider, promptImages, promptIncludesImage, textForPrompt
 } from './llm.js';
 
 import {
 	Logger,
 	Path,
+	Prompt,
 	SproutConfig,
 	SproutName,
 	SproutState,
@@ -48,7 +49,7 @@ export class Sprout {
 	_baseInstructions? : string;
 	_schemaText? : string;
 	_aiProvider? : AIProvider;
-	_userMessages : string[];
+	_userMessages : Prompt[];
 	_states: SproutState[];
 
 	constructor(path : Path, ai? : AIProvider) {
@@ -136,13 +137,13 @@ ${schemaText}
 	}
 
 	//Returns the next prompt to return.
-	async prompt() : Promise<string> {
+	async prompt() : Promise<Prompt> {
 		const baseInstructions = await this.baseInstructions();
 		const schemaText = await this.schemaText();
 
 		const state = await this.lastState();
 
-		return `${baseInstructions}
+		const instructions = `${baseInstructions}
 
 You will manage your state in an object conforming to the following schema:
 ${schemaText}
@@ -153,15 +154,28 @@ Your current state is:
 ${JSON.stringify(state, null, '\t')}
 
 The last messages from the user (with the last message, which you should respond to, at the end):
-${this._userMessages.length ? this._userMessages.join('\n---\n') : '<INITIAL>'}
+${this._userMessages.length ? this._userMessages.map(message => textForPrompt(message)).join('\n---\n') : '<INITIAL>'}
 
 You should respond with only a literal JSON object (not wrapped in markdown formatting) matching this schema:
 ${CONVERSATION_TURN_SCHEMA}
 
 Provide a patch to update the state object based on the users's last message and your response.`;
+
+		if (!this._userMessages.length) return instructions;
+
+		const lastMessage = this._userMessages[this._userMessages.length - 1];
+		if (promptIncludesImage(lastMessage)) {
+			return [
+				instructions,
+				...promptImages(lastMessage)
+			];
+		}
+
+		return instructions;
+
 	}
 
-	provideUserResponse(response : string) : void {
+	provideUserResponse(response : Prompt) : void {
 		this._userMessages.push(response);
 	}
 

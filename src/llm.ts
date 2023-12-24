@@ -11,6 +11,7 @@ import {
 	Environment,
 	ModelProvider,
 	Prompt,
+	PromptComponent,
 	PromptOptions,
 	PromptStream,
 	modelProvider
@@ -164,9 +165,13 @@ export const textForPrompt = (prompt : Prompt) : string => {
 	return prompt.filter(item => typeof item == 'string').join('');
 };
 
-const promptIncludesImage = (prompt : Prompt) : boolean => {
+export const promptIncludesImage = (prompt : Prompt) : boolean => {
+	return promptImages(prompt).length > 0;
+};
+
+export const promptImages = (prompt : Prompt) : PromptComponent[] => {
 	if (!Array.isArray(prompt)) prompt = [prompt];
-	return prompt.some(item => typeof item != 'string');
+	return prompt.filter(item => typeof item != 'string');
 };
 
 //Wrap them in one object to pass around instead of passing around state everywhere else.
