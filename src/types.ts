@@ -52,6 +52,7 @@ export type PromptOptions = {
 	modelRequirements? : {
 		jsonResponse? : boolean,
 		imageInput?: boolean
+		//TODO: add a maximumPromptLength that's auto done (well, for local token-counting)
 		//TODO: add minimumPromptLength = 'tiny' | 'small' | 'medium' | 'long'
 	}
 };

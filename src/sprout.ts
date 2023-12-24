@@ -214,6 +214,7 @@ Provide a patch to update the state object based on the users's last message and
 	change the behavior.
 */
 const userMessageChunk = (parser : StreamingJSONParser, newChunk : string) : string => {
+	//TODO: add as incrementalProperty on parser with a string getter.
 	const previousCompletedJSON = parser.json();
 	parser.ingest(newChunk);
 	const previousParseResult = partialConversationTurnSchema.safeParse(previousCompletedJSON);

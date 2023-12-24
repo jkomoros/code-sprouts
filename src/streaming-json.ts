@@ -120,6 +120,10 @@ export class StreamingJSONParser {
 
 	//Does the smallest amount of mangling necessary to make the partial JSON result into a valid json result and return it.
 	json() : unknown {
+		//TODO: allow passing a defaulted shape that can be used to not put in
+		//'null' but the right completion type. The type should have every thing
+		//down to leaf values required (so e.g. an optional object hsould be
+		//provided so we can see what the leaf types are)
 		if (this._cachedJSON !== undefined) return this._cachedJSON;
 		let finalString = this._result;
 		if (!this._result) return null;
