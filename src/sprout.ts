@@ -196,6 +196,7 @@ Provide a patch to update the state object based on the users's last message and
 			if (chunk.choices.length == 0) throw new Error('No choices');
 			if (debugLogger && AGGRESSIVE_LOGGING) debugLogger('Chunk:\n' + JSON.stringify(chunk, null, '\t'));
 			const choice = chunk.choices[0];
+			if (choice.finish_reason && choice.finish_reason != 'stop') throw new Error(`Unexpected chunk stop reason: ${choice.finish_reason}`);
 			const content = choice.delta.content || '';
 			if (streamLogger) {
 				//If we have a debugLogger then we are in debug mode and should
