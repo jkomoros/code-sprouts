@@ -31,8 +31,13 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
+//TODO: type this better
+export type ImageData = unknown;
+
+type PromptComponent = string | {image: ImageData};
+
 //Later we'll allow passing images, too.
-export type Prompt = string;
+export type Prompt = PromptComponent | PromptComponent[];
 
 export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',

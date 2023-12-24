@@ -4,6 +4,7 @@ import {
 
 import {
 	CompletionInfo,
+	ImageData,
 	Prompt,
 	PromptOptions
 } from './types.js';
@@ -41,13 +42,24 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 	return stream;
 };
 
+const urlForImage = (_image : ImageData) : OpenAI.ChatCompletionContentPartImage.ImageURL => {
+	throw new Error('Not yet implemented');
+};
+
 const contentForAPI = (prompt : Prompt) : ChatCompletionContentPart[] => {
-	return [
-		{
-			type: 'text',
-			text: prompt
+	if (!Array.isArray(prompt)) prompt = [prompt];
+	return prompt.map((item) : ChatCompletionContentPart => {
+		if (typeof item == 'string') {
+			return {
+				type: 'text',
+				text: item
+			};
 		}
-	];
+		return {
+			type: 'image_url',
+			image_url: urlForImage(item.image)
+		};
+	});
 };
 
 export const computePromptOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) : Promise<string> => {

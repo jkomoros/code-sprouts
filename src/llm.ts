@@ -156,7 +156,8 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 };
 
 export const textForPrompt = (prompt : Prompt) : string => {
-	return prompt;
+	if (!Array.isArray(prompt)) prompt = [prompt];
+	return prompt.filter(item => typeof item == 'string').join('');
 };
 
 //Wrap them in one object to pass around instead of passing around state everywhere else.
