@@ -155,6 +155,13 @@ export class AIProvider {
 						modelMatches = false;
 					}
 					break;
+				case 'contextSizeAtLeast':
+					const contextSizeAtLeast = requirements.contextSizeAtLeast || -1;
+					if (contextSizeAtLeast < 0) continue;
+					if (modelInfo.maxTokens < contextSizeAtLeast) {
+						modelMatches = false;
+					}
+					break;
 				default:
 					assertUnreachable(key);
 				}
