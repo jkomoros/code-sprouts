@@ -1,6 +1,6 @@
 import {
 	assertUnreachable
-} from './util';
+} from './util.js';
 
 type expectedChar = {
 	type: ']'
