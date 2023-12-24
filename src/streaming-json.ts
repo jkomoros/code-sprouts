@@ -172,4 +172,30 @@ export class StreamingJSONParser {
 			throw new Error(`Could not parse partial json *${finalString}*: ${error}`);
 		}
 	}
+
+	//incrementalProperty extracts the property via propertyGetter, then ingests
+	//chunk, then does it again, and returns any chunk that has changed before
+	//ingestion. This is useful if you have e.g. a `userMessage` property and
+	//want to stream in its value as it streams in, but not other updates to
+	//object. Your propertyGetter may throw, which will be treated as a ''.
+	incrementalProperty(chunk : string, propertyGetter : (obj: unknown) => string) : string {
+		const previousCompletedJSON = this.json();
+		this.ingest(chunk);
+		let previousProperty : string = '';
+		try {
+			previousProperty = propertyGetter(previousCompletedJSON);
+		} catch {
+			previousProperty = '';
+		}
+		const newJSON = this.json();
+		let newProperty : string = '';
+		try {
+			newProperty = propertyGetter(newJSON);
+		} catch {
+			newProperty = '';
+		}
+		if (newProperty.startsWith(previousProperty)) return newProperty.slice(previousProperty.length);
+		return newProperty;
+	}
+
 }

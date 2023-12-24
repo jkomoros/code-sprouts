@@ -189,7 +189,9 @@ Provide a patch to update the state object based on the users's last message and
 				if (debugLogger) {
 					streamLogger(content);
 				} else {
-					streamLogger(userMessageChunk(parser, content));
+					streamLogger(parser.incrementalProperty(content, (input: unknown) : string => {
+						return partialConversationTurnSchema.parse(input).userMessage || '';
+					}));
 				}
 			}
 			response += content;
@@ -208,22 +210,3 @@ Provide a patch to update the state object based on the users's last message and
 		return turn.userMessage;
 	}
 }
-/*
-	Useful for handling a stream of new content. It returns the newChunk if it
-	is a printable part of userMessage or '' if the chunk that came in did not
-	change the behavior.
-*/
-const userMessageChunk = (parser : StreamingJSONParser, newChunk : string) : string => {
-	//TODO: add as incrementalProperty on parser with a string getter.
-	const previousCompletedJSON = parser.json();
-	parser.ingest(newChunk);
-	const previousParseResult = partialConversationTurnSchema.safeParse(previousCompletedJSON);
-	if (!previousParseResult.success) return '';
-	const previousUserMessage = previousParseResult.data.userMessage || '';
-	const newJSON = parser.json();
-	const newParseResult = partialConversationTurnSchema.safeParse(newJSON);
-	if (!newParseResult.success) return '';
-	const newUserMessage = newParseResult.data.userMessage || '';
-	if (newUserMessage.startsWith(previousUserMessage)) return newUserMessage.slice(previousUserMessage.length);
-	return newUserMessage;
-};
