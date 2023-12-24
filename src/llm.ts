@@ -10,6 +10,7 @@ import {
 	CompletionModelID,
 	Environment,
 	ModelProvider,
+	Prompt,
 	PromptOptions,
 	PromptStream,
 	modelProvider
@@ -83,7 +84,7 @@ export const INFO_BY_PROVIDER : {[name in ModelProvider]: ProviderInfo} = {
 	}
 };
 
-export const computePrompt = async (prompt : string, model: CompletionModelID, env : Environment, opts : PromptOptions = {}) : Promise<string> => {
+export const computePrompt = async (prompt : Prompt, model: CompletionModelID, env : Environment, opts : PromptOptions = {}) : Promise<string> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
@@ -96,7 +97,7 @@ export const computePrompt = async (prompt : string, model: CompletionModelID, e
 	return modelInfo.compute(modelName, apiKey, prompt, modelInfo, opts);
 };
 
-export const computeStream = async (prompt : string, model: CompletionModelID, env : Environment, opts: PromptOptions = {}) : Promise<PromptStream> => {
+export const computeStream = async (prompt : Prompt, model: CompletionModelID, env : Environment, opts: PromptOptions = {}) : Promise<PromptStream> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
@@ -111,7 +112,7 @@ export const computeStream = async (prompt : string, model: CompletionModelID, e
 	return modelInfo.computeStream(modelName, apiKey, prompt, modelInfo, opts);
 };
 
-export const computeTokenCount = async (text : string, model : CompletionModelID) : Promise<number> => {
+export const computeTokenCount = async (text : Prompt, model : CompletionModelID) : Promise<number> => {
 	
 	const [provider, modelName] = extractModel(model);
 	
@@ -154,6 +155,10 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 	return true;
 };
 
+export const textForPrompt = (prompt : Prompt) : string => {
+	return prompt;
+};
+
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
 	private _models : CompletionModelID[];
@@ -179,9 +184,9 @@ export class AIProvider {
 		throw new Error('No model matches requirements');
 	}
 
-	private async extendPromptOptionsWithTokenCount(text: string, input : PromptOptions) : Promise<PromptOptions> {
+	private async extendPromptOptionsWithTokenCount(prompt: Prompt, input : PromptOptions) : Promise<PromptOptions> {
 		//TODO: once there are multiple providers, we don't know which tokenCount to use for them if the model isn't provided.
-		const tokenCount = await this.tokenCount(text, input);
+		const tokenCount = await this.tokenCount(prompt, input);
 		const result = {
 			...input
 		};
@@ -193,25 +198,25 @@ export class AIProvider {
 		return result;
 	}
 
-	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
+	async prompt(prompt: Prompt, opts : PromptOptions = {}) : Promise<string> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPromptOptionsWithTokenCount(text, opts);
+		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computePrompt(text, model, this._env, opts);
+		return computePrompt(prompt, model, this._env, opts);
 	}
 
-	async promptStream(text : string, opts: PromptOptions = {}) : Promise<PromptStream> {
+	async promptStream(prompt : Prompt, opts: PromptOptions = {}) : Promise<PromptStream> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPromptOptionsWithTokenCount(text, opts);
+		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computeStream(text, model, this._env, opts);
+		return computeStream(prompt, model, this._env, opts);
 	}
 
-	async tokenCount(text : string, opts : PromptOptions = {}) : Promise<number> {
+	async tokenCount(prompt : Prompt, opts : PromptOptions = {}) : Promise<number> {
 		opts = mergeObjects(this._opts, opts);
 		const model = this.modelForOptions(opts);
-		return computeTokenCount(text, model);
+		return computeTokenCount(prompt, model);
 	}
 }

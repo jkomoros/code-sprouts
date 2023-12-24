@@ -4,10 +4,12 @@ import {
 
 import {
 	CompletionInfo,
+	Prompt,
 	PromptOptions
 } from './types.js';
+import { textForPrompt } from './llm.js';
 
-export const computePromptStreamOpenAI = async (modelName : string, apiKey : string, prompt : string, modelInfo : CompletionInfo, opts : PromptOptions) => {
+export const computePromptStreamOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) => {
 	const openai = new OpenAI({
 		apiKey
 	});
@@ -38,7 +40,7 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 	return stream;
 };
 
-export const computePromptOpenAI = async (modelName : string, apiKey : string, prompt : string, modelInfo : CompletionInfo, opts : PromptOptions) : Promise<string> => {
+export const computePromptOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) : Promise<string> => {
 	//TODO: factor out with computePromptStreamOpenAI
 	const openai = new OpenAI({
 		apiKey
@@ -71,8 +73,8 @@ export const computePromptOpenAI = async (modelName : string, apiKey : string, p
 
 };
 
-export const computeTokenCountOpenAI = async (_modelName : string,  text : string) : Promise<number> => {
+export const computeTokenCountOpenAI = async (_modelName : string,  prompt : Prompt) : Promise<number> => {
 	const tokenizer = await import('gpt-tok');
 
-	return tokenizer.default.encode(text).length;
+	return tokenizer.default.encode(textForPrompt(prompt)).length;
 };

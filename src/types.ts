@@ -31,6 +31,9 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
+//Later we'll allow passing images, too.
+export type Prompt = string;
+
 export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',
 	'openai.com:gpt-3.5-turbo-16k',
@@ -65,8 +68,8 @@ export type PromptStream = AsyncIterable<OpenAI.ChatCompletionChunk>;
 
 export type CompletionInfo = {
 	maxTokens: number;	
-	compute: (modelName : string, apiKey : string, prompt : string, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<string>,
-	computeStream?: (modelName : string, apiKey : string, prompt : string, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<PromptStream>,
+	compute: (modelName : string, apiKey : string, prompt : Prompt, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<string>,
+	computeStream?: (modelName : string, apiKey : string, prompt : Prompt, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<PromptStream>,
 	supportsJSONResponseFormat?: boolean,
 	supportsImages?: boolean
 };
