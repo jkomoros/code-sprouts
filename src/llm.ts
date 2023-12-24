@@ -116,25 +116,40 @@ export const computeTokenCount = async (text : string, model : CompletionModelID
 
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
-	_model : CompletionModelID;
+	_models : CompletionModelID[];
 	_env : Environment;
 	_opts: PromptOptions;
 
-	constructor(model : CompletionModelID, env : Environment, opts : PromptOptions = {}) {
-		this._model = model;
+	constructor(model : CompletionModelID | CompletionModelID[], env : Environment, opts : PromptOptions = {}) {
+		if (typeof model == 'string') model = [model];
+		if (model.length == 0) throw new Error('At least one model must be provided');
+		this._models = model;
 		this._env = env;
 		this._opts = opts;
 	}
 
+	modelForOptions(_opts : PromptOptions) : CompletionModelID {
+		//TODO: actually do more cascading based on required options in promptOptions.
+		return this._models[0];
+	}
+
 	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
-		return computePrompt(text, this._model, this._env, {...this._opts, ...opts});
+		opts = {
+			...this._opts,
+			...opts
+		};
+		return computePrompt(text, this.modelForOptions(opts), this._env, opts);
 	}
 
 	async promptStream(text : string, opts: PromptOptions = {}) : Promise<PromptStream> {
-		return computeStream(text, this._model, this._env, {...this._opts, ...opts});
+		opts = {
+			...this._opts,
+			...opts
+		};
+		return computeStream(text, this.modelForOptions(opts), this._env, opts);
 	}
 
 	async tokenCount(text : string) : Promise<number> {
-		return computeTokenCount(text, this._model);
+		return computeTokenCount(text, this.modelForOptions(this._opts));
 	}
 }
