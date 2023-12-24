@@ -61,6 +61,17 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 	}
 };
 
+export const DEFAULT_MODEL_STACK : CompletionModelID[] = [
+	//Use the default small model
+	'openai.com:gpt-4',
+	//Use the new one if necessary
+	'openai.com:gpt-4-1106-preview',
+	//Use the long one if necessary
+	'openai.com:gpt-4-32k',
+	//Use the image one if necessary
+	'openai.com:gpt-4-vision-preview'
+];
+
 type ProviderInfo = {
 	defaultCompletionModel: CompletionModelID,
 	apiKeyVar : keyof Environment
@@ -150,9 +161,7 @@ export class AIProvider {
 	private _env : Environment;
 	private _opts: PromptOptions;
 
-	//TODO: provide a default models stack
-
-	constructor(model : CompletionModelID | CompletionModelID[], env : Environment, opts : PromptOptions = {}) {
+	constructor(env : Environment = {}, model : CompletionModelID | CompletionModelID[] = DEFAULT_MODEL_STACK, opts : PromptOptions = {}) {
 		if (typeof model == 'string') model = [model];
 		if (model.length == 0) throw new Error('At least one model must be provided');
 		this._models = model;
