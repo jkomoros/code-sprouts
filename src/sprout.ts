@@ -215,7 +215,13 @@ Provide a patch to update the state object based on the users's last message and
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
 		if (debugLogger && AGGRESSIVE_LOGGING) debugLogger(`Raw Turn: ${response}`);
-		const turn = strictConversationTurnSchema.parse(JSON.parse(response));
+		let turnJSON : unknown = {};
+		try {
+			turnJSON = JSON.parse(response);
+		} catch(err) {
+			throw new Error(`Could not parse JSON: ${response}: ${err}`);
+		}
+		const turn = strictConversationTurnSchema.parse(turnJSON);
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 		const oldState = await this.lastState();
 		//TODO: fix typing to not need this cast
