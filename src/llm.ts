@@ -94,6 +94,8 @@ export const computePrompt = async (prompt : Prompt, model: CompletionModelID, e
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
 
+	if (promptIncludesImage(prompt) && !modelInfo.supportsImages) throw new Error('Prompt includes an image, but for a prompt type that doesnt support images');
+
 	return modelInfo.compute(modelName, apiKey, prompt, modelInfo, opts);
 };
 
@@ -106,6 +108,8 @@ export const computeStream = async (prompt : Prompt, model: CompletionModelID, e
 	if (!apiKey) throw new Error ('Unset API key');
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
+
+	if (promptIncludesImage(prompt) && !modelInfo.supportsImages) throw new Error('Prompt includes an image, but for a prompt type that doesnt support images');
 
 	if (!modelInfo.computeStream) throw new Error(`${modelName} does not support streaming`);
 
@@ -158,6 +162,11 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 export const textForPrompt = (prompt : Prompt) : string => {
 	if (!Array.isArray(prompt)) prompt = [prompt];
 	return prompt.filter(item => typeof item == 'string').join('');
+};
+
+const promptIncludesImage = (prompt : Prompt) : boolean => {
+	if (!Array.isArray(prompt)) prompt = [prompt];
+	return prompt.some(item => typeof item != 'string');
 };
 
 //Wrap them in one object to pass around instead of passing around state everywhere else.
