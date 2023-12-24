@@ -119,7 +119,12 @@ export class Sprout {
 		const prompt = `Return the JSON of a default/empty object conforming to this typescript schema (following comments on defaults):
 ${schemaText}
 `;
-		const rawJSON = await this._aiProvider.prompt(prompt, {jsonResponse: true});
+		const rawJSON = await this._aiProvider.prompt(prompt, {
+			jsonResponse: true,
+			modelRequirements: {
+				jsonResponse: true
+			}
+		});
 		return JSON.parse(rawJSON);
 	}
 
@@ -175,7 +180,13 @@ Provide a patch to update the state object based on the users's last message and
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
-		const stream = await this._aiProvider.promptStream(prompt, {jsonResponse: true, debugLogger});
+		const stream = await this._aiProvider.promptStream(prompt, {
+			jsonResponse: true,
+			debugLogger,
+			modelRequirements: {
+				jsonResponse: true
+			}
+		});
 		let response = '';
 		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
