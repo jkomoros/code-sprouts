@@ -19,7 +19,7 @@ const inString =(stack : expectedChar[]) : boolean => {
 	return item.type == '"';
 };
 
-class StreamingJSONParser {
+export class StreamingJSONParser {
 	_stack : expectedChar[];
 	_result : string;
 	_cachedJSON? : unknown;

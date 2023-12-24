@@ -21,7 +21,7 @@ import {
 } from './types.js';
 
 import {
-	parseStreamingJSON
+	StreamingJSONParser
 } from './streaming-json.js';
 
 import fastJSONPatch from 'fast-json-patch';
@@ -177,6 +177,7 @@ Provide a patch to update the state object based on the users's last message and
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
 		const stream = await this._aiProvider.promptStream(prompt, {jsonResponse: true});
 		let response = '';
+		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
 			if (chunk.choices.length == 0) throw new Error('No choices');
 			const choice = chunk.choices[0];
@@ -188,7 +189,7 @@ Provide a patch to update the state object based on the users's last message and
 				if (debugLogger) {
 					streamLogger(content);
 				} else {
-					streamLogger(userMessageChunk(response, content));
+					streamLogger(userMessageChunk(parser, content));
 				}
 			}
 			response += content;
@@ -212,12 +213,13 @@ Provide a patch to update the state object based on the users's last message and
 	is a printable part of userMessage or '' if the chunk that came in did not
 	change the behavior.
 */
-const userMessageChunk = (previousJSON : string, newChunk : string) : string => {
-	const previousCompletedJSON = parseStreamingJSON(previousJSON);
+const userMessageChunk = (parser : StreamingJSONParser, newChunk : string) : string => {
+	const previousCompletedJSON = parser.json();
+	parser.ingest(newChunk);
 	const previousParseResult = partialConversationTurnSchema.safeParse(previousCompletedJSON);
 	if (!previousParseResult.success) return '';
 	const previousUserMessage = previousParseResult.data.userMessage || '';
-	const newJSON = parseStreamingJSON(previousJSON + newChunk);
+	const newJSON = parser.json();
 	const newParseResult = partialConversationTurnSchema.safeParse(newJSON);
 	if (!newParseResult.success) return '';
 	const newUserMessage = newParseResult.data.userMessage || '';
