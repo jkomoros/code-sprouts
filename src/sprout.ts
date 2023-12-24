@@ -189,9 +189,11 @@ Provide a patch to update the state object based on the users's last message and
 				if (debugLogger) {
 					streamLogger(content);
 				} else {
-					streamLogger(parser.incrementalProperty(content, (input: unknown) : string => {
-						return partialConversationTurnSchema.parse(input).userMessage || '';
-					}));
+					streamLogger(
+						parser.incrementalProperty(content, (input: unknown) : string => {
+							return partialConversationTurnSchema.parse(input).userMessage || '';
+						})
+					);
 				}
 			}
 			response += content;
