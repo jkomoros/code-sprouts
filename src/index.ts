@@ -7,8 +7,13 @@ import {
 } from 'zod';
 
 import {
+	Prompt,
 	pathSchema
 } from './types.js';
+
+import {
+	join
+} from 'path';
 
 import {
 	parse
@@ -32,8 +37,13 @@ import {
 } from 'dotenv';
 
 import {
-	appendFileSync
+	appendFileSync,
+	readFileSync
 } from 'fs';
+
+import {
+	homedir
+} from 'os';
 
 import enquirer from 'enquirer';
 
@@ -53,6 +63,13 @@ const streamLogger = (input : string) : void => {
 
 const IMAGE_MAGIC_STRING = '@image';
 
+const absoluteFile = (input : string) : string => {
+	if (input.startsWith('~')) {
+		return join(homedir(), input.slice('~'.length));
+	}
+	return input;
+};
+
 //This is not a method on sprout because Sprout doesn't  know how to get or give
 //input to the surrounding context.
 const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => {
@@ -69,7 +86,7 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 			name: 'userResponse',
 			message: `Your response ${allowImages ? `(include ${IMAGE_MAGIC_STRING} to include an image)` : ''}:`
 		});
-		let response = userInput.userResponse;
+		let response : Prompt = userInput.userResponse;
 		if (allowImages && response.toLocaleLowerCase().includes(IMAGE_MAGIC_STRING.toLowerCase())) {
 			response = response.replace(IMAGE_MAGIC_STRING, 'image');
 			//TODO: auto complete.
@@ -80,8 +97,13 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 			});
 			const imagePath = userInput.imagePath;
 			console.log(`Image path: ${imagePath}`);
-			//TODO: actually pass the image to the sprout.
-			console.log('TODO: implement actually providing images to the bot');
+			const buffer = readFileSync(absoluteFile(imagePath));
+			response = [
+				response,
+				{
+					image: buffer
+				}
+			];
 		}
 		sprout.provideUserResponse(response);
 	}
