@@ -182,7 +182,13 @@ export const debugTextForPrompt = (prompt : Prompt) : string => {
 			result.push(part);
 			continue;
 		}
-		result.push(JSON.stringify(part, null, '\t'));
+		let actualPart : unknown = part;
+		if (part.image) {
+			actualPart = {
+				image: '<image-data>'
+			};
+		}
+		result.push(JSON.stringify(actualPart, null, '\t'));
 	}
 	return result.join('\n');
 };

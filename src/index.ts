@@ -98,6 +98,7 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 			const imagePath = userInput.imagePath;
 			console.log(`Image path: ${imagePath}`);
 			const buffer = readFileSync(absoluteFile(imagePath));
+			//TODO: resize down
 			response = [
 				response,
 				{
