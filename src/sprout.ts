@@ -178,13 +178,16 @@ Provide a patch to update the state object based on the users's last message and
 	*/
 	async conversationTurn(streamLogger? : StreamLogger, debugLogger? : Logger) : Promise<string> {
 		if (!this._aiProvider) throw new Error('No AI provider');
+		const config = await this.config();
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
 			debugLogger,
 			modelRequirements: {
-				jsonResponse: true
+				//It's not possible to allowImages and imageInput at the same time currently.
+				jsonResponse: !config.allowImages,
+				imageInput: config.allowImages || false
 			}
 		});
 		let response = '';
