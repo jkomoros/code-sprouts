@@ -14,7 +14,7 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 	
 	const responseType = modelInfo.supportsJSONResponseFormat && opts.jsonResponse ? 'json_object' : 'text';
 	
-	const stream = await openai.chat.completions.create({
+	const config : OpenAI.ChatCompletionCreateParamsStreaming = {
 		model: modelName,
 		messages: [
 			{
@@ -22,12 +22,16 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 				content: prompt
 			}
 		],
-		response_format: {
-			type: responseType
-		},
 		stream: true
-		//TODO: allow passing other parameters
-	});
+	};
+
+	if (modelInfo.supportsJSONResponseFormat) {
+		config.response_format = {
+			type: responseType
+		};
+	}
+
+	const stream = await openai.chat.completions.create(config);
 
 	return stream;
 };
@@ -40,19 +44,23 @@ export const computePromptOpenAI = async (modelName : string, apiKey : string, p
 	
 	const responseType = modelInfo.supportsJSONResponseFormat && opts.jsonResponse ? 'json_object' : 'text';
 	
-	const response = await openai.chat.completions.create({
+	const config : OpenAI.ChatCompletionCreateParamsNonStreaming = {
 		model: modelName,
 		messages: [
 			{
 				role: 'user',
 				content: prompt
 			}
-		],
-		response_format: {
+		]
+	};
+
+	if (modelInfo.supportsJSONResponseFormat) {
+		config.response_format = {
 			type: responseType
-		}
-		//TODO: allow passing other parameters
-	});
+		};
+	}
+
+	const response = await openai.chat.completions.create(config);
 
 	//TODO: ideally we'd have stronger typing here 
 	return response.choices[0].message?.content || '';
