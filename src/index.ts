@@ -51,6 +51,8 @@ const streamLogger = (input : string) : void => {
 	stdout.write(input);
 };
 
+const IMAGE_MAGIC_STRING = '@image';
+
 //This is not a method on sprout because Sprout doesn't  know how to get or give
 //input to the surrounding context.
 const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => {
@@ -59,12 +61,27 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	while(active) {
 		const logger = opts.verbose ? console.info : undefined;
 		await sprout.conversationTurn(streamLogger, logger);
+		//TODO: allow configuring whether a sprout accepts images or not.
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',
-			message: 'Your response:'
+			message: `Your response (include ${IMAGE_MAGIC_STRING} to include an image):`
 		});
-		sprout.provideUserResponse(userInput.userResponse);
+		let response = userInput.userResponse;
+		if (response.toLocaleLowerCase().includes(IMAGE_MAGIC_STRING.toLowerCase())) {
+			response = response.replace(IMAGE_MAGIC_STRING, 'image');
+			//TODO: auto complete.
+			const userInput = await enquirer.prompt<{imagePath:string}>({
+				type: 'input',
+				name: 'imagePath',
+				message: 'Path to an image to include:'
+			});
+			const imagePath = userInput.imagePath;
+			console.log(`Image path: ${imagePath}`);
+			//TODO: actually pass the image to the sprout.
+			console.log('TODO: implement actually providing images to the bot');
+		}
+		sprout.provideUserResponse(response);
 	}
 
 };
