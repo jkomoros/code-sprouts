@@ -28,6 +28,7 @@ class StreamingJSONParser {
         this._result = '';
     }
 
+    //Ingests more streaming characters of JSON.
     ingest(partial : string) : void {
         //Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.	
         for (const char of partial) {
@@ -101,6 +102,12 @@ class StreamingJSONParser {
         this._result += partial;
     }
 
+    //Returns the full text that has been ingested so far.
+    get string() : string {
+        return this._result;
+    }
+
+    //Does the smallest amount of mangling necessary to make the partial JSON result into a valid json result and return it.
     json() : unknown {
         let finalString = this._result;
         if (!this._result) return null;
