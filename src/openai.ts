@@ -70,5 +70,5 @@ export const computePromptOpenAI = async (modelName : string, apiKey : string, p
 export const computeTokenCountOpenAI = async (_modelName : string,  text : string) : Promise<number> => {
 	const tokenizer = await import('gpt-tok');
 
-	return tokenizer.encode(text).length;
+	return tokenizer.default.encode(text).length;
 };
