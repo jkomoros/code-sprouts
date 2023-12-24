@@ -31,10 +31,7 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
-//TODO: type this better
-export type ImageData = unknown;
-
-type PromptComponent = string | {image: ImageData};
+type PromptComponent = string | {image: Buffer};
 
 //Later we'll allow passing images, too.
 export type Prompt = PromptComponent | PromptComponent[];

@@ -4,12 +4,17 @@ import {
 
 import {
 	CompletionInfo,
-	ImageData,
 	Prompt,
 	PromptOptions
 } from './types.js';
-import { textForPrompt } from './llm.js';
-import { ChatCompletionContentPart } from 'openai/resources/index.js';
+
+import {
+	textForPrompt
+} from './llm.js';
+
+import {
+	ChatCompletionContentPart
+} from 'openai/resources/index.js';
 
 export const computePromptStreamOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) => {
 	const openai = new OpenAI({
@@ -42,8 +47,12 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 	return stream;
 };
 
-const urlForImage = (_image : ImageData) : OpenAI.ChatCompletionContentPartImage.ImageURL => {
-	throw new Error('Not yet implemented');
+const urlForImage = (image : Buffer) : OpenAI.ChatCompletionContentPartImage.ImageURL => {
+	const result = image.toString('base64url');
+	//TODO: verify the image looks right.
+	return {
+		url: result
+	};
 };
 
 const contentForAPI = (prompt : Prompt) : ChatCompletionContentPart[] => {
