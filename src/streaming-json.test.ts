@@ -1,6 +1,12 @@
 import {
-	parseStreamingJSON
+	StreamingJSONParser
 } from './streaming-json';
+
+const parseStreamingJSON = (partialJSON : string) : unknown => {
+	const parser = new StreamingJSONParser();
+	parser.ingest(partialJSON);
+	return parser.json();
+};
 
 describe('test parseStreamingJSON', () => {
 	it('should not throw an error', () => {

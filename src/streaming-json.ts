@@ -19,6 +19,15 @@ const inString =(stack : expectedChar[]) : boolean => {
 	return item.type == '"';
 };
 
+/*
+
+parsePartialJSON accepts a partial JSON string and terminates it as quickly as possible to make it valid and tries to prase it.
+
+For example, it will take a string like `{"abc":{"a`, complete it to `{"abc":{"a":null}}` and then parse it.
+
+It's useful for when a JSON response is streaming from an LLM and will be partial until it's done.
+
+*/
 export class StreamingJSONParser {
 	_stack : expectedChar[];
 	_result : string;
@@ -160,22 +169,3 @@ export class StreamingJSONParser {
 		}
 	}
 }
-
-/*
-
-parsePartialJSON accepts a partial JSON string and terminates it as quickly as possible to make it valid and tries to prase it.
-
-For example, it will take a string like `{"abc":{"a`, complete it to `{"abc":{"a":null}}` and then parse it.
-
-It's useful for when a JSON response is streaming from an LLM and will be partial until it's done.
-
-*/
-export const parseStreamingJSON = (partialJSON : string) : unknown => {
-
-	//TODO: remove and just use the parser directly in conversationTurn.
-
-	const parser = new StreamingJSONParser();
-	parser.ingest(partialJSON);
-	return parser.json();
-	
-};
