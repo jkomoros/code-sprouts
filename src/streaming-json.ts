@@ -22,6 +22,7 @@ const inString =(stack : expectedChar[]) : boolean => {
 class StreamingJSONParser {
 	_stack : expectedChar[];
 	_result : string;
+	_cachedJSON? : unknown;
 
 	constructor() {
 		this._stack = [];
@@ -100,6 +101,7 @@ class StreamingJSONParser {
 			if (this._stack.length && this._stack[0].type == '"') this._stack[0].lastCharIsEscape = charIsEscape;
 		}
 		this._result += partial;
+		this._cachedJSON = undefined;
 	}
 
 	//Returns the full text that has been ingested so far.
@@ -109,6 +111,7 @@ class StreamingJSONParser {
 
 	//Does the smallest amount of mangling necessary to make the partial JSON result into a valid json result and return it.
 	json() : unknown {
+		if (!this._cachedJSON !== undefined) return this._cachedJSON;
 		let finalString = this._result;
 		if (!this._result) return null;
 		for (const item of this._stack) {
@@ -149,7 +152,9 @@ class StreamingJSONParser {
 			finalString += char;
 		}
 		try {
-			return JSON.parse(finalString);
+			const result = JSON.parse(finalString);
+			this._cachedJSON = result;
+			return result;
 		} catch(error) {
 			throw new Error(`Could not parse partial json *${finalString}*: ${error}`);
 		}
