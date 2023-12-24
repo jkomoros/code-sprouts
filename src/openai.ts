@@ -8,6 +8,7 @@ import {
 	PromptOptions
 } from './types.js';
 import { textForPrompt } from './llm.js';
+import { ChatCompletionContentPart } from 'openai/resources/index.js';
 
 export const computePromptStreamOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) => {
 	const openai = new OpenAI({
@@ -21,7 +22,7 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 		messages: [
 			{
 				role: 'user',
-				content: prompt
+				content: contentForAPI(prompt)
 			}
 		],
 		//Explicitly don't limit max_tokens.
@@ -40,6 +41,15 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 	return stream;
 };
 
+const contentForAPI = (prompt : Prompt) : ChatCompletionContentPart[] => {
+	return [
+		{
+			type: 'text',
+			text: prompt
+		}
+	];
+};
+
 export const computePromptOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) : Promise<string> => {
 	//TODO: factor out with computePromptStreamOpenAI
 	const openai = new OpenAI({
@@ -53,7 +63,7 @@ export const computePromptOpenAI = async (modelName : string, apiKey : string, p
 		messages: [
 			{
 				role: 'user',
-				content: prompt
+				content: contentForAPI(prompt)
 			}
 		],
 		//Explicitly don't limit max_tokens.
