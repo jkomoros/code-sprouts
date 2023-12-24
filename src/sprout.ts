@@ -175,7 +175,7 @@ Provide a patch to update the state object based on the users's last message and
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const prompt = await this.prompt();
 		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
-		const stream = await this._aiProvider.promptStream(prompt, {jsonResponse: true});
+		const stream = await this._aiProvider.promptStream(prompt, {jsonResponse: true, debugLogger});
 		let response = '';
 		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
