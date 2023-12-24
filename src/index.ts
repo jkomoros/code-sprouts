@@ -58,6 +58,8 @@ const IMAGE_MAGIC_STRING = '@image';
 const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => {
 	//TODO: allow an exit
 	const active = true;
+	const sproutConfig = await sprout.config();
+	const allowImages = sproutConfig.allowImages || false;
 	while(active) {
 		const logger = opts.verbose ? console.info : undefined;
 		await sprout.conversationTurn(streamLogger, logger);
@@ -65,10 +67,10 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',
-			message: `Your response (include ${IMAGE_MAGIC_STRING} to include an image):`
+			message: `Your response ${allowImages ? `(include ${IMAGE_MAGIC_STRING} to include an image)` : ''}:`
 		});
 		let response = userInput.userResponse;
-		if (response.toLocaleLowerCase().includes(IMAGE_MAGIC_STRING.toLowerCase())) {
+		if (allowImages && response.toLocaleLowerCase().includes(IMAGE_MAGIC_STRING.toLowerCase())) {
 			response = response.replace(IMAGE_MAGIC_STRING, 'image');
 			//TODO: auto complete.
 			const userInput = await enquirer.prompt<{imagePath:string}>({

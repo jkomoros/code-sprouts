@@ -19,7 +19,8 @@ export type SproutName = z.infer<typeof sproutName>;
 export type SproutState = unknown;
 
 export const sproutConfigSchema = z.object({
-	version: z.literal(0)
+	version: z.literal(0),
+	allowImages : z.optional(z.boolean().describe('Whether the bot allows images'))
 });
 
 export type SproutConfig = z.infer<typeof sproutConfigSchema>;
