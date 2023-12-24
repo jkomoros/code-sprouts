@@ -198,6 +198,7 @@ export class AIProvider {
 		opts = mergeObjects(this._opts, opts);
 		opts = await this.extendPromptOptionsWithTokenCount(text, opts);
 		const model = this.modelForOptions(opts);
+		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
 		return computePrompt(text, model, this._env, opts);
 	}
 
@@ -205,6 +206,7 @@ export class AIProvider {
 		opts = mergeObjects(this._opts, opts);
 		opts = await this.extendPromptOptionsWithTokenCount(text, opts);
 		const model = this.modelForOptions(opts);
+		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
 		return computeStream(text, model, this._env, opts);
 	}
 

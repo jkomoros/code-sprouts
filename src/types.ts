@@ -55,7 +55,8 @@ export type PromptOptions = {
 		jsonResponse? : boolean,
 		imageInput?: boolean
 		contextSizeAtLeast? : number
-	}
+	},
+	debugLogger? : Logger
 };
 
 //TODO: make this a generic type, not relying on OpenAI's structure
