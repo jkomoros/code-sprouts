@@ -63,7 +63,10 @@ export const parseStreamingJSON = (partialJSON : string) : unknown => {
 				stack.unshift({type: '"', lastCharIsEscape: false});
 				for (const item of stack) {
 					if (item.type != '}') continue;
-					if (item.expectsNext == 'start-optional-key' || item.expectsNext == 'start-required-key') item.expectsNext = 'continue-key';
+					if (item.expectsNext == 'start-optional-key' || item.expectsNext == 'start-required-key') {
+                        item.expectsNext = 'continue-key';
+                        break;
+                    }
 				}
 			}
 			inString = !inString;
