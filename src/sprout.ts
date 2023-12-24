@@ -21,8 +21,8 @@ import {
 } from './types.js';
 
 import {
-	parsePartialJSON
-} from './util.js';
+	parseStreamingJSON
+} from './streaming-json.js';
 
 import fastJSONPatch from 'fast-json-patch';
 
@@ -213,11 +213,11 @@ Provide a patch to update the state object based on the users's last message and
 	change the behavior.
 */
 const userMessageChunk = (previousJSON : string, newChunk : string) : string => {
-	const previousCompletedJSON = parsePartialJSON(previousJSON);
+	const previousCompletedJSON = parseStreamingJSON(previousJSON);
 	const previousParseResult = partialConversationTurnSchema.safeParse(previousCompletedJSON);
 	if (!previousParseResult.success) return '';
 	const previousUserMessage = previousParseResult.data.userMessage || '';
-	const newJSON = parsePartialJSON(previousJSON + newChunk);
+	const newJSON = parseStreamingJSON(previousJSON + newChunk);
 	const newParseResult = partialConversationTurnSchema.safeParse(newJSON);
 	if (!newParseResult.success) return '';
 	const newUserMessage = newParseResult.data.userMessage || '';
