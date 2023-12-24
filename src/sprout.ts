@@ -5,7 +5,11 @@ import {
 } from './fetcher.js';
 
 import {
-	AIProvider, promptImages, promptIncludesImage, textForPrompt
+	AIProvider,
+	debugTextForPrompt,
+	promptImages,
+	promptIncludesImage,
+	textForPrompt
 } from './llm.js';
 
 import {
@@ -194,7 +198,7 @@ Provide a patch to update the state object based on the users's last message and
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt();
-		if (debugLogger) debugLogger(`Prompt:\n${prompt}`);
+		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
 			debugLogger,

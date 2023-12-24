@@ -174,6 +174,19 @@ export const promptImages = (prompt : Prompt) : PromptComponent[] => {
 	return prompt.filter(item => typeof item != 'string');
 };
 
+export const debugTextForPrompt = (prompt : Prompt) : string => {
+	if (!Array.isArray(prompt)) prompt = [prompt];
+	const result : string[] = [];
+	for (const part of prompt) {
+		if (typeof part == 'string') {
+			result.push(part);
+			continue;
+		}
+		result.push(JSON.stringify(part, null, '\t'));
+	}
+	return result.join('\n');
+};
+
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
 	private _models : CompletionModelID[];
