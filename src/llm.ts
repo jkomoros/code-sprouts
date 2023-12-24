@@ -15,7 +15,7 @@ import {
 } from './types.js';
 
 import {
-	assertUnreachable
+	assertUnreachable, mergeObjects
 } from './util.js';
 
 export const extractModel = (model : CompletionModelID) : [name : ModelProvider, modelName : string] => {
@@ -134,18 +134,12 @@ export class AIProvider {
 	}
 
 	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
-		opts = {
-			...this._opts,
-			...opts
-		};
+		opts = mergeObjects(this._opts, opts);
 		return computePrompt(text, this.modelForOptions(opts), this._env, opts);
 	}
 
 	async promptStream(text : string, opts: PromptOptions = {}) : Promise<PromptStream> {
-		opts = {
-			...this._opts,
-			...opts
-		};
+		opts = mergeObjects(this._opts, opts);
 		return computeStream(text, this.modelForOptions(opts), this._env, opts);
 	}
 
