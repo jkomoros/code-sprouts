@@ -115,6 +115,35 @@ export const computeTokenCount = async (text : string, model : CompletionModelID
 	return -1;
 };
 
+const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : boolean => {
+	const requirements = opts.modelRequirements;
+	if (!requirements) return true;
+	const modelInfo = COMPLETIONS_BY_MODEL[model];
+	for (const key of TypedObject.keys(requirements)) {
+		if (!modelMatches) break;
+		switch(key) {
+		case 'imageInput':
+			const requireImage = requirements.imageInput || false;
+			if (!requireImage) continue;
+			if (!modelInfo.supportsImages) return false;
+			break;
+		case 'jsonResponse':
+			const requireJsonResponse = requirements.jsonResponse || false;
+			if (!requireJsonResponse) continue;
+			if (!modelInfo.supportsJSONResponseFormat) return false;
+			break;
+		case 'contextSizeAtLeast':
+			const contextSizeAtLeast = requirements.contextSizeAtLeast || -1;
+			if (contextSizeAtLeast < 0) continue;
+			if (modelInfo.maxTokens < contextSizeAtLeast) return false;
+			break;
+		default:
+			assertUnreachable(key);
+		}
+	}
+	return true;
+};
+
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
 	private _models : CompletionModelID[];
@@ -134,39 +163,7 @@ export class AIProvider {
 
 	modelForOptions(opts : PromptOptions) : CompletionModelID {
 		for (const model of this._models) {
-			const requirements = opts.modelRequirements;
-			if (!requirements) return model;
-			const modelInfo = COMPLETIONS_BY_MODEL[model];
-			let modelMatches = true;
-			for (const key of TypedObject.keys(requirements)) {
-				if (!modelMatches) break;
-				switch(key) {
-				case 'imageInput':
-					const requireImage = requirements.imageInput || false;
-					if (!requireImage) continue;
-					if (!modelInfo.supportsImages) {
-						modelMatches = false;
-					}
-					break;
-				case 'jsonResponse':
-					const requireJsonResponse = requirements.jsonResponse || false;
-					if (!requireJsonResponse) continue;
-					if (!modelInfo.supportsJSONResponseFormat) {
-						modelMatches = false;
-					}
-					break;
-				case 'contextSizeAtLeast':
-					const contextSizeAtLeast = requirements.contextSizeAtLeast || -1;
-					if (contextSizeAtLeast < 0) continue;
-					if (modelInfo.maxTokens < contextSizeAtLeast) {
-						modelMatches = false;
-					}
-					break;
-				default:
-					assertUnreachable(key);
-				}
-			}
-			if (modelMatches) return model;
+			if (modelMatches(model, opts)) return model;
 		}
 		throw new Error('No model matches requirements');
 	}
