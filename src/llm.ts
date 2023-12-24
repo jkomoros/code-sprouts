@@ -122,6 +122,7 @@ export class AIProvider {
 	_opts: PromptOptions;
 
 	//TODO: provide a default models stack
+	//TODO: make Sprout express requirements where they exist
 
 	constructor(model : CompletionModelID | CompletionModelID[], env : Environment, opts : PromptOptions = {}) {
 		if (typeof model == 'string') model = [model];
