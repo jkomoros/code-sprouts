@@ -121,7 +121,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 
 	const ai = new AIProvider({
 		openai_api_key: OPENAI_API_KEY
-	}, 'openai.com:gpt-4-1106-preview');
+	});
 	const sprout = new Sprout(sproutName, ai);
 	await sprout.validate();
 	await runSprout(sprout, opts);
