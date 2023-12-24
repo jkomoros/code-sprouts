@@ -162,6 +162,10 @@ export class AIProvider {
 	}
 
 	modelForOptions(opts : PromptOptions) : CompletionModelID {
+		if (opts.model) {
+			if (!modelMatches(opts.model, opts)) throw new Error(`model ${opts.model} provided, but it does not match provided requirements`);
+			return opts.model;
+		}
 		for (const model of this._models) {
 			if (modelMatches(model, opts)) return model;
 		}

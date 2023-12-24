@@ -48,6 +48,8 @@ export const modelProvider = z.enum([
 export type ModelProvider = z.infer<typeof modelProvider>;
 
 export type PromptOptions = {
+	//If provided, will use this model (assuming it matches requirements)
+	model? : CompletionModelID,
 	jsonResponse? : boolean,
 	modelRequirements? : {
 		jsonResponse? : boolean,
