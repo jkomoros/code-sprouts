@@ -53,7 +53,6 @@ export type PromptOptions = {
 		jsonResponse? : boolean,
 		imageInput?: boolean
 		contextSizeAtLeast? : number
-		//TODO: add a maximumPromptLength that's auto done (well, for local token-counting)
 	}
 };
 

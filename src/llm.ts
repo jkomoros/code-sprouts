@@ -117,9 +117,9 @@ export const computeTokenCount = async (text : string, model : CompletionModelID
 
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
-	_models : CompletionModelID[];
-	_env : Environment;
-	_opts: PromptOptions;
+	private _models : CompletionModelID[];
+	private _env : Environment;
+	private _opts: PromptOptions;
 
 	//TODO: provide a default models stack
 	//TODO: make Sprout express requirements where they exist
@@ -173,12 +173,14 @@ export class AIProvider {
 
 	async prompt(text : string, opts : PromptOptions = {}) : Promise<string> {
 		opts = mergeObjects(this._opts, opts);
-		return computePrompt(text, this.modelForOptions(opts), this._env, opts);
+		const model = this.modelForOptions(opts);
+		return computePrompt(text, model, this._env, opts);
 	}
 
 	async promptStream(text : string, opts: PromptOptions = {}) : Promise<PromptStream> {
 		opts = mergeObjects(this._opts, opts);
-		return computeStream(text, this.modelForOptions(opts), this._env, opts);
+		const model = this.modelForOptions(opts);
+		return computeStream(text, model, this._env, opts);
 	}
 
 	async tokenCount(text : string) : Promise<number> {
