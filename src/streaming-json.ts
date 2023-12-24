@@ -111,7 +111,7 @@ class StreamingJSONParser {
 
 	//Does the smallest amount of mangling necessary to make the partial JSON result into a valid json result and return it.
 	json() : unknown {
-		if (!this._cachedJSON !== undefined) return this._cachedJSON;
+		if (this._cachedJSON !== undefined) return this._cachedJSON;
 		let finalString = this._result;
 		if (!this._result) return null;
 		for (const item of this._stack) {
