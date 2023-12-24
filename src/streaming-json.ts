@@ -125,7 +125,7 @@ export class StreamingJSONParser {
 		//down to leaf values required (so e.g. an optional object hsould be
 		//provided so we can see what the leaf types are)
 		if (this._cachedJSON !== undefined) return this._cachedJSON;
-		let finalString = this._result;
+		let finalString = this._result.trim();
 		if (!this._result) return null;
 		for (const item of this._stack) {
 			const char = item.type;
