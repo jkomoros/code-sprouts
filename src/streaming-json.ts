@@ -3,7 +3,8 @@ import {
 } from './util.js';
 
 type expectedChar = {
-	type: ']'
+	type: ']',
+	expectsNext: 'start-value' | 'continue-value';
 } | {
 	type: '"',
 	lastCharIsEscape: boolean
@@ -44,9 +45,9 @@ export class StreamingJSONParser {
 		for (const char of partial) {
 			let charIsEscape = false;
 			//If we're not in a string, the character is not whitespace, we're in an
-			//object context, and we haven't started the value yet, note that it's
+			//object or array context, and we haven't started the value yet, note that it's
 			//now started.
-			if (!inString(this._stack) && char.trim() && this._stack.length && this._stack[0].type == '}' && this._stack[0].expectsNext == 'start-value') this._stack[0].expectsNext = 'continue-value';
+			if (!inString(this._stack) && char.trim() && this._stack.length && (this._stack[0].type == '}' || this._stack[0].type == ']') && this._stack[0].expectsNext == 'start-value') this._stack[0].expectsNext = 'continue-value';
 			switch(char) {
 			case '\\':
 				//This can only happen within a string if it's valid json anyway
@@ -80,7 +81,7 @@ export class StreamingJSONParser {
 				break;
 			case '[':
 				if (inString(this._stack)) break;
-				this._stack.unshift({type: ']'});
+				this._stack.unshift({type: ']', expectsNext: 'continue-value'});
 				break;
 			case ']':
 				if (inString(this._stack)) break;
@@ -103,8 +104,8 @@ export class StreamingJSONParser {
 				break;
 			case ',':
 				if (inString(this._stack)) break;
-				if (this._stack[0].type != '}') break;
-				this._stack[0].expectsNext = 'start-required-key';
+				if (this._stack[0].type == '}') this._stack[0].expectsNext = 'start-required-key';
+				if (this._stack[0].type == ']') this._stack[0].expectsNext = 'start-value';
 				break;
 			}
 			if (this._stack.length && this._stack[0].type == '"') this._stack[0].lastCharIsEscape = charIsEscape;
@@ -161,6 +162,18 @@ export class StreamingJSONParser {
 			} else if (char == '"') {
 				//We need to do an extra ending quote otherwise it won't terminate the string
 				if (item.lastCharIsEscape) finalString += '"';
+			} else if (char == ']') {
+				const next = item.expectsNext;
+				switch(next) {
+				case 'continue-value':
+					finalString += '';
+					break;
+				case 'start-value':
+					finalString += 'null';
+					break;
+				default:
+					assertUnreachable(next);
+				}
 			}
 			finalString += char;
 		}

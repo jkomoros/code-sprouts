@@ -121,11 +121,14 @@ describe('test parseStreamingJSON', () => {
 					"op": "add",
 					"path": "/responses/-",
 					"value": "a"
+				},
+				{
+					"op:": "add",
+					"path": "/responses/-",
+					"value": "b"
 				}
 			]
 		}`;
-
-		//TODO: an array with multiple items fails hard.	
 			
 		for (let i = 0; i < input.length; i++) {
 			const str = input.slice(0,i);
