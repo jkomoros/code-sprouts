@@ -12,7 +12,8 @@ import {
 } from './types.js';
 
 import {
-	join
+	join,
+	resolve
 } from 'path';
 
 import {
@@ -69,7 +70,7 @@ const absoluteFile = (input : string) : string => {
 	if (input.startsWith('~')) {
 		return join(homedir(), input.slice('~'.length));
 	}
-	return input;
+	return resolve(input);
 };
 
 const resizedImage = async (input : Buffer) : Promise<Buffer> => {
