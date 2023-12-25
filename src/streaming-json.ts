@@ -52,6 +52,8 @@ export class StreamingJSONParser {
 		this._rawInput = '';
 	}
 
+	//TODO: switch to doing a proper state machine.
+
 	//Returns if we should process or skip chars that are outside what we expect
 	//right now. This helps us skip markdown for example.
 	skipChar(char : string) : boolean {
