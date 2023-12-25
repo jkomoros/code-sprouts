@@ -55,8 +55,6 @@ export class StreamingJSONParser {
 	//Ingests more streaming characters of JSON.
 	ingest(partial : string) : void {
 
-		//TODO: reject strings that are outside the allowed state. Put all chars in _rawInput.
-
 		//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.	
 		for (const char of partial) {
 			//We consume char no matter what.
