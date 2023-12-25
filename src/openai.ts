@@ -48,9 +48,10 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 };
 
 const urlForImage = (image : Buffer) : OpenAI.ChatCompletionContentPartImage.ImageURL => {
-	const result = image.toString('base64url');
+	const result = image.toString('base64');
 	return {
-		url: `data:image/jpeg;base64${result}`
+		url: `data:image/jpeg;base64${result}`,
+		detail: 'low'
 	};
 };
 

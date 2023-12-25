@@ -76,14 +76,20 @@ const absoluteFile = (input : string) : string => {
 const resizedImage = async (input : Buffer) : Promise<Buffer> => {
 	const resizedImageBuffer = await sharp(input)
 		.resize({
-			width: 2000,
-			height: 2000,
+			width: 512,
+			height: 512,
 			fit: sharp.fit.inside,
 			withoutEnlargement: true
 		})
 		.toBuffer();
 
 	return resizedImageBuffer;
+};
+
+const loadImage = async (imagePath : string) : Promise<Buffer> => {
+	const buffer = readFileSync(absoluteFile(imagePath));
+	const resizedBuffer = await resizedImage(buffer);
+	return resizedBuffer;
 };
 
 //This is not a method on sprout because Sprout doesn't  know how to get or give
@@ -113,13 +119,11 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 			});
 			const imagePath = userInput.imagePath;
 			console.log(`Image path: ${imagePath}`);
-			const buffer = readFileSync(absoluteFile(imagePath));
-			const resizedBuffer = await resizedImage(buffer);
-			//TODO: resize down
+			const image = await loadImage(imagePath);
 			response = [
 				response,
 				{
-					image: resizedBuffer
+					image
 				}
 			];
 		}
