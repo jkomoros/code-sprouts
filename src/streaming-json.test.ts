@@ -136,8 +136,53 @@ describe('test parseStreamingJSON', () => {
 		}
 	});
 
-	//TODO: test streaming JSON wrapped in naked ```
-	//TODO: test streaming JSON with text and then ```json`
+	it('iteratively handles a long and complex bit of json number 4 including wrapped in markdown', () => {
+		const input = `\`\`\`{
+			"userMessage": "This is a value: and another one,",
+			"patch": [
+				{
+					"op": "add",
+					"path": "/responses/-",
+					"value": "a"
+				},
+				{
+					"op:": "add",
+					"path": "/responses/-",
+					"value": "b"
+				}
+			]
+		}\`\`\``;
+			
+		for (let i = 0; i < input.length; i++) {
+			const str = input.slice(0,i);
+			expect(() => parseStreamingJSON(str)).not.toThrow();
+		}
+	});
+
+	it('iteratively handles a long and complex bit of json number 5 including wrapped in markdown', () => {
+		const input = `OK, here's an answer for you: \`\`\`json
+		{
+			"userMessage": "This is a value: and another one,",
+			"patch": [
+				{
+					"op": "add",
+					"path": "/responses/-",
+					"value": "a"
+				},
+				{
+					"op:": "add",
+					"path": "/responses/-",
+					"value": "b"
+				}
+			]
+		}\`\`\``;
+			
+		for (let i = 0; i < input.length; i++) {
+			const str = input.slice(0,i);
+			expect(() => parseStreamingJSON(str)).not.toThrow();
+		}
+	});
+
 	//TODO: test MULTIPLE JSONs.
 
 });
