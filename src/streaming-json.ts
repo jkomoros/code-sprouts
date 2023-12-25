@@ -42,7 +42,6 @@ Here's your result:
 */
 export class StreamingJSONParser {
 	private _stack : expectedChar[];
-	//TODO: make this input
 	private _input : string;
 	private _rawInput : string;
 	private _cachedJSON? : unknown;
