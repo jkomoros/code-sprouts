@@ -208,7 +208,6 @@ Provide a patch to update the state object based on the users's last message and
 				imageInput: config.allowImages || false
 			}
 		});
-		let response = '';
 		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
 			if (chunk.choices.length == 0) throw new Error('No choices');
@@ -223,6 +222,7 @@ Provide a patch to update the state object based on the users's last message and
 				if (debugLogger) {
 					//TODO: use parser.ingest here and use its final result.
 					streamLogger(content);
+					parser.ingest(content);
 				} else {
 					streamLogger(
 						parser.incrementalProperty(content, (input: unknown) : string => {
@@ -231,17 +231,17 @@ Provide a patch to update the state object based on the users's last message and
 					);
 				}
 			}
-			response += content;
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
-		if (debugLogger && AGGRESSIVE_LOGGING) debugLogger(`Raw Turn: ${response}`);
+		if (debugLogger && AGGRESSIVE_LOGGING) debugLogger(`Raw Turn: ${parser.string}`);
 		let turnJSON : unknown = {};
 		try {
-			turnJSON = JSON.parse(response);
+			turnJSON = parser.json();
 		} catch(err) {
-			throw new Error(`Could not parse JSON: ${response}: ${err}`);
+			throw new Error(`Could not parse JSON: ${parser.string}: ${err}`);
 		}
+		if (!turnJSON) throw new Error('Empty json');
 		const turn = strictConversationTurnSchema.parse(turnJSON);
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 		const oldState = await this.lastState();
