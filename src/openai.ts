@@ -48,6 +48,8 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 };
 
 const urlForImage = (image : Buffer) : OpenAI.ChatCompletionContentPartImage.ImageURL => {
+	//TODO: isn't it kind of weird that we do the final sizing etc here?
+	//Shouldn't we be passed the buffer at full size and resize here?
 	const result = image.toString('base64');
 	return {
 		url: `data:image/jpeg;base64${result}`,
