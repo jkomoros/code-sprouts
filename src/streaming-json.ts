@@ -28,6 +28,15 @@ For example, it will take a string like `{"abc":{"a`, complete it to `{"abc":{"a
 
 It's useful for when a JSON response is streaming from an LLM and will be partial until it's done.
 
+It will reject and ignore characters outside of a JSON blob. This means it will natively be resilient to the LLM returning something like:
+
+```
+Here's your result:
+```json
+{
+	"message": "foo"
+}
+```
 */
 export class StreamingJSONParser {
 	private _stack : expectedChar[];
