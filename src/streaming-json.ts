@@ -170,7 +170,7 @@ export class StreamingJSONParser {
 		//provided so we can see what the leaf types are)
 		if (this._cachedJSON !== undefined) return this._cachedJSON;
 		let finalString = this._input.trim();
-		if (!this._input) return null;
+		if (!finalString) return null;
 		for (const item of this._stack) {
 			const char = item.type;
 			if (char == '}') {
