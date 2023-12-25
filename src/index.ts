@@ -45,6 +45,8 @@ import {
 	homedir
 } from 'os';
 
+import sharp from 'sharp';
+
 import enquirer from 'enquirer';
 
 dotEnvConfig();
@@ -68,6 +70,19 @@ const absoluteFile = (input : string) : string => {
 		return join(homedir(), input.slice('~'.length));
 	}
 	return input;
+};
+
+const resizedImage = async (input : Buffer) : Promise<Buffer> => {
+	const resizedImageBuffer = await sharp(input)
+		.resize({
+			width: 2000,
+			height: 2000,
+			fit: sharp.fit.inside,
+			withoutEnlargement: true
+		})
+		.toBuffer();
+
+	return resizedImageBuffer;
 };
 
 //This is not a method on sprout because Sprout doesn't  know how to get or give
@@ -98,11 +113,12 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 			const imagePath = userInput.imagePath;
 			console.log(`Image path: ${imagePath}`);
 			const buffer = readFileSync(absoluteFile(imagePath));
+			const resizedBuffer = await resizedImage(buffer);
 			//TODO: resize down
 			response = [
 				response,
 				{
-					image: buffer
+					image: resizedBuffer
 				}
 			];
 		}
