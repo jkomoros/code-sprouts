@@ -234,12 +234,15 @@ Provide a patch to update the state object based on the users's last message and
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
-		if (debugLogger && AGGRESSIVE_LOGGING) debugLogger(`Raw Turn: ${parser.rawInput}`);
+		if (debugLogger && AGGRESSIVE_LOGGING) {
+			debugLogger(`Raw Turn: ${parser.rawInput}`);
+			debugLogger(`Trimmed Turn: ${parser.input}`);
+		}
 		let turnJSON : unknown = {};
 		try {
 			turnJSON = parser.json();
 		} catch(err) {
-			throw new Error(`Could not parse JSON: ${parser.rawInput}: ${err}`);
+			throw new Error(`Could not parse JSON: ${parser.input}: ${err}`);
 		}
 		if (!turnJSON) throw new Error('Empty json');
 		const turn = strictConversationTurnSchema.parse(turnJSON);
