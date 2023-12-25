@@ -174,6 +174,8 @@ export class StreamingJSONParser {
 				default:
 					assertUnreachable(next);
 				}
+			} else {
+				assertUnreachable(char);
 			}
 			finalString += char;
 		}
