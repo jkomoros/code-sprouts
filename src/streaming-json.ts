@@ -33,11 +33,13 @@ export class StreamingJSONParser {
 	private _stack : expectedChar[];
 	//TODO: make this input
 	private _input : string;
+	private _rawInput : string;
 	private _cachedJSON? : unknown;
 
 	constructor() {
 		this._stack = [];
 		this._input = '';
+		this._rawInput = '';
 	}
 
 	//Ingests more streaming characters of JSON.
@@ -47,6 +49,8 @@ export class StreamingJSONParser {
 
 		//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.	
 		for (const char of partial) {
+			//We consume char no matter what.
+			this._rawInput += char;
 			let charIsEscape = false;
 			//If we're not in a string, the character is not whitespace, we're in an
 			//object or array context, and we haven't started the value yet, note that it's
@@ -113,8 +117,8 @@ export class StreamingJSONParser {
 				break;
 			}
 			if (this._stack.length && this._stack[0].type == '"') this._stack[0].lastCharIsEscape = charIsEscape;
+			this._input += char;
 		}
-		this._input += partial;
 		this._cachedJSON = undefined;
 	}
 
@@ -124,7 +128,7 @@ export class StreamingJSONParser {
 	}
 
 	get rawInput() : string {
-		return this._input;
+		return this._rawInput;
 	}
 
 	//Does the smallest amount of mangling necessary to make the partial JSON result into a valid json result and return it.
