@@ -136,4 +136,8 @@ describe('test parseStreamingJSON', () => {
 		}
 	});
 
+	//TODO: test streaming JSON wrapped in naked ```
+	//TODO: test streaming JSON with text and then ```json`
+	//TODO: test MULTIPLE JSONs.
+
 });

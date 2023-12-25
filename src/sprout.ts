@@ -221,6 +221,7 @@ Provide a patch to update the state object based on the users's last message and
 				//log the raw token. But if we don't, log the net new
 				//userMessage token.
 				if (debugLogger) {
+					//TODO: use parser.ingest here and use its final result.
 					streamLogger(content);
 				} else {
 					streamLogger(

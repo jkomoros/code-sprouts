@@ -31,6 +31,7 @@ It's useful for when a JSON response is streaming from an LLM and will be partia
 */
 export class StreamingJSONParser {
 	_stack : expectedChar[];
+	//TODO: make this input
 	_result : string;
 	_cachedJSON? : unknown;
 
@@ -41,6 +42,9 @@ export class StreamingJSONParser {
 
 	//Ingests more streaming characters of JSON.
 	ingest(partial : string) : void {
+
+		//TODO: reject strings that are outside the allowed state. Put all chars in _rawInput.
+
 		//Each time we enter an object context we push another item on here to tell us if the next thing to expect is a string.	
 		for (const char of partial) {
 			let charIsEscape = false;
