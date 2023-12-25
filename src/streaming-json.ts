@@ -22,7 +22,9 @@ const inString =(stack : expectedChar[]) : boolean => {
 
 /*
 
-parsePartialJSON accepts a partial JSON string and terminates it as quickly as possible to make it valid and tries to prase it.
+StreamingJSONParser accumulates character-by-chaacter of JSON by repeated calls to ingest().
+
+It accepts a partial JSON string and terminates it as quickly as possible to make it valid and tries to prase it.
 
 For example, it will take a string like `{"abc":{"a`, complete it to `{"abc":{"a":null}}` and then parse it.
 
