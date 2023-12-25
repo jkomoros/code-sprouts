@@ -30,10 +30,10 @@ It's useful for when a JSON response is streaming from an LLM and will be partia
 
 */
 export class StreamingJSONParser {
-	_stack : expectedChar[];
+	private _stack : expectedChar[];
 	//TODO: make this input
-	_input : string;
-	_cachedJSON? : unknown;
+	private _input : string;
+	private _cachedJSON? : unknown;
 
 	constructor() {
 		this._stack = [];
