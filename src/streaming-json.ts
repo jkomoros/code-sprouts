@@ -47,8 +47,28 @@ export class StreamingJSONParser {
 	skipChar(char : string) : boolean {
 		//Whitespace always allwoed
 		if (!char.trim()) return false;
-		if (inString(this._stack)) return false;
 		//TODO: also reject things outside what we're expecting right now.
+		if (this._stack.length == 0) {
+			//Haven't yet started. Only two valid chars are '{' or '['
+			if (char == '{') return false;
+			if (char == '[') return false;
+			return true;
+		}
+		const item = this._stack[0];
+		const type = item.type;
+		switch (type) {
+		case '"':
+			//Inside a string everything is allowed
+			return false;
+		case ']':
+			//TODO: be more discerning here
+			return false;
+		case '}':
+			//TODO: be more discerning here
+			return false;
+		default:
+			assertUnreachable(type);
+		}
 		return false;
 	}
 
