@@ -42,6 +42,16 @@ export class StreamingJSONParser {
 		this._rawInput = '';
 	}
 
+	//Returns if we should process or skip chars that are outside what we expect
+	//right now. This helps us skip markdown for example.
+	skipChar(char : string) : boolean {
+		//Whitespace always allwoed
+		if (!char.trim()) return true;
+		if (inString(this._stack)) return true;
+		//TODO: also reject things outside what we're expecting right now.
+		return false;
+	}
+
 	//Ingests more streaming characters of JSON.
 	ingest(partial : string) : void {
 
@@ -51,6 +61,9 @@ export class StreamingJSONParser {
 		for (const char of partial) {
 			//We consume char no matter what.
 			this._rawInput += char;
+
+			if (this.skipChar(char)) continue;
+
 			let charIsEscape = false;
 			//If we're not in a string, the character is not whitespace, we're in an
 			//object or array context, and we haven't started the value yet, note that it's
