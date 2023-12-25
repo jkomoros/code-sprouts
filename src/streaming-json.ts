@@ -46,8 +46,8 @@ export class StreamingJSONParser {
 	//right now. This helps us skip markdown for example.
 	skipChar(char : string) : boolean {
 		//Whitespace always allwoed
-		if (!char.trim()) return true;
-		if (inString(this._stack)) return true;
+		if (!char.trim()) return false;
+		if (inString(this._stack)) return false;
 		//TODO: also reject things outside what we're expecting right now.
 		return false;
 	}
