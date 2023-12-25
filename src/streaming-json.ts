@@ -184,7 +184,9 @@ export class StreamingJSONParser {
 			this._cachedJSON = result;
 			return result;
 		} catch(error) {
-			throw new Error(`Could not parse partial json *${finalString}*: ${error}`);
+			console.warn(`Could not parse partial json *${finalString}*: ${error}`);
+			//Sometimes the bot gives back invalid formatting.
+			return null;
 		}
 	}
 

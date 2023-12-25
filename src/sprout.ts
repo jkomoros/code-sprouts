@@ -160,7 +160,7 @@ ${JSON.stringify(state, null, '\t')}
 The last messages from the user (with the last message, which you should respond to, at the end):
 ${this._userMessages.length ? this._userMessages.map(message => textForPrompt(message)).join('\n---\n') : '<INITIAL>'}
 
-You should respond with only a literal JSON object (not wrapped in markdown formatting) matching this schema:
+It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${CONVERSATION_TURN_SCHEMA}
 
 Provide a patch to update the state object based on the users's last message and your response.`;
