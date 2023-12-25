@@ -52,8 +52,7 @@ const urlForImage = (image : Buffer) : OpenAI.ChatCompletionContentPartImage.Ima
 	//Shouldn't we be passed the buffer at full size and resize here?
 	const result = image.toString('base64');
 	return {
-		url: `data:image/jpeg;base64,${result}`,
-		detail: 'low'
+		url: `data:image/jpeg;base64,${result}`
 	};
 };
 

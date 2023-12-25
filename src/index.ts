@@ -76,8 +76,8 @@ const absoluteFile = (input : string) : string => {
 const resizedImage = async (input : Buffer) : Promise<Buffer> => {
 	const resizedImageBuffer = await sharp(input)
 		.resize({
-			width: 512,
-			height: 512,
+			width: 2000,
+			height: 2000,
 			fit: sharp.fit.inside,
 			withoutEnlargement: true
 		})
