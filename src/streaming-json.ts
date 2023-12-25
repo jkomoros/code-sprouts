@@ -119,7 +119,11 @@ export class StreamingJSONParser {
 	}
 
 	//Returns the full text that has been ingested so far.
-	get string() : string {
+	get input() : string {
+		return this._input;
+	}
+
+	get rawInput() : string {
 		return this._input;
 	}
 
