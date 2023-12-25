@@ -32,12 +32,12 @@ It's useful for when a JSON response is streaming from an LLM and will be partia
 export class StreamingJSONParser {
 	_stack : expectedChar[];
 	//TODO: make this input
-	_result : string;
+	_input : string;
 	_cachedJSON? : unknown;
 
 	constructor() {
 		this._stack = [];
-		this._result = '';
+		this._input = '';
 	}
 
 	//Ingests more streaming characters of JSON.
@@ -114,13 +114,13 @@ export class StreamingJSONParser {
 			}
 			if (this._stack.length && this._stack[0].type == '"') this._stack[0].lastCharIsEscape = charIsEscape;
 		}
-		this._result += partial;
+		this._input += partial;
 		this._cachedJSON = undefined;
 	}
 
 	//Returns the full text that has been ingested so far.
 	get string() : string {
-		return this._result;
+		return this._input;
 	}
 
 	//Does the smallest amount of mangling necessary to make the partial JSON result into a valid json result and return it.
@@ -130,8 +130,8 @@ export class StreamingJSONParser {
 		//down to leaf values required (so e.g. an optional object hsould be
 		//provided so we can see what the leaf types are)
 		if (this._cachedJSON !== undefined) return this._cachedJSON;
-		let finalString = this._result.trim();
-		if (!this._result) return null;
+		let finalString = this._input.trim();
+		if (!this._input) return null;
 		for (const item of this._stack) {
 			const char = item.type;
 			if (char == '}') {
