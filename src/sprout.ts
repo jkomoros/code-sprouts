@@ -48,11 +48,12 @@ import {
 import fastJSONPatch from 'fast-json-patch';
 
 //A manual conversion of types.ts:conversationTurnSchema
-const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
+const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
 	type: 'subInstruction';
 	//The subInstruction to have summarized for us, before responding to the user.
 	subInstructionToDescribe: {{SUB_INSTRUCTION_NAMES}};
-} | {
+} | `;
+const CONVERSATION_TURN_SCHEMA_SECOND_PART = `{
   type: 'default',
   //The message that will be shown to the user.
   userMessage: string
@@ -60,8 +61,11 @@ const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
   patch : JSONPatchRFC6902
 }`;
 
+const CONVERSATION_TURN_SCHEMA = CONVERSATION_TURN_SCHEMA_FIRST_PART + CONVERSATION_TURN_SCHEMA_SECOND_PART;
+
 const conversationTurnSchema = (subInstructions : SubInstructionsMap) : string => {
-	const subInstructionNames = Object.keys(subInstructions).length ? Object.keys(subInstructions).map(name => `'${name}'`).join(' | ') : 'never';
+	if (Object.keys(subInstructions).length == 0) return CONVERSATION_TURN_SCHEMA_SECOND_PART;
+	const subInstructionNames = Object.keys(subInstructions).map(name => `'${name}'`).join(' | ');
 	return CONVERSATION_TURN_SCHEMA.replace('{{SUB_INSTRUCTION_NAMES}}', subInstructionNames);
 };
 
@@ -350,7 +354,7 @@ The last messages from the user (with the last message, which you should respond
 ${this._userMessages.length ? this._userMessages.map(message => textForPrompt(message)).join('\n---\n') : '<INITIAL>'}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
-${conversationTurnSchema(subInstructions)}
+${conversationTurnSchema(subInstruction ? {} : subInstructions)}
 
 Provide a patch to update the state object based on the users's last message and your response.`;
 
