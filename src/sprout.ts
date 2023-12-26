@@ -13,6 +13,7 @@ import {
 } from './llm.js';
 
 import {
+	CompiledSprout,
 	Logger,
 	Path,
 	Prompt,
@@ -20,6 +21,7 @@ import {
 	SproutName,
 	SproutState,
 	StreamLogger,
+	compiledSproutSchema,
 	partialConversationTurnSchema,
 	sproutConfigSchema,
 	strictConversationTurnSchema
@@ -35,6 +37,7 @@ import fastJSONPatch from 'fast-json-patch';
 const SPROUT_CONFIG_PATH = 'config.json';
 const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
 const SPROUT_SCHEMA_PATH = 'schema.ts';
+const SPROUT_COMPILED_PATH = 'compiled.json';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
@@ -50,6 +53,8 @@ const AGGRESSIVE_LOGGING = false;
 export class Sprout {
 	private _path : Path;
 	private _config?: SproutConfig;
+	// A null means it is affirmatively non existent.
+	private _compiled? : CompiledSprout | null;
 	private _baseInstructions? : string;
 	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
@@ -68,7 +73,25 @@ export class Sprout {
 		return this._path;
 	}
 
+	private async _compiledInfo() : Promise<CompiledSprout | null> {
+		if (this._compiled === undefined) {
+			const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
+			if (await fileExists(compiledSproutPath)) {
+				const compiledData = await fileFetch(compiledSproutPath);
+				//Tnis will throw if invalid shape.
+				const data = compiledSproutSchema.parse(JSON.parse(compiledData));
+				this._compiled = data;
+			} else {
+				this._compiled = null;
+			}
+		}
+		return this._compiled;
+	}
+
 	async config() : Promise<SproutConfig> {
+		const compiled = await this._compiledInfo();
+		if(compiled) return compiled.config;
+
 		if (!this._config) {
 			const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
 			if (!await fileExists(sproutConfigPath)) {
@@ -85,6 +108,9 @@ export class Sprout {
 	}
 
 	async baseInstructions() : Promise<string> {
+		const compiled = await this._compiledInfo();
+		if(compiled) return compiled.baseInstructions;
+
 		if (this._baseInstructions === undefined) {
 			const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
 			if (!await fileExists(sproutInstructionsPath)) {
@@ -97,6 +123,9 @@ export class Sprout {
 	}
 
 	async schemaText() : Promise<string> {
+		const compiled = await this._compiledInfo();
+		if(compiled) return compiled.schemaText;
+
 		if (this._schemaText === undefined) {
 			const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
 			if (!await fileExists(sproutSchemaPath)) {
@@ -118,6 +147,8 @@ export class Sprout {
 	}
 
 	async starterState() : Promise<SproutState> {
+		const compiled = await this._compiledInfo();
+		if(compiled) return compiled.starterState;
 		//TODO: don't use an LLM for this / cache the result so we don't have to run it each time
 		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
 		const schemaText = await this.schemaText();

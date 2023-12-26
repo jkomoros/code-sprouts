@@ -15,8 +15,9 @@ const sproutName = z.string();
 
 export type SproutName = z.infer<typeof sproutName>;
 
+const sproutState = z.unknown();
 //The state a given sprout defines. This library doesn't really care too much as long as it's JSONable.
-export type SproutState = unknown;
+export type SproutState = z.infer<typeof sproutState>;
 
 export const sproutConfigSchema = z.object({
 	version: z.literal(0),
@@ -35,6 +36,19 @@ export type PromptComponent = string | {image: Buffer};
 
 //Later we'll allow passing images, too.
 export type Prompt = PromptComponent | PromptComponent[];
+
+export const compiledSproutSchema = z.object({
+	//TODO: should this be a more specific object name, to make it easier to verify it's indeded a sprout when loaded from a random place?
+	version: z.literal(0),
+	name: sproutName,
+	//TODO: a lastUpdated timestamp to check and invalidate
+	config: sproutConfigSchema,
+	baseInstructions: z.string(),
+	schemaText: z.string(),
+	starterState: sproutState
+});
+
+export type CompiledSprout = z.infer<typeof compiledSproutSchema>;
 
 export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',
