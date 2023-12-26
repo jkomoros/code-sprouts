@@ -1,4 +1,5 @@
-import fetcher from './fetcher.js';
+//TODO: when there's a browser-safe fetcher, use that instead as the default.
+import fetcherImpl from './fetcher.js';
 
 import {
 	AIProvider,
@@ -10,6 +11,7 @@ import {
 
 import {
 	CompiledSprout,
+	Fetcher,
 	Logger,
 	Path,
 	Prompt,
@@ -52,6 +54,8 @@ type SproutOptions = {
 	debugLogger? : Logger
 };
 
+let fetcher : Fetcher = fetcherImpl;
+
 export class Sprout {
 	private _path : Path;
 	private _config?: SproutConfig;
@@ -63,6 +67,10 @@ export class Sprout {
 	private _debugLogger? : Logger;
 	private _userMessages : Prompt[];
 	private _states: SproutState[];
+
+	static setFetcher(input : Fetcher) : void {
+		fetcher = input;
+	}
 
 	constructor(path : Path, opts : SproutOptions = {}) {
 		const {

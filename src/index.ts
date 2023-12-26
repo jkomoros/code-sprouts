@@ -1,4 +1,4 @@
-import fetcher from './fetcher.js';
+import nodeFetcher from './fetcher.js';
 
 import {
 	z
@@ -49,6 +49,9 @@ import sharp from 'sharp';
 import enquirer from 'enquirer';
 
 dotEnvConfig();
+
+//Tell sprout to use the node fetcher
+Sprout.setFetcher(nodeFetcher);
 
 const cliOptions = z.object({
 	sprout: z.optional(pathSchema),
@@ -167,7 +170,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	
 	if (!sproutName) {
 
-		const sproutPaths = await fetcher.listSprouts();
+		const sproutPaths = await nodeFetcher.listSprouts();
 		const input = await enquirer.prompt<{sprout: string}>({
 			type: 'select',
 			name: 'sprout',
