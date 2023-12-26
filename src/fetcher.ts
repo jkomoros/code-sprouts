@@ -17,6 +17,9 @@ import {
 const SPROUT_EXAMPLE_DIR = 'examples';
 
 class NodeFetcher {
+
+	writable : true = true as const;
+
 	async fileFetch(path : Path) : Promise<string> {
 		//TODO: have a node and fetch-based version.
 		const f = readFileSync(path);

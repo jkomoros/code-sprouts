@@ -76,6 +76,7 @@ export class Sprout {
 
 	async compile() : Promise<void> {
 		if (await this.compiled()) return;
+		if (!fetcher.writable) return;
 		const result : CompiledSprout = {
 			version: 0,
 			name: this.name,

@@ -50,13 +50,23 @@ export const compiledSproutSchema = z.object({
 
 export type CompiledSprout = z.infer<typeof compiledSproutSchema>;
 
-export type Fetcher = {
+type BaseFetcher = {
 	fileFetch(path : Path) : Promise<string>;
 	fileExists(path : Path) : Promise<boolean>;
-	writeFile(path : Path, data : string) : Promise<void>;
 	joinPath(...parts : string[]) : Path;
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
-}
+};
+
+type ReadOnlyFetcher = BaseFetcher & {
+	writable: false
+};
+
+type WritableFetcher = BaseFetcher & {
+	writable: true,
+	writeFile(path : Path, data : string) : Promise<void>;
+};
+
+export type Fetcher = ReadOnlyFetcher | WritableFetcher;
 
 export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',
