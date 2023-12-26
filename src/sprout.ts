@@ -28,14 +28,15 @@ import {
 	StreamingJSONParser
 } from './streaming-json.js';
 
-import fastJSONPatch from 'fast-json-patch';
+import {
+	SPROUT_COMPILED_PATH,
+	SPROUT_CONFIG_PATH,
+	SPROUT_INSTRUCTIONS_PATH,
+	SPROUT_SCHEMA_PATH,
+	BASE_SPROUT_PATHS
+} from './constants.js';
 
-//Relative to the sprout root
-const SPROUT_CONFIG_PATH = 'config.json';
-const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
-const SPROUT_SCHEMA_PATH = 'schema.ts';
-const SPROUT_COMPILED_PATH = 'compiled.json';
-const BASE_SPROUT_PATHS = [SPROUT_INSTRUCTIONS_PATH, SPROUT_SCHEMA_PATH, SPROUT_CONFIG_PATH];
+import fastJSONPatch from 'fast-json-patch';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
