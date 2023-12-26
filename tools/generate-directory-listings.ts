@@ -9,6 +9,10 @@ import {
 	readdirSync
 } from 'fs';
 
+import {
+	DirectoryListingFile
+} from '../src/types.js';
+
 const generateDirectoryListing = (path: string): void => {
 	const files : string[] = [];
 	for (const item of readdirSync(path, {withFileTypes: true})) {
@@ -17,7 +21,10 @@ const generateDirectoryListing = (path: string): void => {
 	}
 
 	const outputPath = `${path}/${DIRECTORY_LISTING_FILE}`;
-	writeFileSync(outputPath, JSON.stringify(files, null, '\t'));
+	const data : DirectoryListingFile = {
+		sprouts: files
+	};
+	writeFileSync(outputPath, JSON.stringify(data, null, '\t'));
 	
 };
 

@@ -70,6 +70,12 @@ type WritableFetcher = BaseFetcher & {
 
 export type Fetcher = ReadOnlyFetcher | WritableFetcher;
 
+export const directoryListingFileSchema = z.object({
+	sprouts: z.array(sproutName),
+});
+
+export type DirectoryListingFile = z.infer<typeof directoryListingFileSchema>;
+
 export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',
 	'openai.com:gpt-3.5-turbo-16k',

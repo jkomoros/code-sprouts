@@ -1,6 +1,7 @@
 import {
 	Fetcher,
-	Path
+	Path,
+	directoryListingFileSchema
 } from './types.js';
 
 import {
@@ -42,10 +43,11 @@ class BrowserFetcher {
 				if (!response.ok) {
 					continue;
 				}
-				const sprouts: string[] = await response.json();
-				sprouts.forEach(sprout => {
+				const json = await response.json();
+				const data = directoryListingFileSchema.parse(json);
+				for (const sprout of data.sprouts) {
 					result.push(this.joinPath(basePath, sprout));
-				});
+				}
 			} catch (error) {
 				console.error(`Error listing sprouts in ${basePath}:`, error);
 			}
