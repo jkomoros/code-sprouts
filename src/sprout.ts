@@ -342,9 +342,9 @@ ${schemaText}
 
 Do not talk about the state object with a user; it is an implementation detail the user doesn't need to know about.
 
-${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].summary}` :
+${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].instruction}` :
 		Object.keys(subInstructions).length ? `Here are sub-instructions you can request information on providing their name:
-		${Object.entries(subInstructions).map(([name, info]) => `* '${name}': ${info.instruction}`).join('\n')}` :
+		${Object.entries(subInstructions).map(([name, info]) => `* '${name}': ${info.summary}`).join('\n')}` :
 			''}
 
 Your current state is:
