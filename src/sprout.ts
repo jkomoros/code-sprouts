@@ -47,6 +47,10 @@ const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
 //Set true while debugging
 const AGGRESSIVE_LOGGING = false;
 
+type SproutOptions = {
+	ai? : AIProvider
+};
+
 export class Sprout {
 	private _path : Path;
 	private _config?: SproutConfig;
@@ -58,7 +62,10 @@ export class Sprout {
 	private _userMessages : Prompt[];
 	private _states: SproutState[];
 
-	constructor(path : Path, ai? : AIProvider) {
+	constructor(path : Path, opts : SproutOptions = {}) {
+		const {
+			ai
+		} = opts;
 		this._path = path;
 		this._aiProvider = ai;
 		this._userMessages = [];
