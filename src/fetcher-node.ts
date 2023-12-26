@@ -15,6 +15,10 @@ import {
 	join
 } from 'path';
 
+import {
+	Sprout
+} from './sprout.js';
+
 const SPROUT_EXAMPLE_DIR = 'examples';
 const SPROUT_SPROUT_DIR = 'sprouts';
 
@@ -60,5 +64,7 @@ class NodeFetcher {
 
 //Type to verify we match
 const fetcher : Fetcher = new NodeFetcher();
+
+Sprout.setFetcher(fetcher);
 
 export default fetcher;

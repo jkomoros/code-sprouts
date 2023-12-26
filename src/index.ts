@@ -50,9 +50,6 @@ import enquirer from 'enquirer';
 
 dotEnvConfig();
 
-//Tell sprout to use the node fetcher
-Sprout.setFetcher(nodeFetcher);
-
 const cliOptions = z.object({
 	sprout: z.optional(pathSchema),
 	verbose: z.optional(z.boolean()),
