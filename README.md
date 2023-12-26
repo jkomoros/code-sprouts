@@ -39,3 +39,7 @@ Code Sprout's approach comes out of a few observations: LLMs can sometimes "lose
 The traditional LLM approach is best for open-ended, mostly english tasks. The Code Sprout approach might be better for mostly-structured-but-kind-of-squishy-in-the-middle kinds of use cases. Which kind of task will it turn out to be more common for people to apply LLMs to? I have no idea!
 
 It might turn out that this approach works well in a lot of useful cases; it might turn out it doens't work at all except in a set of hyper specific contrived use cases. That's why it's good to experiment and see if it makes any sense!
+
+## Developing
+
+After changing the JSON format of files, run `npm run generate:schemas` to re-update schemas.

@@ -19,6 +19,7 @@ const sproutState = z.record(z.string(), z.unknown());
 //The state a given sprout defines. This library doesn't really care too much as long as it's JSONable.
 export type SproutState = z.infer<typeof sproutState>;
 
+//Note: when changing, re-run `npm run generate:schemas`
 export const sproutConfigSchema = z.object({
 	version: z.literal(0),
 	allowImages : z.optional(z.boolean().describe('Whether the bot allows images'))

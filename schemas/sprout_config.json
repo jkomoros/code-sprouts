@@ -1,0 +1,18 @@
+{
+	"type": "object",
+	"properties": {
+		"version": {
+			"type": "number",
+			"const": 0
+		},
+		"allowImages": {
+			"type": "boolean",
+			"description": "Whether the bot allows images"
+		}
+	},
+	"required": [
+		"version"
+	],
+	"additionalProperties": false,
+	"$schema": "http://json-schema.org/draft-07/schema#"
+}
