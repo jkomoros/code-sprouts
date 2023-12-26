@@ -1,7 +1,8 @@
 import {
 	fileExists,
 	fileFetch,
-	joinPath
+	joinPath,
+	writeFile
 } from './fetcher.js';
 
 import {
@@ -71,6 +72,24 @@ export class Sprout {
 	get name() : SproutName {
 		//TODO: return the last path component
 		return this._path;
+	}
+
+	async compiled() : Promise<boolean> {
+		const compiled = await this._compiledInfo();
+		return Boolean(compiled);
+	}
+
+	async compile() : Promise<void> {
+		if (await this.compiled()) return;
+		const result : CompiledSprout = {
+			version: 0,
+			name: this.name,
+			config: await this.config(),
+			baseInstructions: await this.baseInstructions(),
+			schemaText: await this.schemaText()
+		};
+		writeFile(joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
+		this._compiled = result;
 	}
 
 	private async _compiledInfo() : Promise<CompiledSprout | null> {

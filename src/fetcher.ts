@@ -5,7 +5,8 @@ import {
 import {
 	readFileSync,
 	existsSync,
-	readdirSync
+	readdirSync,
+	writeFileSync
 } from 'fs';
 
 import {
@@ -22,6 +23,10 @@ export const fileFetch = async (path : Path) : Promise<string> => {
 
 export const fileExists = async (path : Path) : Promise<boolean> => {
 	return existsSync(path);
+};
+
+export const writeFile = async (path : Path, data : string) : Promise<void> => {
+	writeFileSync(path, data);
 };
 
 export const joinPath = (...parts : string[]) : Path => {
