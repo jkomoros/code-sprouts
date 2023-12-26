@@ -1,4 +1,5 @@
 import {
+	Fetcher,
 	Path
 } from './types.js';
 
@@ -47,6 +48,7 @@ class NodeFetcher {
 	}
 }
 
-const fetcher = new NodeFetcher();
+//Type to verify we match
+const fetcher : Fetcher = new NodeFetcher();
 
 export default fetcher;

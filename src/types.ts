@@ -50,6 +50,14 @@ export const compiledSproutSchema = z.object({
 
 export type CompiledSprout = z.infer<typeof compiledSproutSchema>;
 
+export type Fetcher = {
+	fileFetch(path : Path) : Promise<string>;
+	fileExists(path : Path) : Promise<boolean>;
+	writeFile(path : Path, data : string) : Promise<void>;
+	joinPath(...parts : string[]) : Path;
+	listSprouts(basePaths? : string[]) : Promise<Path[]>;
+}
+
 export const completionModelID = z.enum([
 	'openai.com:gpt-3.5-turbo',
 	'openai.com:gpt-3.5-turbo-16k',
