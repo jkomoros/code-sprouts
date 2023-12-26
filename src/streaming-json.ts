@@ -165,11 +165,14 @@ export class StreamingJSONParser {
 		this._cachedJSON = undefined;
 	}
 
-	//Returns the full text that has been ingested so far.
+	//Returns the full text that has been ingested so far, minus any ignored
+	//characters (e.g. markdown supports). This is what is later extended and
+	//parsed as JSON..
 	get input() : string {
 		return this._input;
 	}
 
+	//The full raw ingested text, including ignored characters.
 	get rawInput() : string {
 		return this._rawInput;
 	}
