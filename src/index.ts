@@ -1,4 +1,4 @@
-import nodeFetcher from './fetcher.js';
+import nodeFetcher from './fetcher-node.js';
 
 import {
 	z
