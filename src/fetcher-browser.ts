@@ -3,7 +3,9 @@ import {
 	Path
 } from './types.js';
 
-const DIRECTORY_JSON = 'directory.json';
+import {
+	DIRECTORY_LISTING_FILE
+} from './constants.js';
 
 class BrowserFetcher {
 
@@ -36,7 +38,7 @@ class BrowserFetcher {
 		const result: Path[] = [];
 		for (const basePath of basePaths) {
 			try {
-				const response = await fetch(`${basePath}/${DIRECTORY_JSON}`);
+				const response = await fetch(`${basePath}/${DIRECTORY_LISTING_FILE}`);
 				if (!response.ok) {
 					continue;
 				}

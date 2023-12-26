@@ -12,3 +12,4 @@ sprouts/
 *.SECRET.*
 .env
 compiled.json
+directory.json
