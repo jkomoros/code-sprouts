@@ -40,6 +40,10 @@ import {
 	SPROUT_SUBINSTUCTIONS_DIR
 } from './constants.js';
 
+import {
+	z
+} from 'zod';
+
 import fastJSONPatch from 'fast-json-patch';
 
 //A manual conversion of types.ts:conversationTurnSchema
@@ -212,8 +216,7 @@ export class Sprout {
 				if (!path.endsWith('.md')) continue;
 				const instruction = await fetcher.fileFetch(path);
 				const name = item.replace(/\.md$/, '');
-				//TODO: compute a better summary.
-				const summary = name;
+				const summary = await this.summaryForSubInstruction(instruction);
 				this._subInstructions[name] = {
 					summary,
 					instruction
@@ -222,6 +225,33 @@ export class Sprout {
 		}
 		if (this._subInstructions === undefined) throw new Error(`${this.name}: No sub-instructions`);
 		return this._subInstructions;
+	}
+
+	private async summaryForSubInstruction(instruction : string) : Promise<string> {
+		const prompt = `Provide a short summary (no longer than 10 words) for the following instructions:
+
+${instruction}
+
+----
+Return a json object matching this schema:
+type Result = {
+	summary: string
+}`;
+
+		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
+		const summary = await this._aiProvider.prompt(prompt, {
+			jsonResponse: true,
+			modelRequirements: {
+				jsonResponse: true,
+			}
+		});
+
+		const json = JSON.parse(summary);
+		const summarySchema = z.object({
+			summary: z.string()
+		});
+		const result = summarySchema.parse(json);
+		return result.summary;
 	}
 
 	async schemaText() : Promise<string> {
