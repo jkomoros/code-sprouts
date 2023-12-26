@@ -36,7 +36,8 @@ import {
 	SPROUT_SCHEMA_PATH,
 	BASE_SPROUT_PATHS,
 	BASE_SPROUT_DIRECTORIES,
-	FILE_EXTENSIONS_IN_SPROUT
+	FILE_EXTENSIONS_IN_SPROUT,
+	SPROUT_SUBINSTUCTIONS_DIR
 } from './constants.js';
 
 import fastJSONPatch from 'fast-json-patch';
@@ -203,8 +204,21 @@ export class Sprout {
 		if(compiled) return compiled.subInstructions;
 
 		if (this._subInstructions === undefined) {
-			console.warn('TODO: implement subInstructions');
 			this._subInstructions = {};
+			//TODO: make sure this will return [] if the directory doesn't exist.
+			const items = await fetcher.listDirectory(fetcher.joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR));
+			for (const item of items) {
+				const path = fetcher.joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
+				if (!path.endsWith('.md')) continue;
+				const instruction = await fetcher.fileFetch(path);
+				const name = item.replace(/\.md$/, '');
+				//TODO: compute a better summary.
+				const summary = name;
+				this._subInstructions[name] = {
+					summary,
+					instruction
+				};
+			}
 		}
 		if (this._subInstructions === undefined) throw new Error(`${this.name}: No sub-instructions`);
 		return this._subInstructions;
