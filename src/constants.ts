@@ -10,4 +10,7 @@ export const SPROUT_CONFIG_PATH = 'config.json';
 export const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
 export const SPROUT_SCHEMA_PATH = 'schema.ts';
 export const SPROUT_COMPILED_PATH = 'compiled.json';
+export const SPROUT_SUBINSTUCTIONS_DIR = 'sub_instructions';
 export const BASE_SPROUT_PATHS = [SPROUT_INSTRUCTIONS_PATH, SPROUT_SCHEMA_PATH, SPROUT_CONFIG_PATH];
+export const BASE_SPROUT_DIRECTORIES = [SPROUT_SUBINSTUCTIONS_DIR];
+export const FILE_EXTENSIONS_IN_SPROUT = ['.md', '.ts', '.json'];

@@ -34,7 +34,9 @@ import {
 	SPROUT_CONFIG_PATH,
 	SPROUT_INSTRUCTIONS_PATH,
 	SPROUT_SCHEMA_PATH,
-	BASE_SPROUT_PATHS
+	BASE_SPROUT_PATHS,
+	BASE_SPROUT_DIRECTORIES,
+	FILE_EXTENSIONS_IN_SPROUT
 } from './constants.js';
 
 import fastJSONPatch from 'fast-json-patch';
@@ -120,6 +122,18 @@ export class Sprout {
 		this._compiledData = result;
 	}
 
+	private async _filesToCheckForCompilation() : Promise<Path[]> {
+		const result = [...BASE_SPROUT_PATHS];
+		for (const directory of BASE_SPROUT_DIRECTORIES) {
+			const items = await fetcher.listDirectory(fetcher.joinPath(this._path, directory));
+			for (const item of items) {
+				if (!FILE_EXTENSIONS_IN_SPROUT.some(ext => item.endsWith(ext))) continue;
+				result.push(fetcher.joinPath(directory, item));
+			}
+		}
+		return result;
+	}
+
 	private async _compiled() : Promise<CompiledSprout | null> {
 		if (this._compiledData === undefined) {
 			const compiledSproutPath = fetcher.joinPath(this._path, SPROUT_COMPILED_PATH);
@@ -129,7 +143,7 @@ export class Sprout {
 				const data = compiledSproutSchema.parse(JSON.parse(compiledData));
 				const compiledLastUpdated = new Date(data.lastUpdated);
 				if (fetcher.writable) {
-					for (const file of BASE_SPROUT_PATHS) {
+					for (const file of await this._filesToCheckForCompilation()) {
 						const path = fetcher.joinPath(this._path, file);
 						if (!await fetcher.fileExists(path)) continue;
 						const lastUpdated = await fetcher.fileLastUpdated(path);

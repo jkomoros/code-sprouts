@@ -22,6 +22,9 @@ A sprout is a named folder (typically in `sprouts/` but with version-controlled 
   - config.json - Documents metadata about the sprout.
   - instructions.md - The top-level instructions to the bot, included in each turn.
   - schema.ts - A file that documents the state that the bot should use to store all relevant state from turn to turn, other than the most recent user message.
+  - sub_instructions/ - An optional directory of sub-instructions.
+    //Each file is the name of a sub-instruction the bot can consult for more information
+    deal_cards.md - An example that will be called deal_cards.
 ```
 
 Sprouts are passed the current state object as of the last turn, and also the last user message they received, and are then asked to return a message to show to the user, and optionally a JSON Patch to modify the state object for the next turn.
