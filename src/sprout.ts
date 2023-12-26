@@ -34,6 +34,7 @@ const SPROUT_CONFIG_PATH = 'config.json';
 const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
 const SPROUT_SCHEMA_PATH = 'schema.ts';
 const SPROUT_COMPILED_PATH = 'compiled.json';
+const BASE_SPROUT_PATHS = [SPROUT_INSTRUCTIONS_PATH, SPROUT_SCHEMA_PATH, SPROUT_CONFIG_PATH];
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
@@ -96,6 +97,19 @@ export class Sprout {
 				const compiledData = await fetcher.fileFetch(compiledSproutPath);
 				//Tnis will throw if invalid shape.
 				const data = compiledSproutSchema.parse(JSON.parse(compiledData));
+				const compiledLastUpdated = new Date(data.lastUpdated);
+				if (fetcher.writable) {
+					for (const file of BASE_SPROUT_PATHS) {
+						const path = fetcher.joinPath(this._path, file);
+						if (!await fetcher.fileExists(path)) continue;
+						const lastUpdated = await fetcher.fileLastUpdated(path);
+						if (lastUpdated > compiledLastUpdated) {
+							//If any of the base files are newer than the compiled file, we need to recompile.
+							this._compiledData = null;
+							return null;
+						}
+					}
+				}
 				this._compiledData = data;
 			} else {
 				this._compiledData = null;
