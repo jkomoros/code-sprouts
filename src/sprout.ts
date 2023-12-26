@@ -1,5 +1,4 @@
-//TODO: when there's a browser-safe fetcher, use that instead as the default.
-import fetcherImpl from './fetcher-node.js';
+import fetcherImpl from './fetcher-browser.js';
 
 import {
 	AIProvider,
