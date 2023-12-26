@@ -50,7 +50,7 @@ export class Sprout {
 	private _path : Path;
 	private _config?: SproutConfig;
 	// A null means it is affirmatively non existent.
-	private _compiled? : CompiledSprout | null;
+	private _compiledData? : CompiledSprout | null;
 	private _baseInstructions? : string;
 	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
@@ -70,7 +70,7 @@ export class Sprout {
 	}
 
 	async compiled() : Promise<boolean> {
-		const compiled = await this._compiledInfo();
+		const compiled = await this._compiled();
 		return Boolean(compiled);
 	}
 
@@ -86,26 +86,26 @@ export class Sprout {
 			schemaText: await this.schemaText()
 		};
 		fetcher.writeFile(fetcher.joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
-		this._compiled = result;
+		this._compiledData = result;
 	}
 
-	private async _compiledInfo() : Promise<CompiledSprout | null> {
-		if (this._compiled === undefined) {
+	private async _compiled() : Promise<CompiledSprout | null> {
+		if (this._compiledData === undefined) {
 			const compiledSproutPath = fetcher.joinPath(this._path, SPROUT_COMPILED_PATH);
 			if (await fetcher.fileExists(compiledSproutPath)) {
 				const compiledData = await fetcher.fileFetch(compiledSproutPath);
 				//Tnis will throw if invalid shape.
 				const data = compiledSproutSchema.parse(JSON.parse(compiledData));
-				this._compiled = data;
+				this._compiledData = data;
 			} else {
-				this._compiled = null;
+				this._compiledData = null;
 			}
 		}
-		return this._compiled;
+		return this._compiledData;
 	}
 
 	async config() : Promise<SproutConfig> {
-		const compiled = await this._compiledInfo();
+		const compiled = await this._compiled();
 		if(compiled) return compiled.config;
 
 		if (!this._config) {
@@ -124,7 +124,7 @@ export class Sprout {
 	}
 
 	async baseInstructions() : Promise<string> {
-		const compiled = await this._compiledInfo();
+		const compiled = await this._compiled();
 		if(compiled) return compiled.baseInstructions;
 
 		if (this._baseInstructions === undefined) {
@@ -139,7 +139,7 @@ export class Sprout {
 	}
 
 	async schemaText() : Promise<string> {
-		const compiled = await this._compiledInfo();
+		const compiled = await this._compiled();
 		if(compiled) return compiled.schemaText;
 
 		if (this._schemaText === undefined) {
@@ -163,7 +163,7 @@ export class Sprout {
 	}
 
 	async starterState() : Promise<SproutState> {
-		const compiled = await this._compiledInfo();
+		const compiled = await this._compiled();
 		if(compiled) return compiled.starterState;
 		//TODO: don't use an LLM for this / cache the result so we don't have to run it each time
 		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
