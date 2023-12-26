@@ -18,6 +18,7 @@ import {
 	SproutName,
 	SproutState,
 	StreamLogger,
+	SubInstructionsMap,
 	compiledSproutSchema,
 	partialConversationTurnSchema,
 	sproutConfigSchema,
@@ -62,6 +63,7 @@ export class Sprout {
 	// A null means it is affirmatively non existent.
 	private _compiledData? : CompiledSprout | null;
 	private _baseInstructions? : string;
+	private _subInstructions? : SubInstructionsMap;
 	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
 	private _debugLogger? : Logger;
@@ -109,6 +111,7 @@ export class Sprout {
 			name: this.name,
 			config: await this.config(),
 			baseInstructions: await this.baseInstructions(),
+			subInstructions: await this.subInstructions(),
 			schemaText: await this.schemaText(),
 			starterState: await this.starterState()
 		};
@@ -179,6 +182,18 @@ export class Sprout {
 		}
 		if (this._baseInstructions === undefined) throw new Error(`${this.name}: No instructions`);
 		return this._baseInstructions;
+	}
+
+	async subInstructions() : Promise<SubInstructionsMap> {
+		const compiled = await this._compiled();
+		if(compiled) return compiled.subInstructions;
+
+		if (this._subInstructions === undefined) {
+			console.warn('TODO: implement subInstructions');
+			this._subInstructions = {};
+		}
+		if (this._subInstructions === undefined) throw new Error(`${this.name}: No sub-instructions`);
+		return this._subInstructions;
 	}
 
 	async schemaText() : Promise<string> {

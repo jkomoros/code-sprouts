@@ -33,6 +33,17 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
+const subInstructionNameSchema = z.string();
+
+const subInstructionRecordSchema = z.object({
+	summary: z.string(),
+	instruction: z.string()
+});
+
+export const subInstructionsMapSchema = z.record(subInstructionNameSchema, subInstructionRecordSchema);
+
+export type SubInstructionsMap = z.infer<typeof subInstructionsMapSchema>;
+
 export type PromptComponent = string | {image: Buffer};
 
 //Later we'll allow passing images, too.
@@ -45,6 +56,7 @@ export const compiledSproutSchema = z.object({
 	name: sproutName,
 	config: sproutConfigSchema,
 	baseInstructions: z.string(),
+	subInstructions: subInstructionsMapSchema,
 	schemaText: z.string(),
 	starterState: sproutState
 });
