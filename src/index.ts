@@ -1,6 +1,4 @@
-import {
-	listSprouts
-} from './fetcher.js';
+import fetcher from './fetcher.js';
 
 import {
 	z
@@ -170,7 +168,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	
 	if (!sproutName) {
 
-		const sproutPaths = await listSprouts();
+		const sproutPaths = await fetcher.listSprouts();
 		const input = await enquirer.prompt<{sprout: string}>({
 			type: 'select',
 			name: 'sprout',

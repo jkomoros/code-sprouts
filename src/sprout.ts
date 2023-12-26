@@ -1,9 +1,4 @@
-import {
-	fileExists,
-	fileFetch,
-	joinPath,
-	writeFile
-} from './fetcher.js';
+import fetcher from './fetcher.js';
 
 import {
 	AIProvider,
@@ -88,15 +83,15 @@ export class Sprout {
 			baseInstructions: await this.baseInstructions(),
 			schemaText: await this.schemaText()
 		};
-		writeFile(joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
+		fetcher.writeFile(fetcher.joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
 		this._compiled = result;
 	}
 
 	private async _compiledInfo() : Promise<CompiledSprout | null> {
 		if (this._compiled === undefined) {
-			const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
-			if (await fileExists(compiledSproutPath)) {
-				const compiledData = await fileFetch(compiledSproutPath);
+			const compiledSproutPath = fetcher.joinPath(this._path, SPROUT_COMPILED_PATH);
+			if (await fetcher.fileExists(compiledSproutPath)) {
+				const compiledData = await fetcher.fileFetch(compiledSproutPath);
 				//Tnis will throw if invalid shape.
 				const data = compiledSproutSchema.parse(JSON.parse(compiledData));
 				this._compiled = data;
@@ -112,11 +107,11 @@ export class Sprout {
 		if(compiled) return compiled.config;
 
 		if (!this._config) {
-			const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
-			if (!await fileExists(sproutConfigPath)) {
+			const sproutConfigPath = fetcher.joinPath(this._path, SPROUT_CONFIG_PATH);
+			if (!await fetcher.fileExists(sproutConfigPath)) {
 				throw new Error(`${this.name}: Config file ${sproutConfigPath} not found`);
 			}
-			const configData = await fileFetch(sproutConfigPath);
+			const configData = await fetcher.fileFetch(sproutConfigPath);
 			//Tnis will throw if invalid shape.
 			const config = sproutConfigSchema.parse(JSON.parse(configData));
 			if (!config) throw new Error(`${this.name}: No config`);
@@ -131,11 +126,11 @@ export class Sprout {
 		if(compiled) return compiled.baseInstructions;
 
 		if (this._baseInstructions === undefined) {
-			const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
-			if (!await fileExists(sproutInstructionsPath)) {
+			const sproutInstructionsPath = fetcher.joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
+			if (!await fetcher.fileExists(sproutInstructionsPath)) {
 				throw new Error(`${this.name}: Instruction file ${sproutInstructionsPath} not found`);
 			}
-			this._baseInstructions = await fileFetch(sproutInstructionsPath);
+			this._baseInstructions = await fetcher.fileFetch(sproutInstructionsPath);
 		}
 		if (this._baseInstructions === undefined) throw new Error(`${this.name}: No instructions`);
 		return this._baseInstructions;
@@ -146,12 +141,12 @@ export class Sprout {
 		if(compiled) return compiled.schemaText;
 
 		if (this._schemaText === undefined) {
-			const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
-			if (!await fileExists(sproutSchemaPath)) {
+			const sproutSchemaPath = fetcher.joinPath(this._path, SPROUT_SCHEMA_PATH);
+			if (!await fetcher.fileExists(sproutSchemaPath)) {
 				throw new Error(`${this.name}: Schema file ${sproutSchemaPath} not found`);
 			}
 			//TODO: validate this is valid typescript
-			this._schemaText = await fileFetch(sproutSchemaPath);
+			this._schemaText = await fetcher.fileFetch(sproutSchemaPath);
 		}
 		if (this._schemaText === undefined) throw new Error(`${this.name}: No schema`);
 		return this._schemaText;
