@@ -100,7 +100,6 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	while(active) {
 		const logger = opts.verbose ? console.info : undefined;
 		await sprout.conversationTurn(streamLogger, logger);
-		//TODO: allow configuring whether a sprout accepts images or not.
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',
