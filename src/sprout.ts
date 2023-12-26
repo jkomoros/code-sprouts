@@ -48,6 +48,11 @@ import fastJSONPatch from 'fast-json-patch';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
+	type: 'subInstruction';
+	//The subInstruction to have summarized for us, before responding to the user.
+	subInstructionToDescribe: string;
+} | {
+  type: 'default',
   //The message that will be shown to the user.
   userMessage: string
   //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
@@ -410,6 +415,11 @@ Provide a patch to update the state object based on the users's last message and
 		if (!turnJSON) throw new Error('Empty json');
 		const turn = strictConversationTurnSchema.parse(turnJSON);
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
+
+		if (turn.type == 'subInstruction') {
+			throw new Error('TODO: support sub instructions');
+		}
+
 		const oldState = await this.lastState();
 		//TODO: fix typing to not need this cast
 		//eslint-disable-next-line @typescript-eslint/no-explicit-any

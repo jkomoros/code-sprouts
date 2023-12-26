@@ -133,17 +133,30 @@ export type CompletionInfo = {
 };
 
 //TODO: use function calling instead.
-
-//note that sprout.ts:ConversationTurnSchema needs to match this shape.
-export const converationTurnSchema = z.object({
+const defaultConversationTurnSchema = z.object({
+	type: z.literal('default'),
 	userMessage: z.string().describe('The message that will be shown to the user'),
 	patch : jsonPatchRFC6902Schema.describe('The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].')
 	//TODO: add a userConcludedConversation boolean, as a way for the LLM to report that the user requested conversation to be over.
 });
 
-export const strictConversationTurnSchema = converationTurnSchema.strict();
+const subInstructionTurnSchema = z.object({
+	type: z.literal('subInstruction'),
+	subInstructionToDescribe: z.string().describe('The subInstruction to have summarized for us, before responding to the user.')
+});
 
-export const partialConversationTurnSchema = converationTurnSchema.pick({userMessage: true}).partial();
+//note that sprout.ts:ConversationTurnSchema needs to match this shape.
+export const converationTurnSchema = z.union([
+	subInstructionTurnSchema,
+	defaultConversationTurnSchema
+]);
+
+export const strictConversationTurnSchema = z.union([
+	subInstructionTurnSchema.strict(),
+	defaultConversationTurnSchema.strict()
+]);
+
+export const partialConversationTurnSchema = defaultConversationTurnSchema.pick({userMessage: true}).partial();
 
 export type ConversationTurn = z.infer<typeof converationTurnSchema>;
 
