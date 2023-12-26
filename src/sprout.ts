@@ -109,7 +109,8 @@ export class Sprout {
 			name: this.name,
 			config: await this.config(),
 			baseInstructions: await this.baseInstructions(),
-			schemaText: await this.schemaText()
+			schemaText: await this.schemaText(),
+			starterState: await this.starterState()
 		};
 		if (this._debugLogger) this._debugLogger(`${this.name}: Compiling`);
 		fetcher.writeFile(fetcher.joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
