@@ -17,7 +17,7 @@ type CardType = 'red' //Red team. On key card, is a red square with a circle.
   | 'guessed' //for cards that have already been guessed by a player so far this game, and removed from play.
   | 'unknown' //The initial state, for when the image of the cards has been scanned but not yet the key card.
 
-type CodenamesGame = {
+export type CodenamesGame = {
   //The team that our conversational partner is the spymaster for.
   team: 'blue' | 'red',
  //25 cards, in order form left to right, top to bottom. As the cards are guessed, they flip to 'guessed' state, removing them from play.
