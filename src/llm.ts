@@ -44,16 +44,19 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 	},
 	'openai.com:gpt-4': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 8192
+		maxTokens: 8192,
+		supportsFunctionCalling: true
 	},
 	'openai.com:gpt-4-32k': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 32768
+		maxTokens: 32768,
+		supportsFunctionCalling: true
 	},
 	'openai.com:gpt-4-1106-preview': {
 		...BASE_OPENAI_COMPLETION_INFO,
 		maxTokens: 4096,
-		supportsJSONResponseFormat: true
+		supportsJSONResponseFormat: true,
+		supportsFunctionCalling: true
 	},
 	'openai.com:gpt-4-vision-preview': {
 		...BASE_OPENAI_COMPLETION_INFO,

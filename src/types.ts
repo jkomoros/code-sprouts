@@ -114,7 +114,8 @@ export type CompletionInfo = {
 	compute: (modelName : string, apiKey : string, prompt : Prompt, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<string>,
 	computeStream?: (modelName : string, apiKey : string, prompt : Prompt, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<PromptStream>,
 	supportsJSONResponseFormat?: boolean,
-	supportsImages?: boolean
+	supportsImages?: boolean,
+	supportsFunctionCalling?: boolean
 };
 
 //TODO: use function calling instead.
