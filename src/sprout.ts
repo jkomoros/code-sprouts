@@ -67,6 +67,11 @@ type SproutOptions = {
 	debugLogger? : Logger
 };
 
+export type ConversationTurnOptions = {
+	streamLogger? : StreamLogger,
+	debugLogger? : Logger
+}
+
 let fetcher : Fetcher = fetcherImpl;
 
 export class Sprout {
@@ -362,7 +367,8 @@ Provide a patch to update the state object based on the users's last message and
 		should display it to the user, pass any new response from a user via
 		provideUserResponse, and then call conversationTurn() again.
 	*/
-	async conversationTurn(streamLogger? : StreamLogger, debugLogger? : Logger) : Promise<string> {
+	async conversationTurn(opts : ConversationTurnOptions = {}) : Promise<string> {
+		const {debugLogger, streamLogger} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt();

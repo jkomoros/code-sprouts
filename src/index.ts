@@ -99,7 +99,7 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	const allowImages = sproutConfig.allowImages || false;
 	while(active) {
 		const logger = opts.verbose ? console.info : undefined;
-		await sprout.conversationTurn(streamLogger, logger);
+		await sprout.conversationTurn({streamLogger, debugLogger: logger});
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',
