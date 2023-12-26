@@ -87,8 +87,14 @@ export class Sprout {
 	}
 
 	async compile() : Promise<void> {
-		if (await this.compiled()) return;
-		if (!fetcher.writable) return;
+		if (await this.compiled()) {
+			if (this._debugLogger) this._debugLogger(`${this.name}: Already compiled`);
+			return;
+		}
+		if (!fetcher.writable) {
+			if (this._debugLogger) this._debugLogger(`${this.name}: Not writable, not compiling`);
+			return;
+		}
 		const result : CompiledSprout = {
 			version: 0,
 			lastUpdated: new Date().toISOString(),
@@ -97,6 +103,7 @@ export class Sprout {
 			baseInstructions: await this.baseInstructions(),
 			schemaText: await this.schemaText()
 		};
+		if (this._debugLogger) this._debugLogger(`${this.name}: Compiling`);
 		fetcher.writeFile(fetcher.joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
 		this._compiledData = result;
 	}
@@ -117,12 +124,14 @@ export class Sprout {
 						if (lastUpdated > compiledLastUpdated) {
 							//If any of the base files are newer than the compiled file, we need to recompile.
 							this._compiledData = null;
+							if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
 							return null;
 						}
 					}
 				}
 				this._compiledData = data;
 			} else {
+				if(this._debugLogger) this._debugLogger(`${this.name}: No compiled file`);
 				this._compiledData = null;
 			}
 		}
