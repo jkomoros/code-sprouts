@@ -46,6 +46,14 @@ class NodeFetcher {
 		return stats.mtime;
 	}
 
+	async listDirectory(path : Path) : Promise<Path[]> {
+		const result : Path[] = [];
+		for (const entry of readdirSync(path)) {
+			result.push(entry);
+		}
+		return result;
+	}
+
 	joinPath(...parts : string[]) : Path {
 		return join(...parts);
 	}

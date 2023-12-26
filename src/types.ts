@@ -67,6 +67,8 @@ type BaseFetcher = {
 	fileFetch(path : Path) : Promise<string>;
 	fileExists(path : Path) : Promise<boolean>;
 	joinPath(...parts : string[]) : Path;
+	//Returns items in the given directory, not including the directory itself.
+	listDirectory(path : Path) : Promise<Path[]>;
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
 };
 

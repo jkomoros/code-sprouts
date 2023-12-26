@@ -34,6 +34,14 @@ class BrowserFetcher {
 		return parts.join('/');
 	}
 
+	async listDirectory(path: Path): Promise<Path[]> {
+		const response = await fetch(this.joinPath(path, DIRECTORY_LISTING_FILE));
+		if (!response.ok) throw new Error(`Could not list directory ${path}`);
+		const json = await response.json();
+		const data = directoryListingFileSchema.parse(json);
+		return data.directories;
+	}
+
 	async listSprouts(basePaths: string[] = ['examples', 'sprouts']): Promise<Path[]> {
 		//This requires a directory.json file in each folder.
 		const result: Path[] = [];
