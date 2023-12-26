@@ -19,7 +19,7 @@ type CardType = 'red' //Red team. On key card, is a red square with a circle.
 
 export type CodenamesGame = {
   //The team that our conversational partner is the spymaster for.
-  team: 'blue' | 'red',
+  team: 'blue' | 'red' | 'unknown',
  //25 cards, in order form left to right, top to bottom. As the cards are guessed, they flip to 'guessed' state, removing them from play.
   cards: {
       [card : CodenameCard]: CardType
