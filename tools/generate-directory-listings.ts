@@ -22,7 +22,7 @@ const generateDirectoryListing = (path: string): void => {
 
 	const outputPath = `${path}/${DIRECTORY_LISTING_FILE}`;
 	const data : DirectoryListingFile = {
-		sprouts: files
+		directories: files
 	};
 	writeFileSync(outputPath, JSON.stringify(data, null, '\t'));
 	

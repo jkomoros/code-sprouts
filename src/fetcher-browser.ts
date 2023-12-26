@@ -45,7 +45,7 @@ class BrowserFetcher {
 				}
 				const json = await response.json();
 				const data = directoryListingFileSchema.parse(json);
-				for (const sprout of data.sprouts) {
+				for (const sprout of data.directories) {
 					result.push(this.joinPath(basePath, sprout));
 				}
 			} catch (error) {
