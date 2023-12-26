@@ -64,6 +64,8 @@ type ReadOnlyFetcher = BaseFetcher & {
 type WritableFetcher = BaseFetcher & {
 	writable: true,
 	writeFile(path : Path, data : string) : Promise<void>;
+	//TODO: isn't it kind of weird that this is on writeable? Should I just have a Local or Remote fetcher?
+	fileLastUpdated(path : Path) : Promise<Date>;
 };
 
 export type Fetcher = ReadOnlyFetcher | WritableFetcher;

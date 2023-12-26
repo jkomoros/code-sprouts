@@ -7,7 +7,8 @@ import {
 	readFileSync,
 	existsSync,
 	readdirSync,
-	writeFileSync
+	writeFileSync,
+	statSync
 } from 'fs';
 
 import {
@@ -32,6 +33,11 @@ class NodeFetcher {
 
 	async writeFile(path : Path, data : string) : Promise<void> {
 		writeFileSync(path, data);
+	}
+
+	async fileLastUpdated(path : Path) : Promise<Date> {
+		const stats = statSync(path);
+		return stats.mtime;
 	}
 
 	joinPath(...parts : string[]) : Path {
