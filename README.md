@@ -14,9 +14,8 @@ Run the tool with `node build/src/index.js`. The tool will ask for your OPENAI_A
 
 ## Creating a Sprout
 
-TODO: allow creating a non-version-controlled sprout.
 
-A sprout is a named folder (currently within `examples/`) with the following directory shape:
+A sprout is a named folder (typically in `sprouts/` but with version-controlled sprouts in `examples/` too) with the following directory shape:
 
 ```
 - [sprout-name] /

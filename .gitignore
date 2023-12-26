@@ -5,6 +5,9 @@ _site/
 .DS_Store
 lib/
 
+# Ignore the non-version controlled sprouts folder
+sprouts/
+
 #Ensure that no one checks in the secret config
 *.SECRET.*
 .env
