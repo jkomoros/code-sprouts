@@ -15,7 +15,7 @@ const sproutName = z.string();
 
 export type SproutName = z.infer<typeof sproutName>;
 
-const sproutState = z.unknown();
+const sproutState = z.record(z.string(), z.unknown());
 //The state a given sprout defines. This library doesn't really care too much as long as it's JSONable.
 export type SproutState = z.infer<typeof sproutState>;
 
