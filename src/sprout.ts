@@ -335,12 +335,14 @@ ${schemaText}
 
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
+		//TODO: if images are supported, say that and tell it to summarize state changes.
+
 		const instructions = `${baseInstructions}
 
 You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
-Do not talk about the state object with a user; it is an implementation detail the user doesn't need to know about.
+When relevant or requested, summarize the state in a way that a non-technical user would understand. If the user explicitly asks what is in the state object, reproduce it exactly.
 
 ${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].instruction}` :
 		Object.keys(subInstructions).length ? `Here are sub-instructions you can request information on providing their name:
