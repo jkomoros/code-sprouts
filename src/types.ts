@@ -40,8 +40,8 @@ export type Prompt = PromptComponent | PromptComponent[];
 export const compiledSproutSchema = z.object({
 	//TODO: should this be a more specific object name, to make it easier to verify it's indeded a sprout when loaded from a random place?
 	version: z.literal(0),
+	lastUpdated: z.string().datetime(),
 	name: sproutName,
-	//TODO: a lastUpdated timestamp to check and invalidate
 	config: sproutConfigSchema,
 	baseInstructions: z.string(),
 	schemaText: z.string(),

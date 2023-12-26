@@ -79,6 +79,7 @@ export class Sprout {
 		if (!fetcher.writable) return;
 		const result : CompiledSprout = {
 			version: 0,
+			lastUpdated: new Date().toISOString(),
 			name: this.name,
 			config: await this.config(),
 			baseInstructions: await this.baseInstructions(),
