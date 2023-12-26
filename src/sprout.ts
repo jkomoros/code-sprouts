@@ -48,7 +48,8 @@ const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
 const AGGRESSIVE_LOGGING = false;
 
 type SproutOptions = {
-	ai? : AIProvider
+	ai? : AIProvider,
+	debugLogger? : Logger
 };
 
 export class Sprout {
@@ -59,15 +60,18 @@ export class Sprout {
 	private _baseInstructions? : string;
 	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
+	private _debugLogger? : Logger;
 	private _userMessages : Prompt[];
 	private _states: SproutState[];
 
 	constructor(path : Path, opts : SproutOptions = {}) {
 		const {
-			ai
+			ai,
+			debugLogger
 		} = opts;
 		this._path = path;
 		this._aiProvider = ai;
+		this._debugLogger = debugLogger;
 		this._userMessages = [];
 		this._states = [];
 	}
