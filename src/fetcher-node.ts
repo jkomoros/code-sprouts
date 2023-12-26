@@ -19,8 +19,9 @@ import {
 	Sprout
 } from './sprout.js';
 
-const SPROUT_EXAMPLE_DIR = 'examples';
-const SPROUT_SPROUT_DIR = 'sprouts';
+import {
+	DEFAULT_SPROUT_DIRECTORIES
+} from './constants.js';
 
 class NodeFetcher {
 
@@ -49,7 +50,7 @@ class NodeFetcher {
 		return join(...parts);
 	}
 
-	async listSprouts(basePaths : string[] = [SPROUT_EXAMPLE_DIR, SPROUT_SPROUT_DIR]) : Promise<Path[]> {
+	async listSprouts(basePaths : string[] = DEFAULT_SPROUT_DIRECTORIES) : Promise<Path[]> {
 		//TODO: in a browser fetch context this will have to use a prebuilt listing file.
 		const result : Path[] = [];
 		for (const folder of basePaths) {
