@@ -187,6 +187,8 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	});
 	const sprout = new Sprout(sproutName, ai);
 	await sprout.validate();
+	//Ensure that we won't have to redo calculations in the future.
+	await sprout.compile();
 	await runSprout(sprout, opts);
 };
 
