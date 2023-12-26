@@ -3,6 +3,7 @@ export const SPROUT_SPROUT_DIR = 'sprouts';
 
 export const DEFAULT_SPROUT_DIRECTORIES = [SPROUT_EXAMPLE_DIR, SPROUT_SPROUT_DIR];
 
+//Also in .vscode/settings.json
 export const DIRECTORY_LISTING_FILE = 'directory.json';
 
 //Relative to the sprout root
