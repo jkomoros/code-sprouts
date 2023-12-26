@@ -48,6 +48,10 @@ class NodeFetcher {
 
 	async listDirectory(path : Path) : Promise<Path[]> {
 		const result : Path[] = [];
+		//Check if directory exists
+		if (!existsSync(path)) {
+			return [];
+		}
 		for (const entry of readdirSync(path)) {
 			result.push(entry);
 		}
