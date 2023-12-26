@@ -19,6 +19,7 @@ import {
 	SproutState,
 	StreamLogger,
 	SubInstructionsMap,
+	SubInstructionsName,
 	compiledSproutSchema,
 	partialConversationTurnSchema,
 	sproutConfigSchema,
@@ -69,7 +70,8 @@ type SproutOptions = {
 
 export type ConversationTurnOptions = {
 	streamLogger? : StreamLogger,
-	debugLogger? : Logger
+	debugLogger? : Logger,
+	subInstruction? : SubInstructionsName
 }
 
 let fetcher : Fetcher = fetcherImpl;
@@ -314,11 +316,15 @@ ${schemaText}
 	}
 
 	//Returns the next prompt to return.
-	async prompt() : Promise<Prompt> {
+	async prompt(subInstruction? : SubInstructionsName) : Promise<Prompt> {
 		const baseInstructions = await this.baseInstructions();
 		const schemaText = await this.schemaText();
 
 		const state = await this.lastState();
+
+		const subInstructions = await this.subInstructions();
+
+		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
 		const instructions = `${baseInstructions}
 
@@ -326,6 +332,11 @@ You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
 Do not talk about the state object with a user; it is an implementation detail the user doesn't need to know about.
+
+${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].summary}` :
+		Object.keys(subInstructions).length ? `Here are sub-instructions you can request information on providing their name:
+		${Object.entries(subInstructions).map(([name, info]) => `* '${name}': ${info.instruction}`).join('\n')}` :
+			''}
 
 Your current state is:
 ${JSON.stringify(state, null, '\t')}
@@ -368,10 +379,10 @@ Provide a patch to update the state object based on the users's last message and
 		provideUserResponse, and then call conversationTurn() again.
 	*/
 	async conversationTurn(opts : ConversationTurnOptions = {}) : Promise<string> {
-		const {debugLogger, streamLogger} = opts;
+		const {debugLogger, streamLogger, subInstruction} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
-		const prompt = await this.prompt();
+		const prompt = await this.prompt(subInstruction);
 		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
@@ -423,7 +434,7 @@ Provide a patch to update the state object based on the users's last message and
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 
 		if (turn.type == 'subInstruction') {
-			throw new Error('TODO: support sub instructions');
+			return await this.conversationTurn({...opts, subInstruction: turn.subInstructionToDescribe});
 		}
 
 		const oldState = await this.lastState();

@@ -35,6 +35,8 @@ export type Environment = z.infer<typeof environmentSchema>;
 
 const subInstructionNameSchema = z.string();
 
+export type SubInstructionsName = z.infer<typeof subInstructionNameSchema>;
+
 const subInstructionRecordSchema = z.object({
 	summary: z.string(),
 	instruction: z.string()
