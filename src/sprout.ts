@@ -331,11 +331,11 @@ ${schemaText}
 
 		const state = await this.lastState();
 
+		const config = await this.config();
+
 		const subInstructions = await this.subInstructions();
 
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
-
-		//TODO: if images are supported, say that and tell it to summarize state changes.
 
 		const instructions = `${baseInstructions}
 
@@ -357,6 +357,8 @@ ${this._userMessages.length ? this._userMessages.map(message => textForPrompt(me
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${conversationTurnSchema(subInstruction ? {} : subInstructions)}
+
+${config.allowImages ? 'You can also accept images as input. If you are provided an image, give a more descriptive natural language description of the state change you make in response to the image.' : 'You are not configured to receive images from the user'}
 
 Provide a patch to update the state object based on the users's last message and your response.`;
 
