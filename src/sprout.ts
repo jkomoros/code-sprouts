@@ -51,7 +51,7 @@ import fastJSONPatch from 'fast-json-patch';
 const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
 	type: 'subInstruction';
 	//The subInstruction to have summarized for us, before responding to the user.
-	subInstructionToDescribe: string;
+	subInstructionToDescribe: {{SUB_INSTRUCTION_NAMES}};
 } | {
   type: 'default',
   //The message that will be shown to the user.
@@ -59,6 +59,11 @@ const CONVERSATION_TURN_SCHEMA = `type ConversationTurn = {
   //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
   patch : JSONPatchRFC6902
 }`;
+
+const conversationTurnSchema = (subInstructions : SubInstructionsMap) : string => {
+	const subInstructionNames = Object.keys(subInstructions).length ? Object.keys(subInstructions).map(name => `'${name}'`).join(' | ') : 'never';
+	return CONVERSATION_TURN_SCHEMA.replace('{{SUB_INSTRUCTION_NAMES}}', subInstructionNames);
+};
 
 //Set true while debugging
 const AGGRESSIVE_LOGGING = false;
@@ -345,7 +350,7 @@ The last messages from the user (with the last message, which you should respond
 ${this._userMessages.length ? this._userMessages.map(message => textForPrompt(message)).join('\n---\n') : '<INITIAL>'}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
-${CONVERSATION_TURN_SCHEMA}
+${conversationTurnSchema(subInstructions)}
 
 Provide a patch to update the state object based on the users's last message and your response.`;
 
