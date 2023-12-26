@@ -89,6 +89,7 @@ export type Fetcher = ReadOnlyFetcher | WritableFetcher;
 
 export const directoryListingFileSchema = z.object({
 	directories: z.array(sproutName),
+	files: z.array(z.string())
 });
 
 export type DirectoryListingFile = z.infer<typeof directoryListingFileSchema>;

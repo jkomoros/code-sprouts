@@ -14,15 +14,22 @@ import {
 } from '../src/types.js';
 
 const generateDirectoryListing = (path: string): void => {
+	const directories : string[] = [];
 	const files : string[] = [];
 	for (const item of readdirSync(path, {withFileTypes: true})) {
-		if (!item.isDirectory()) continue;
-		files.push(item.name);
+		if (item.name == DIRECTORY_LISTING_FILE) continue;
+		if (!item.isDirectory()) {
+			files.push(item.name);
+			continue;
+		}
+		directories.push(item.name);
+		generateDirectoryListing(`${path}/${item.name}`);
 	}
 
 	const outputPath = `${path}/${DIRECTORY_LISTING_FILE}`;
 	const data : DirectoryListingFile = {
-		directories: files
+		directories,
+		files
 	};
 	writeFileSync(outputPath, JSON.stringify(data, null, '\t'));
 	
