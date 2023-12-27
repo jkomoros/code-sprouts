@@ -30,7 +30,7 @@ import {
 } from '../actions/app.js';
 
 import {
-	setOpenAIApiKey
+	setOpenAIAPIKey
 } from '../actions/data.js';
 
 import {
@@ -89,7 +89,7 @@ class MainView extends connect(store)(PageViewElement) {
 
 	override firstUpdated() {
 		store.dispatch(canonicalizePath());
-		store.dispatch(setOpenAIApiKey(fetchOpenAIAPIKeyFromStorage()));
+		store.dispatch(setOpenAIAPIKey(fetchOpenAIAPIKeyFromStorage()));
 		window.addEventListener('hashchange', () => this._handleHashChange());
 		//We do this after packets have already been loaded from storage
 		this._handleHashChange();
@@ -105,7 +105,7 @@ class MainView extends connect(store)(PageViewElement) {
 			} else {
 				const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.');
 				if (key) {
-					store.dispatch(setOpenAIApiKey(key));
+					store.dispatch(setOpenAIAPIKey(key));
 				}
 			}
 		}
