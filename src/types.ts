@@ -22,6 +22,8 @@ export type SproutState = z.infer<typeof sproutState>;
 //Note: when changing, re-run `npm run generate:schemas`
 export const sproutConfigSchema = z.object({
 	version: z.literal(0),
+	title: z.optional(z.string().describe('The title of the sprout')),
+	description: z.optional(z.string().describe('A description of the sprout')),
 	allowImages : z.optional(z.boolean().describe('Whether the bot allows images'))
 });
 

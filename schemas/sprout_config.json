@@ -5,6 +5,14 @@
 			"type": "number",
 			"const": 0
 		},
+		"title": {
+			"type": "string",
+			"description": "The title of the sprout"
+		},
+		"description": {
+			"type": "string",
+			"description": "A description of the sprout"
+		},
 		"allowImages": {
 			"type": "boolean",
 			"description": "Whether the bot allows images"
