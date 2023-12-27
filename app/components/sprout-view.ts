@@ -30,6 +30,7 @@ import {
 } from '../actions/app.js';
 
 import {
+	addDefaultSprouts,
 	setOpenAIAPIKey
 } from '../actions/data.js';
 
@@ -88,6 +89,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	override firstUpdated() {
+		store.dispatch(addDefaultSprouts());
 		store.dispatch(canonicalizePath());
 		store.dispatch(setOpenAIAPIKey(fetchOpenAIAPIKeyFromStorage()));
 		window.addEventListener('hashchange', () => this._handleHashChange());

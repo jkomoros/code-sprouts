@@ -13,6 +13,8 @@ import {
 	selectSproutData
 } from '../selectors.js';
 
+import fetcher from '../../src/fetcher-browser.js';
+
 export const addSprouts = (sprouts : SproutDataMap) : SomeAction => {
 	return {
 		type: 'ADD_SPROUTS',
@@ -35,5 +37,13 @@ export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) =>
 	dispatch({
 		type: SET_OPENAI_API_KEY,
 		key
+	});
+};
+
+export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {
+	const sprouts = await fetcher.listSprouts();
+	dispatch({
+		type: 'ADD_SPROUTS',
+		sprouts: Object.fromEntries(sprouts.map(sprout => [sprout, true]))
 	});
 };
