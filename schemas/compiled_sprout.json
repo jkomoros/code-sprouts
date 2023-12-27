@@ -48,13 +48,13 @@
 					"summary": {
 						"type": "string"
 					},
-					"instruction": {
+					"instructions": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"summary",
-					"instruction"
+					"instructions"
 				],
 				"additionalProperties": false
 			}

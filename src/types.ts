@@ -41,7 +41,7 @@ export type SubInstructionsName = z.infer<typeof subInstructionNameSchema>;
 
 const subInstructionRecordSchema = z.object({
 	summary: z.string(),
-	instruction: z.string()
+	instructions: z.string()
 });
 
 export const subInstructionsMapSchema = z.record(subInstructionNameSchema, subInstructionRecordSchema);

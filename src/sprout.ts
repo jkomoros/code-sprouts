@@ -242,12 +242,12 @@ export class Sprout {
 			for (const item of items) {
 				const path = fetcher.joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
 				if (!path.endsWith('.md')) continue;
-				const instruction = await fetcher.fileFetch(path);
+				const instructions = await fetcher.fileFetch(path);
 				const name = item.replace(/\.md$/, '');
-				const summary = await this.summaryForSubInstruction(instruction);
+				const summary = await this.summaryForSubInstruction(instructions);
 				this._subInstructions[name] = {
 					summary,
-					instruction
+					instructions
 				};
 			}
 		}
@@ -354,7 +354,7 @@ ${schemaText}
 
 When relevant or requested, summarize the state in a way that a non-technical user would understand. If the user explicitly asks what is in the state object, reproduce it exactly.
 
-${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].instruction}` :
+${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].instructions}` :
 		Object.keys(subInstructions).length ? `Here are sub-instructions you can request information on providing their name:
 		${Object.entries(subInstructions).map(([name, info]) => `* '${name}': ${info.summary}`).join('\n')}` :
 			''}
