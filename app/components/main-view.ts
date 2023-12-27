@@ -7,8 +7,8 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 import {
-	selectHasOpenAIAPIKey,
 	selectHashForCurrentState,
+	selectOpenAIAPIKey,
 	selectPageExtra,
 } from '../selectors.js';
 
@@ -29,6 +29,7 @@ import {
 	updateHash,
 } from '../actions/app.js';
 import { setOpenAIApiKey } from '../actions/data.js';
+import { fetchOpenAIAPIKeyFromSTorage, storeOpenAIAPIKeyToSTorage } from '../util.js';
 
 @customElement('main-view')
 class MainView extends connect(store)(PageViewElement) {
@@ -40,7 +41,7 @@ class MainView extends connect(store)(PageViewElement) {
 		_hashForCurrentState = '';
 
 	@state()
-		_hasOpenAIAPIKey = false;
+		_openAIAPIKey = '';
 
 	static override get styles() {
 		return [
@@ -76,11 +77,12 @@ class MainView extends connect(store)(PageViewElement) {
 	override stateChanged(state : RootState) {
 		this._pageExtra = selectPageExtra(state);
 		this._hashForCurrentState = selectHashForCurrentState(state);
-		this._hasOpenAIAPIKey = selectHasOpenAIAPIKey(state);
+		this._openAIAPIKey = selectOpenAIAPIKey(state);
 	}
 
 	override firstUpdated() {
 		store.dispatch(canonicalizePath());
+		store.dispatch(setOpenAIApiKey(fetchOpenAIAPIKeyFromSTorage()));
 		window.addEventListener('hashchange', () => this._handleHashChange());
 		//We do this after packets have already been loaded from storage
 		this._handleHashChange();
@@ -90,10 +92,14 @@ class MainView extends connect(store)(PageViewElement) {
 		if (changedProps.has('_hashForCurrentState')) {
 			store.dispatch(canonicalizeHash());
 		}
-		if (changedProps.has('_hasOpenAIAPIKey') && !this._hasOpenAIAPIKey) {
-			const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.');
-			if (key) {
-				store.dispatch(setOpenAIApiKey(key));
+		if (changedProps.has('_openAIAPIKey')) {
+			if (this._openAIAPIKey) {
+				storeOpenAIAPIKeyToSTorage(this._openAIAPIKey);
+			} else {
+				const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.');
+				if (key) {
+					store.dispatch(setOpenAIApiKey(key));
+				}
 			}
 		}
 	}
