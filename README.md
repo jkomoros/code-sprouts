@@ -12,9 +12,7 @@ Open a terminal window and run `npm run start`.
 
 Run the tool with `node build/src/index.js`. The tool will ask for your OPENAI_API_KEY on first run if not set, and offer to save it in a `.env` file for you.
 
-## Web App
-
-TODO: document running
+You can also access a web app version at `https://localhost:8081`
 
 ## Creating a Sprout
 

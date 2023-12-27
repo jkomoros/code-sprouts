@@ -4,8 +4,12 @@
     "repository": "jkomoros/code-sprout",
     "type": "module",
     "scripts": {
-        "start": "tsc --watch --preserveWatchOutput",
+        "start": "npm run serve",
         "test": "jest",
+        "serve": "npm run generate:listings && npm run serve:main",
+        "serve:main": "npm run serve:typescript & npm run serve:app",
+        "serve:typescript": "tsc --watch --preserveWatchOutput",
+        "serve:app": "wds --node-resolve --port=8081",
         "generate:listings": "node ./build/tools/generate-directory-listings.js",
         "generate:schemas": "node ./build/tools/generate-schemas.js"
     },
