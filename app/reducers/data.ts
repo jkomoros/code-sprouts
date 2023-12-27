@@ -1,4 +1,5 @@
 import {
+	ADD_SPROUTS,
 	SET_OPENAI_API_KEY,
 	SomeAction
 } from '../actions.js';
@@ -8,7 +9,8 @@ import {
 } from '../types_store.js';
 
 const INITIAL_STATE : DataState = {
-	openAIAPIKey: ''
+	openAIAPIKey: '',
+	sprouts: {}
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -18,6 +20,14 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			openAIAPIKey: action.key
+		};
+	case ADD_SPROUTS:
+		return {
+			...state,
+			sprouts: {
+				...state.sprouts,
+				...action.sprouts
+			}
 		};
 	default:
 		return state;

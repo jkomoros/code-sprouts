@@ -1,3 +1,7 @@
+import {
+	SproutDataMap
+} from './types.js';
+
 export type AppState = {
 	page : string;
 	pageExtra : string;
@@ -6,7 +10,8 @@ export type AppState = {
 };
 
 export type DataState = {
-    openAIAPIKey : string
+	openAIAPIKey : string,
+	sprouts: SproutDataMap
 }
 
 export type RootState = {
