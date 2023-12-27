@@ -166,22 +166,29 @@ export class Sprout {
 			if (await fetcher.fileExists(compiledSproutPath)) {
 				const compiledData = await fetcher.fileFetch(compiledSproutPath);
 				//Tnis will throw if invalid shape.
-				const data = compiledSproutSchema.parse(JSON.parse(compiledData));
-				const compiledLastUpdated = new Date(data.lastUpdated);
-				if (fetcher.writable) {
-					for (const file of await this._filesToCheckForCompilation()) {
-						const path = fetcher.joinPath(this._path, file);
-						if (!await fetcher.fileExists(path)) continue;
-						const lastUpdated = await fetcher.fileLastUpdated(path);
-						if (lastUpdated > compiledLastUpdated) {
-							//If any of the base files are newer than the compiled file, we need to recompile.
-							this._compiledData = null;
-							if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
-							return null;
+				const parseResult = compiledSproutSchema.safeParse(JSON.parse(compiledData));
+				if (parseResult.success) {
+					const data = parseResult.data;
+					const compiledLastUpdated = new Date(data.lastUpdated);
+					//TODO: we use fetcher.writable as a proxy for "can do quick last-updated checks".
+					if (fetcher.writable) {
+						for (const file of await this._filesToCheckForCompilation()) {
+							const path = fetcher.joinPath(this._path, file);
+							if (!await fetcher.fileExists(path)) continue;
+							const lastUpdated = await fetcher.fileLastUpdated(path);
+							if (lastUpdated > compiledLastUpdated) {
+								//If any of the base files are newer than the compiled file, we need to recompile.
+								this._compiledData = null;
+								if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
+								return null;
+							}
 						}
 					}
+					this._compiledData = data;
+				} else {
+					if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file invalid: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
+					this._compiledData = null;
 				}
-				this._compiledData = data;
 			} else {
 				if(this._debugLogger) this._debugLogger(`${this.name}: No compiled file`);
 				this._compiledData = null;
