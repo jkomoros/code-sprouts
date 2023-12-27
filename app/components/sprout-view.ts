@@ -38,8 +38,8 @@ import {
 	storeOpenAIAPIKeyToStorage
 } from '../util.js';
 
-@customElement('main-view')
-class MainView extends connect(store)(PageViewElement) {
+@customElement('sprout-view')
+class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_pageExtra = '';
@@ -95,7 +95,7 @@ class MainView extends connect(store)(PageViewElement) {
 		this._handleHashChange();
 	}
 
-	override updated(changedProps : Map<keyof MainView, MainView[keyof MainView]>) {
+	override updated(changedProps : Map<keyof SproutView, SproutView[keyof SproutView]>) {
 		if (changedProps.has('_hashForCurrentState')) {
 			store.dispatch(canonicalizeHash());
 		}
@@ -119,6 +119,6 @@ class MainView extends connect(store)(PageViewElement) {
 
 declare global {
 	interface HTMLElementTagNameMap {
-		'main-view': MainView;
+		'sprout-view': SproutView;
 	}
 }

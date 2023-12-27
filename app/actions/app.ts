@@ -66,8 +66,8 @@ const loadPage  = (location : string) : ThunkSomeAction => (dispatch) => {
 	const pageExtra = pieces.length < 2 ? '' : pieces.slice(1).join('/');
 
 	switch(page) {
-	case 'main':
-		import('../components/main-view.js');
+	case 'sprout':
+		import('../components/sprout-view.js');
 		break;
 	default:
 		page = 'view404';
