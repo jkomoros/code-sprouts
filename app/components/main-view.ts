@@ -28,8 +28,15 @@ import {
 	canonicalizePath,
 	updateHash,
 } from '../actions/app.js';
-import { setOpenAIApiKey } from '../actions/data.js';
-import { fetchOpenAIAPIKeyFromSTorage, storeOpenAIAPIKeyToSTorage } from '../util.js';
+
+import {
+	setOpenAIApiKey
+} from '../actions/data.js';
+
+import {
+	fetchOpenAIAPIKeyFromStorage,
+	storeOpenAIAPIKeyToStorage
+} from '../util.js';
 
 @customElement('main-view')
 class MainView extends connect(store)(PageViewElement) {
@@ -82,7 +89,7 @@ class MainView extends connect(store)(PageViewElement) {
 
 	override firstUpdated() {
 		store.dispatch(canonicalizePath());
-		store.dispatch(setOpenAIApiKey(fetchOpenAIAPIKeyFromSTorage()));
+		store.dispatch(setOpenAIApiKey(fetchOpenAIAPIKeyFromStorage()));
 		window.addEventListener('hashchange', () => this._handleHashChange());
 		//We do this after packets have already been loaded from storage
 		this._handleHashChange();
@@ -94,7 +101,7 @@ class MainView extends connect(store)(PageViewElement) {
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
-				storeOpenAIAPIKeyToSTorage(this._openAIAPIKey);
+				storeOpenAIAPIKeyToStorage(this._openAIAPIKey);
 			} else {
 				const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.');
 				if (key) {
