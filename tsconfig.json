@@ -5,6 +5,8 @@
       "noEmitOnError": true,
       "moduleResolution": "Node",
       "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "skipLibCheck": true,
       "allowSyntheticDefaultImports": true,
       "lib": ["es2020", "DOM", "DOM.Iterable"],
       "declaration": true,
@@ -15,6 +17,6 @@
       "rootDir": ".",
       "strict": true,
     },
-    "include": ["src/**/*.ts", "tools/**/*.ts"],
+    "include": ["src/**/*.ts", "tools/**/*.ts", "app/**/*.ts"],
     "exclude": []
   }
