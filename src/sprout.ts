@@ -409,7 +409,7 @@ Provide a patch to update the state object based on the users's last message and
 			jsonResponse: true,
 			debugLogger,
 			modelRequirements: {
-				//It's not possible to allowImages and imageInput at the same time currently.
+				//It's not possible to allowImages and imageInput at the same time currently, because no openai model allows both.
 				jsonResponse: !promptHasImages,
 				imageInput: promptHasImages
 			}
