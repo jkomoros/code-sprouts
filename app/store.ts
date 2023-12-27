@@ -6,7 +6,11 @@ import {
 	Reducer
 } from 'redux';
 
-import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
+import { 
+	thunk,
+	ThunkAction,
+	ThunkMiddleware
+} from 'redux-thunk';
 
 import {
 	AppState,
@@ -37,7 +41,8 @@ export const store = createStore(
 	}) as Reducer<Partial<{ app: AppState; data: DataState; }>, SomeAction>,
 	// Apply thunk middleware
 	compose(
-		applyMiddleware(thunk as ThunkMiddleware<RootState, SomeAction>)
+		//Install thunk middleware expecting RootState and SomeAction.
+		applyMiddleware(thunk as ThunkMiddleware<RootState, SomeAction>),
 	)
 );
 
