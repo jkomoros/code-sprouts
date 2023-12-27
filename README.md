@@ -19,7 +19,7 @@ A sprout is a named folder (typically in `sprouts/` but with version-controlled 
 
 ```
 - [sprout-name] /
-  - config.json - Documents metadata about the sprout.
+  - sprout.json - Documents metadata about the sprout.
   - instructions.md - The top-level instructions to the bot, included in each turn.
   - schema.ts - A file that documents the state that the bot should use to store all relevant state from turn to turn, other than the most recent user message.
   - sub_instructions/ - An optional directory of sub-instructions.

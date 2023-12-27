@@ -12,8 +12,8 @@
     "json.schemas": [
         {
             "fileMatch": [
-                "/examples/*/config.json",
-                "/sprouts/*/config.json"
+                "/examples/*/sprout.json",
+                "/sprouts/*/sprout.json"
             ],
             "url": "/schemas/sprout_config.json"
         },
