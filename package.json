@@ -6,7 +6,9 @@
     "scripts": {
         "start": "npm run serve",
         "test": "jest",
-        "serve": "npm run generate:listings && npm run serve:main",
+        "build": "npm run generate:listings && npm run build:rollup",
+        "build:rollup" : "rollup -c",
+        "serve": "npm run build && npm run serve:main",
         "serve:main": "npm run serve:typescript & npm run serve:app",
         "serve:typescript": "tsc --watch --preserveWatchOutput",
         "serve:app": "wds --node-resolve --port=8081",

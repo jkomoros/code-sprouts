@@ -1,13 +1,14 @@
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
-import minifyHTML from 'rollup-plugin-minify-html-literals';
+import pkg from 'rollup-plugin-minify-html-literals';
+const { default: minifyHTML } = pkg;
 import copy from 'rollup-plugin-copy';
 import commonjs from '@rollup/plugin-commonjs';
 import summary from 'rollup-plugin-summary';
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 
 export default {
-	input: 'app/components/my-app.js',
+	input: 'build/app/components/my-app.js',
 	output: {
 		dir: 'build/app/components',
 		format: 'es',
