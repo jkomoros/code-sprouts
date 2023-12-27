@@ -25,6 +25,9 @@ import {
 import app from './reducers/app.js';
 import data from './reducers/data.js';
 
+//Create devCompose to install redux devtools if available
+const devCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 declare global {
 	interface Window {
 		process?: object;
@@ -40,7 +43,7 @@ export const store = createStore(
 		data
 	}) as Reducer<Partial<{ app: AppState; data: DataState; }>, SomeAction>,
 	// Apply thunk middleware
-	compose(
+	devCompose(
 		//Install thunk middleware expecting RootState and SomeAction.
 		applyMiddleware(thunk as ThunkMiddleware<RootState, SomeAction>),
 	)
