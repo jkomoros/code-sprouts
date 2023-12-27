@@ -6,7 +6,8 @@
     "scripts": {
         "start": "npm run serve",
         "test": "jest",
-        "build": "npm run generate:listings && npm run build:rollup",
+        "build": "npm run build:typescript && npm run generate:listings && npm run build:rollup",
+        "build:typescript" : "tsc",
         "build:rollup" : "rollup -c",
         "serve": "npm run build && npm run serve:main",
         "serve:main": "npm run serve:typescript & npm run serve:app",
