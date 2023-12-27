@@ -1,5 +1,5 @@
 import {
-    SET_OPENAI_API_KEY,
+	SET_OPENAI_API_KEY,
 	SomeAction
 } from '../actions.js';
 
@@ -8,7 +8,7 @@ import {
 } from '../types_store.js';
 
 const INITIAL_STATE : DataState = {
-    openAIAPIKey: ''
+	openAIAPIKey: ''
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -17,7 +17,7 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case SET_OPENAI_API_KEY:
 		return {
 			...state,
-            openAIAPIKey: action.key
+			openAIAPIKey: action.key
 		};
 	default:
 		return state;
