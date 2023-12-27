@@ -1,5 +1,6 @@
 import {
 	ADD_SPROUTS,
+	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
 	SomeAction
 } from '../actions.js';
@@ -10,7 +11,8 @@ import {
 
 const INITIAL_STATE : DataState = {
 	openAIAPIKey: '',
-	sprouts: {}
+	sprouts: {},
+	currentSprout: null
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -28,6 +30,11 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				...state.sprouts,
 				...action.sprouts
 			}
+		};
+	case SELECT_SPROUT:
+		return {
+			...state,
+			currentSprout: action.sprout
 		};
 	default:
 		return state;

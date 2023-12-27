@@ -1,13 +1,14 @@
 import {
 	z
 } from 'zod';
-import { sproutDataMapSchema } from './types';
+import { sproutDataMapSchema, sproutLocationSchema } from './types';
 
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_HASH = 'UPDATE_HASH';
 
 export const ADD_SPROUTS = 'ADD_SPROUTS';
+export const SELECT_SPROUT = 'SELECT_SPROUT';
 export const SET_OPENAI_API_KEY = 'SET_OPENAI_API_KEY';
 
 const actionUpdatePage = z.object({
@@ -33,6 +34,11 @@ const actionAddSprouts = z.object({
 	sprouts: sproutDataMapSchema,
 }).strict();
 
+const actionSelectSprout = z.object({
+	type: z.literal(SELECT_SPROUT),
+	sprout: sproutLocationSchema
+}).strict();
+
 const actionSetOpenAPIKey = z.object({
 	type: z.literal(SET_OPENAI_API_KEY),
 	key: z.string()
@@ -43,6 +49,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionUpdateOffline,
 	actionUpdateHash,
 	actionAddSprouts,
+	actionSelectSprout,
 	actionSetOpenAPIKey
 ]);
 

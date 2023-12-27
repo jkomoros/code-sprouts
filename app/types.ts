@@ -7,7 +7,9 @@ export const urlHashArgs = z.object({
 	//TODO: verify there aren't multiple unncessary UPDATE_HASH events.
 });
 
-const sproutLocationSchema = z.string();
+export const sproutLocationSchema = z.string();
+
+export type SproutLocation = z.infer<typeof sproutLocationSchema>;
 
 export const sproutDataMapSchema = z.record(sproutLocationSchema, z.boolean());
 
