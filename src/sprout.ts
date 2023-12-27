@@ -396,14 +396,16 @@ Provide a patch to update the state object based on the users's last message and
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt(subInstruction);
+		const promptHasImages = promptIncludesImage(prompt);
+		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
 			debugLogger,
 			modelRequirements: {
 				//It's not possible to allowImages and imageInput at the same time currently.
-				jsonResponse: !config.allowImages,
-				imageInput: config.allowImages || false
+				jsonResponse: !promptHasImages,
+				imageInput: promptHasImages
 			}
 		});
 		const parser = new StreamingJSONParser();
