@@ -4,6 +4,7 @@ node_modules/
 _site/
 .DS_Store
 lib/
+build/
 
 # Ignore the non-version controlled sprouts folder
 sprouts/
