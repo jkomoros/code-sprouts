@@ -11,12 +11,6 @@ import {
 	selectPageExtra,
 } from '../selectors.js';
 
-// We are lazy loading its reducer.
-import data from '../reducers/data.js';
-store.addReducers({
-	data
-});
-
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles.js';
 
