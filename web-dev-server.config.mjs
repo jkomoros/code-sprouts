@@ -9,8 +9,9 @@ import rollupCommonjs from '@rollup/plugin-commonjs';
 const commonjs = fromRollup(rollupCommonjs);
 
 export default {
+	rootDir: './build',
 	//File to return for any path that would otherwise 404
-	appIndex: 'index.html',
+	appIndex: 'build/index.html',
 	//Flags for --node-resolve (options at https://www.npmjs.com/package/rollup-plugin-node-resolve-main-fields)
 	nodeResolve: {
 		/* reselect-map has an ESG export at jsnext */
