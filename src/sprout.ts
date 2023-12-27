@@ -337,6 +337,9 @@ ${schemaText}
 
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
+		const previousUserMessages = this._userMessages.slice(0, this._userMessages.length - 1);
+		const lastUserMessage = this._userMessages[this._userMessages.length - 1];
+
 		const instructions = `${baseInstructions}
 
 You will manage your state in an object conforming to the following schema:
@@ -352,8 +355,11 @@ ${subInstruction ? `Here is information on the sub-instruction ${subInstruction}
 Your current state is:
 ${JSON.stringify(state, null, '\t')}
 
-The last messages from the user (with the last message, which you should respond to, at the end):
-${this._userMessages.length ? this._userMessages.map(message => textForPrompt(message)).join('\n---\n') : '<INITIAL>'}
+${previousUserMessages.length ? 'The previous user messages (for context only):\n' + previousUserMessages.map(message => textForPrompt(message)).join('\n---\n') + '\n---\n' : ''}
+
+The last user message (VERY IMPORTANT that you respond to this):
+
+${lastUserMessage ? textForPrompt(lastUserMessage) + '\n---\n' : '<INITIAL>\n---\n'}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${conversationTurnSchema(subInstruction ? {} : subInstructions)}
