@@ -1,0 +1,82 @@
+{
+	"type": "object",
+	"properties": {
+		"version": {
+			"type": "number",
+			"const": 0
+		},
+		"lastUpdated": {
+			"type": "string",
+			"format": "date-time"
+		},
+		"name": {
+			"type": "string"
+		},
+		"config": {
+			"type": "object",
+			"properties": {
+				"version": {
+					"type": "number",
+					"const": 0
+				},
+				"title": {
+					"type": "string",
+					"description": "The title of the sprout"
+				},
+				"description": {
+					"type": "string",
+					"description": "A description of the sprout"
+				},
+				"allowImages": {
+					"type": "boolean",
+					"description": "Whether the bot allows images"
+				}
+			},
+			"required": [
+				"version"
+			],
+			"additionalProperties": false
+		},
+		"baseInstructions": {
+			"type": "string"
+		},
+		"subInstructions": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"summary": {
+						"type": "string"
+					},
+					"instruction": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"summary",
+					"instruction"
+				],
+				"additionalProperties": false
+			}
+		},
+		"schemaText": {
+			"type": "string"
+		},
+		"starterState": {
+			"type": "object",
+			"additionalProperties": {}
+		}
+	},
+	"required": [
+		"version",
+		"lastUpdated",
+		"name",
+		"config",
+		"baseInstructions",
+		"subInstructions",
+		"schemaText",
+		"starterState"
+	],
+	"additionalProperties": false,
+	"$schema": "http://json-schema.org/draft-07/schema#"
+}

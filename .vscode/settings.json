@@ -17,5 +17,12 @@
             ],
             "url": "/schemas/sprout_config.json"
         },
+        {
+            "fileMatch": [
+                "/examples/*/sprout.compiled.json",
+                "/sprouts/*/sprout.compiled.json"
+            ],
+            "url": "/schemas/compiled_sprout.json"
+        },
     ]
 }
