@@ -167,16 +167,33 @@ class SproutView extends connect(store)(PageViewElement) {
 				#conversation-input {
 					width: 100%;
 					display: flex;
+					position: relative;
 				}
 
 				#conversation-input textarea {
 					flex-grow: 1;
 				}
 
-				.drop-target {
-					border: 2px dashed var(--disabled-color); /* Dashed border to indicate drop area */
+				#conversation-input .drop-target-message {
+					z-index: 1;
+					position: absolute;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					pointer-events: none;
+					font-size: 2.0em;
+					display: none;
+					color: var(--lighter-gray-color);
+					outline: 2px dashed var(--disabled-color); /* Dashed border to indicate drop area */
 					background-color: rgba(255, 255, 255, 0.7); /* Slight background highlight */
-					/* Add any other styling as needed */
+				}
+
+				#conversation-input.drop-target .drop-target-message {
+					display: flex;
 				}
 
 				.conversation-turn-speaker {
@@ -259,6 +276,9 @@ class SproutView extends connect(store)(PageViewElement) {
 						@dragleave=${this._handleDragLeave}
 						@drop=${this._handleDrop}
 					>
+						<div class='drop-target-message'>
+							Drop images here
+						</div>
 						<textarea
 							autofocus
 							id='conversation-input-textarea'
