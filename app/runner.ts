@@ -44,7 +44,8 @@ export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller)
 	while(!signaller.done) {
 		signaller.streamStarted();
 		const message = await sprout.conversationTurn({
-			streamLogger: signaller.streamIncrementalMessage
+			//Use a => to bind to this
+			streamLogger: (message : string) => signaller.streamIncrementalMessage(message)
 		});
 		signaller.streamStopped();
 		console.log('result', message);
