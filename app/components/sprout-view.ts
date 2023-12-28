@@ -158,6 +158,12 @@ class SproutView extends connect(store)(PageViewElement) {
 					align-items: center;
 				}
 
+				.row {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+				}
+
 				.column {
 					width:60em;
 					height: 100%;
@@ -305,22 +311,24 @@ class SproutView extends connect(store)(PageViewElement) {
 					<div class='toolbar'>
 						<div class='controls'>
 							<label for='sprout-select'>Sprout:</label>
-							<select
-								id='sprout-select'
-								.value=${this._currentSproutName || ''}
-								@change=${this._handleSproutChanged}
-							>
-								${Object.keys(this._sprouts).map((key) => html`
-									<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
-								`)}
-							</select>
-							<button
-								class='small'
-								@click=${this._handleAddSprout}
-								title='Add a new sprout'
-							>
-								${PLUS_ICON}
-							</button>
+							<div class='row'>
+								<select
+									id='sprout-select'
+									.value=${this._currentSproutName || ''}
+									@change=${this._handleSproutChanged}
+								>
+									${Object.keys(this._sprouts).map((key) => html`
+										<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
+									`)}
+								</select>
+								<button
+									class='small'
+									@click=${this._handleAddSprout}
+									title='Add a new sprout'
+								>
+									${PLUS_ICON}
+								</button>
+							</div>
 						</div>
 						<div class='title'>
 							<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
