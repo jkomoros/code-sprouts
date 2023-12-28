@@ -183,11 +183,11 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
-	_handleHashChange() {
+	private _handleHashChange() {
 		store.dispatch(updateHash(window.location.hash, true));
 	}
 
-	_handleSproutChanged(e : Event) {
+	private _handleSproutChanged(e : Event) {
 		const sproutName = (e.target as HTMLSelectElement).value;
 		if (sproutName) {
 			store.dispatch(selectSprout(sproutName));
