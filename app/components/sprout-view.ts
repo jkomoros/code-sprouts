@@ -200,16 +200,6 @@ class SproutView extends connect(store)(PageViewElement) {
 					</div>
 					<div id='conversation-input'>
 						<textarea autofocus id='conversation-input-textarea'></textarea>
-						<!-- TODO: allow image input -->
-						<button
-							class='button round'
-							@click=${this._handleConversationInputSubmit}
-							title='Send'
-							?disabled=${this._sproutStreaming}
-						>
-							<!-- TODO: Cmd-Enter to send -->
-							${SEND_ICON}
-						</button>
 						<!-- TODO: allow dragging and dropping -->
 						<input
 							type='file'
@@ -228,6 +218,15 @@ class SproutView extends connect(store)(PageViewElement) {
 								${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
 							</button>
 						`: ''}
+						<button
+							class='button round'
+							@click=${this._handleConversationInputSubmit}
+							title='Send'
+							?disabled=${this._sproutStreaming}
+						>
+							<!-- TODO: Cmd-Enter to send -->
+							${SEND_ICON}
+						</button>
 					</div>
 				</div>
 			</div>
