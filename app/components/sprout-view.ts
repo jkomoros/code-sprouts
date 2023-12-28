@@ -206,7 +206,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					object-fit: contain;
 				}
 
-				svg {
+				span.loading svg {
 					fill: var(--dark-gray-color);
 					height:1.0em;
 					width:1.0em;
