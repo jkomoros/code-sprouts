@@ -74,7 +74,9 @@ const AGGRESSIVE_LOGGING = false;
 
 type SproutOptions = {
 	ai? : AIProvider,
-	debugLogger? : Logger
+	debugLogger? : Logger,
+	//If true, and a file is not compiled, it will fail.
+	disallowCompilation? : boolean
 };
 
 export type ConversationTurnOptions = {
@@ -94,6 +96,7 @@ export class Sprout {
 	private _subInstructions? : SubInstructionsMap;
 	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
+	private _disallowCompilation : boolean;
 	private _debugLogger? : Logger;
 	private _userMessages : Prompt[];
 	private _states: SproutState[];
@@ -105,11 +108,13 @@ export class Sprout {
 	constructor(path : Path, opts : SproutOptions = {}) {
 		const {
 			ai,
-			debugLogger
+			debugLogger,
+			disallowCompilation
 		} = opts;
 		this._path = path;
 		this._aiProvider = ai;
 		this._debugLogger = debugLogger;
+		this._disallowCompilation = Boolean(disallowCompilation);
 		this._userMessages = [];
 		this._states = [];
 	}
@@ -210,6 +215,7 @@ export class Sprout {
 				this._compiledData = null;
 			}
 		}
+		if (!this._compiledData && this._disallowCompilation) throw new Error(`${this.name}: No compiled file and disallowCompilation is true`);
 		return this._compiledData;
 	}
 
