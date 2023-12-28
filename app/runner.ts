@@ -7,11 +7,13 @@ export class Signaller {
 	private _done = false;
 	private _streamStarted : () => void;
 	private _streamStopped : () => void;
+	private _streamIncrementalMessage: (message : string) => void;
 
-	constructor(opts : {streamStarted: () => void, streamStopped: () => void}) {
-		const {streamStarted, streamStopped} = opts;
+	constructor(opts : {streamStarted: () => void, streamStopped: () => void, streamIncrementalMessage : (message : string) => void}) {
+		const {streamStarted, streamStopped, streamIncrementalMessage} = opts;
 		this._streamStarted = streamStarted;
 		this._streamStopped = streamStopped;
+		this._streamIncrementalMessage = streamIncrementalMessage;
 	}
 
 	streamStarted() : void {
@@ -20,6 +22,10 @@ export class Signaller {
 
 	streamStopped() : void {
 		this._streamStopped();
+	}
+
+	streamIncrementalMessage(message : string) : void {
+		this._streamIncrementalMessage(message);
 	}
 
 	finish() : void {

@@ -39,6 +39,7 @@ import {
 	setOpenAIAPIKey,
 	sproutStoppedStreaming,
 	startStreamingSprout,
+	streamIncrementalMessage,
 	updateWithMainPageExtra
 } from '../actions/data.js';
 
@@ -162,6 +163,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			this._lastSignaller = new Signaller({
 				streamStarted: () => store.dispatch(startStreamingSprout()),
 				streamStopped: () => store.dispatch(sproutStoppedStreaming()),
+				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message))
 			});
 			runSproutInBrowser(this._currentSprout, this._lastSignaller);
 		}
