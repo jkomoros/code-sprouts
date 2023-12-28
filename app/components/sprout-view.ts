@@ -115,6 +115,9 @@ class SproutView extends connect(store)(PageViewElement) {
 	@state()
 		_imageUpload : ImageURL = '';
 
+	@state()
+		_renderDropTarget : boolean = false;
+
 	_lastSignaller : Signaller | null = null;
 
 	static override get styles() {
@@ -165,6 +168,12 @@ class SproutView extends connect(store)(PageViewElement) {
 					flex-grow: 1;
 				}
 
+				.drop-target {
+					border: 2px dashed var(--disabled-color); /* Dashed border to indicate drop area */
+					background-color: rgba(255, 255, 255, 0.7); /* Slight background highlight */
+					/* Add any other styling as needed */
+				}
+
 				.conversation-turn-speaker {
 					font-size: 0.8em;
 					color: var(--dark-gray-color);
@@ -198,7 +207,13 @@ class SproutView extends connect(store)(PageViewElement) {
 					<div id='conversation-messages'>
 						${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
 					</div>
-					<div id='conversation-input'>
+					<div
+						id='conversation-input'
+						class='${this._renderDropTarget ? 'drop-target' : ''}'
+						@dragover=${this._handleDragOver}
+						@dragleave=${this._handleDragLeave}
+						@drop=${this._handleDrop}
+					>
 						<textarea autofocus id='conversation-input-textarea'></textarea>
 						<!-- TODO: allow dragging and dropping -->
 						<input
@@ -314,6 +329,26 @@ class SproutView extends connect(store)(PageViewElement) {
 				</div>` : ''}
 			</div>
 		`;
+	}
+
+	private _handleDragOver(e : DragEvent) {
+		e.preventDefault();
+		this._renderDropTarget = true;
+	}
+
+	private _handleDragLeave(e : DragEvent) {
+		e.preventDefault();
+		this._renderDropTarget = false;
+	}
+
+	private _handleDrop(e : DragEvent) {
+		e.preventDefault();
+		this._renderDropTarget = false;
+		if (!e.dataTransfer) throw new Error('No data transfer');
+		const files = e.dataTransfer.files;
+		if (!files.length) return;
+		const file = files[0];
+		this._attachFile(file);
 	}
 
 	private _handleConversationInputSubmit() {
