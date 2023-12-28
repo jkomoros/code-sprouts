@@ -32,6 +32,10 @@ import {
 	Prompt
 } from '../../src/types.js';
 
+import {
+	normalizeSproutPath
+} from '../../src/util.js';
+
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
 		type: 'ADD_SPROUTS',
@@ -112,6 +116,7 @@ export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {
 };
 
 export const addSprout = (sproutLocation : Path) : ThunkSomeAction => async (dispatch) => {
+	sproutLocation = normalizeSproutPath(sproutLocation);
 	dispatch(addSprouts({[sproutLocation]: true}));
 	dispatch(selectSprout(sproutLocation));
 };

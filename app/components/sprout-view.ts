@@ -37,6 +37,7 @@ import {
 
 import {
 	addDefaultSprouts,
+	addSprout,
 	provideUserResponse,
 	selectSprout,
 	setOpenAIAPIKey,
@@ -71,6 +72,7 @@ import {
 import {
 	ATTACH_FILE_ICON,
 	IMAGE_ICON,
+	OPEN_IN_NEW,
 	SEND_ICON,
 	SYNC_ICON
 } from './my-icons.js';
@@ -312,6 +314,13 @@ class SproutView extends connect(store)(PageViewElement) {
 									<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
 								`)}
 							</select>
+							<button
+								class='small'
+								@click=${this._handleAddSprout}
+								title='Add a new sprout'
+							>
+								${OPEN_IN_NEW}
+							</button>
 						</div>
 						<div class='title'>
 							<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
@@ -468,6 +477,12 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _handleDraftMessageInput(e : Event) {
 		const textarea = e.target as HTMLTextAreaElement;
 		store.dispatch(updateDraftMessage(textarea.value));
+	}
+
+	private _handleAddSprout() {
+		const sproutName = prompt('What is the name of the sprout you want to add?\nHere are some examples: `example/codenames`, `https://komoroske.com/example/codenames/`, `komoroske.com/example/codenames`');
+		if (!sproutName) return;
+		store.dispatch(addSprout(sproutName));
 	}
 
 	private _handleDragOver(e : DragEvent) {
