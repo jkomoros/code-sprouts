@@ -52,6 +52,14 @@ export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispat
 	dispatch(selectSprout(sproutNames[0]));
 };
 
+export const addOrSelectSprout = (sprout : SproutLocation) : ThunkSomeAction => (dispatch, getState) => {
+	const sprouts = selectSproutData(getState());
+	if (!sprouts[sprout]) {
+		dispatch(addSprout(sprout));
+	}
+	dispatch(selectSprout(sprout, false));
+};
+
 export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) : ThunkSomeAction => (dispatch, getState) => {
 	const sprouts = selectSproutData(getState());
 	if (!sprouts[sprout]) {
@@ -126,7 +134,7 @@ export const updateWithMainPageExtra = (pageExtra : string) : ThunkSomeAction =>
 	//The last piece is the trailing slash
 	parts.pop();
 	const sproutName = parts.join('/');
-	dispatch(selectSprout(sproutName, true));
+	dispatch(addOrSelectSprout(sproutName));
 };
 
 export const updateDraftMessage = (message : string) : SomeAction => {
