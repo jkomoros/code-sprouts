@@ -16,7 +16,6 @@ You can also access a web app version at `https://localhost:8081`
 
 ## Creating a Sprout
 
-
 A sprout is a named folder (typically in `sprouts/` but with version-controlled sprouts in `examples/` too) with the following directory shape:
 
 ```
@@ -30,6 +29,8 @@ A sprout is a named folder (typically in `sprouts/` but with version-controlled 
 ```
 
 Sprouts are passed the current state object as of the last turn, and also the last user message they received, and are then asked to return a message to show to the user, and optionally a JSON Patch to modify the state object for the next turn.
+
+You can run `npm run compile:sprouts` to compile any local sprouts that require it.
 
 ## Why not just build this as a GPT?
 
