@@ -49,15 +49,6 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 	return stream;
 };
 
-const urlForImage = (image : Buffer) : OpenAI.ChatCompletionContentPartImage.ImageURL => {
-	//TODO: isn't it kind of weird that we do the final sizing etc here?
-	//Shouldn't we be passed the buffer at full size and resize here?
-	const result = image.toString('base64');
-	return {
-		url: `data:image/jpeg;base64,${result}`
-	};
-};
-
 const contentForAPI = (prompt : Prompt) : ChatCompletionContentPart[] => {
 	if (!Array.isArray(prompt)) prompt = [prompt];
 	return prompt.map((item) : ChatCompletionContentPart => {
@@ -69,7 +60,9 @@ const contentForAPI = (prompt : Prompt) : ChatCompletionContentPart[] => {
 		}
 		return {
 			type: 'image_url',
-			image_url: urlForImage(item.image)
+			image_url: {
+				url: item.image
+			}
 		};
 	});
 };

@@ -5,6 +5,7 @@ import {
 } from 'zod';
 
 import {
+	ImageURL,
 	Prompt,
 	pathSchema
 } from './types.js';
@@ -84,10 +85,11 @@ const resizedImage = async (input : Buffer) : Promise<Buffer> => {
 	return resizedImageBuffer;
 };
 
-const loadImage = async (imagePath : string) : Promise<Buffer> => {
+const loadImage = async (imagePath : string) : Promise<ImageURL> => {
 	const buffer = readFileSync(absoluteFile(imagePath));
 	const resizedBuffer = await resizedImage(buffer);
-	return resizedBuffer;
+	const data = resizedBuffer.toString('base64');
+	return `data:image/jpeg;base64,${data}`;
 };
 
 //This is not a method on sprout because Sprout doesn't  know how to get or give

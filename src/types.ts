@@ -48,8 +48,13 @@ export const subInstructionsMapSchema = z.record(subInstructionNameSchema, subIn
 
 export type SubInstructionsMap = z.infer<typeof subInstructionsMapSchema>;
 
+//TODO: better validation
+const imageURL = z.string();
+
+export type ImageURL = z.infer<typeof imageURL>;
+
 const promptComponentImageSchema = z.object({
-	image: z.instanceof(Buffer)
+	image: imageURL
 });
 
 const promptComponentStringSchema = z.string();
