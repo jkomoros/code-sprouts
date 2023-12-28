@@ -186,7 +186,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					flex-grow:1;
 					display: flex;
 					flex-direction: column;
-					justify-content: center;
+					justify-content: end;
 					align-items: center;	
 				}
 
