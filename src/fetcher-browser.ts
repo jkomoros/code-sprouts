@@ -9,6 +9,7 @@ import {
 } from './constants.js';
 
 import {
+	joinPath,
 	makeFinalPath
 } from './util.js';
 
@@ -35,14 +36,9 @@ class BrowserFetcher {
 		}
 	}
 
-	joinPath(...parts: string[]): Path {
-		// Assuming the parts are URL segments, this will join them with '/' separators
-		return parts.join('/');
-	}
-
 	async listDirectory(path: Path): Promise<Path[]> {
 		path = makeFinalPath(path);
-		const response = await fetch(this.joinPath(path, DIRECTORY_LISTING_FILE));
+		const response = await fetch(joinPath(path, DIRECTORY_LISTING_FILE));
 		if (!response.ok) throw new Error(`Could not list directory ${path}`);
 		const json = await response.json();
 		const data = directoryListingFileSchema.parse(json);
@@ -62,7 +58,7 @@ class BrowserFetcher {
 				const json = await response.json();
 				const data = directoryListingFileSchema.parse(json);
 				for (const sprout of data.directories) {
-					result.push(this.joinPath(basePath, sprout));
+					result.push(joinPath(basePath, sprout));
 				}
 			} catch (error) {
 				console.error(`Error listing sprouts in ${basePath}:`, error);

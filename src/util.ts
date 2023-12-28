@@ -45,3 +45,8 @@ export const pathIsRemote = (path : Path) : boolean => {
 export const makeFinalPath = (path : Path) : FinalPath => {
 	return pathIsRemote(path) ? `https://${path}` : path;
 };
+
+export const joinPath = (...parts: Path[]): Path => {
+	// Assuming the parts are URL segments, this will join them with '/' separators
+	return parts.join('/');
+};

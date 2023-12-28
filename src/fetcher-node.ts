@@ -12,16 +12,16 @@ import {
 } from 'fs';
 
 import {
-	join
-} from 'path';
-
-import {
 	Sprout
 } from './sprout.js';
 
 import {
 	DEFAULT_SPROUT_DIRECTORIES
 } from './constants.js';
+
+import {
+	joinPath
+} from './util.js';
 
 class NodeFetcher {
 
@@ -58,17 +58,13 @@ class NodeFetcher {
 		return result;
 	}
 
-	joinPath(...parts : string[]) : Path {
-		return join(...parts);
-	}
-
 	async listSprouts(basePaths : string[] = DEFAULT_SPROUT_DIRECTORIES) : Promise<Path[]> {
 		//TODO: in a browser fetch context this will have to use a prebuilt listing file.
 		const result : Path[] = [];
 		for (const folder of basePaths) {
 			for (const entry of readdirSync(folder, {withFileTypes: true})) {
 				if (!entry.isDirectory()) continue;
-				result.push(this.joinPath(folder, entry.name));
+				result.push(joinPath(folder, entry.name));
 			}
 		}
 		return result;

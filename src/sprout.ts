@@ -46,6 +46,7 @@ import {
 } from 'zod';
 
 import fastJSONPatch from 'fast-json-patch';
+import { joinPath } from './util.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
@@ -165,17 +166,17 @@ export class Sprout {
 			starterState: await this.starterState()
 		};
 		if (this._debugLogger) this._debugLogger(`${this.name}: Compiling`);
-		fetcher.writeFile(fetcher.joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
+		fetcher.writeFile(joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
 		this._compiledData = result;
 	}
 
 	private async _filesToCheckForCompilation() : Promise<Path[]> {
 		const result = [...BASE_SPROUT_PATHS];
 		for (const directory of BASE_SPROUT_DIRECTORIES) {
-			const items = await fetcher.listDirectory(fetcher.joinPath(this._path, directory));
+			const items = await fetcher.listDirectory(joinPath(this._path, directory));
 			for (const item of items) {
 				if (!FILE_EXTENSIONS_IN_SPROUT.some(ext => item.endsWith(ext))) continue;
-				result.push(fetcher.joinPath(directory, item));
+				result.push(joinPath(directory, item));
 			}
 		}
 		return result;
@@ -183,7 +184,7 @@ export class Sprout {
 
 	private async _compiled() : Promise<CompiledSprout | null> {
 		if (this._compiledData === undefined) {
-			const compiledSproutPath = fetcher.joinPath(this._path, SPROUT_COMPILED_PATH);
+			const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
 			if (await fetcher.fileExists(compiledSproutPath)) {
 				const compiledData = await fetcher.fileFetch(compiledSproutPath);
 				//Tnis will throw if invalid shape.
@@ -194,7 +195,7 @@ export class Sprout {
 					//TODO: we use fetcher.writable as a proxy for "can do quick last-updated checks".
 					if (fetcher.writable) {
 						for (const file of await this._filesToCheckForCompilation()) {
-							const path = fetcher.joinPath(this._path, file);
+							const path = joinPath(this._path, file);
 							if (!await fetcher.fileExists(path)) continue;
 							const lastUpdated = await fetcher.fileLastUpdated(path);
 							if (lastUpdated > compiledLastUpdated) {
@@ -224,7 +225,7 @@ export class Sprout {
 		if(compiled) return compiled.config;
 
 		if (!this._config) {
-			const sproutConfigPath = fetcher.joinPath(this._path, SPROUT_CONFIG_PATH);
+			const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
 			if (!await fetcher.fileExists(sproutConfigPath)) {
 				throw new Error(`${this.name}: Config file ${sproutConfigPath} not found`);
 			}
@@ -243,7 +244,7 @@ export class Sprout {
 		if(compiled) return compiled.baseInstructions;
 
 		if (this._baseInstructions === undefined) {
-			const sproutInstructionsPath = fetcher.joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
+			const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
 			if (!await fetcher.fileExists(sproutInstructionsPath)) {
 				throw new Error(`${this.name}: Instruction file ${sproutInstructionsPath} not found`);
 			}
@@ -260,9 +261,9 @@ export class Sprout {
 		if (this._subInstructions === undefined) {
 			this._subInstructions = {};
 			//TODO: make sure this will return [] if the directory doesn't exist.
-			const items = await fetcher.listDirectory(fetcher.joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR));
+			const items = await fetcher.listDirectory(joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR));
 			for (const item of items) {
-				const path = fetcher.joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
+				const path = joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
 				if (!path.endsWith('.md')) continue;
 				const instructions = await fetcher.fileFetch(path);
 				const name = item.replace(/\.md$/, '');
@@ -309,7 +310,7 @@ type Result = {
 		if(compiled) return compiled.schemaText;
 
 		if (this._schemaText === undefined) {
-			const sproutSchemaPath = fetcher.joinPath(this._path, SPROUT_SCHEMA_PATH);
+			const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
 			if (!await fetcher.fileExists(sproutSchemaPath)) {
 				throw new Error(`${this.name}: Schema file ${sproutSchemaPath} not found`);
 			}
