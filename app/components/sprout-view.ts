@@ -359,10 +359,10 @@ class SproutView extends connect(store)(PageViewElement) {
 								${this._currentSproutConfig?.description || 'A sprout without a description'}
 							</p>
 							<p class='messages'>
-								${remoteDomain ? html`<span class='warning'>${WARNING_ICON}</span> This is a remote sprout from <strong>${remoteDomain}</strong>` : ''}
+								${remoteDomain ? html`<span class='warning' .title=${`This domain does not vouch for the content you load from ${remoteDomain} or any other domain.`}>${WARNING_ICON} This is a remote sprout from <strong>${remoteDomain}</strong></span>` : ''}
 							</p>
 							<p class='messages'>
-								${remoteDomain ? html`${LOCK_ICON} <strong>${remoteDomain}</strong> cannot see your private information or keys` : ''}
+								${remoteDomain ? html`<span .title=${`This site reaches out to openai.com directly and doesn't pass any information to ${remoteDomain}, other than that someone fetched the sprout definition.`}>${LOCK_ICON} <strong>${remoteDomain}</strong> cannot see any of your information from this page</span>` : ''}
 							</p>
 						</div>
 					</div>
