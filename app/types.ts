@@ -16,3 +16,10 @@ export const sproutDataMapSchema = z.record(sproutLocationSchema, z.boolean());
 export type SproutDataMap = z.infer<typeof sproutDataMapSchema>;
 
 export type URLHashArgs = z.infer<typeof urlHashArgs>;
+
+type ConverastionTurn = {
+	speaker: 'user' | 'sprout',
+	text: string
+};
+
+export type Conversation = ConverastionTurn[];

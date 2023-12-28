@@ -1,5 +1,7 @@
 import {
-	SproutDataMap, SproutLocation
+	SproutDataMap,
+	SproutLocation,
+	Conversation
 } from './types.js';
 
 export type AppState = {
@@ -9,17 +11,12 @@ export type AppState = {
 	hash: string;
 };
 
-type ConverastionTurn = {
-	speaker: 'user' | 'sprout',
-	text: string
-};
-
 export type DataState = {
 	openAIAPIKey : string,
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
 	sproutStreaming: boolean,
-	conversation: ConverastionTurn[]
+	conversation: Conversation
 }
 
 export type RootState = {
