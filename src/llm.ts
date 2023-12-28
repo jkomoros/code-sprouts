@@ -11,7 +11,7 @@ import {
 	Environment,
 	ModelProvider,
 	Prompt,
-	PromptComponent,
+	PromptComponentImage,
 	PromptOptions,
 	PromptStream,
 	modelProvider
@@ -172,9 +172,9 @@ export const promptIncludesImage = (prompt : Prompt) : boolean => {
 	return promptImages(prompt).length > 0;
 };
 
-export const promptImages = (prompt : Prompt) : PromptComponent[] => {
+export const promptImages = (prompt : Prompt) : PromptComponentImage[] => {
 	if (!Array.isArray(prompt)) prompt = [prompt];
-	return prompt.filter(item => typeof item != 'string');
+	return prompt.filter(item => typeof item == 'object' && item.image) as PromptComponentImage[];
 };
 
 export const debugTextForPrompt = (prompt : Prompt) : string => {

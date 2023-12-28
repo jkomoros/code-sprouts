@@ -57,6 +57,8 @@ const promptComponentImageSchema = z.object({
 	image: imageURL
 });
 
+export type PromptComponentImage = z.infer<typeof promptComponentImageSchema>;
+
 const promptComponentStringSchema = z.string();
 
 const promptComponentSchema = z.union([promptComponentImageSchema, promptComponentStringSchema]);
