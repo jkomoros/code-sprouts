@@ -22,7 +22,10 @@ import fetcher from '../../src/fetcher-browser.js';
 import {
 	canonicalizePath
 } from './app.js';
-import { Signaller } from '../runner.js';
+
+import {
+	Signaller
+} from '../runner.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({

@@ -48,10 +48,20 @@ export const subInstructionsMapSchema = z.record(subInstructionNameSchema, subIn
 
 export type SubInstructionsMap = z.infer<typeof subInstructionsMapSchema>;
 
-export type PromptComponent = string | {image: Buffer};
+const promptComponentImageSchema = z.object({
+	image: z.instanceof(Buffer)
+});
+
+const promptComponentStringSchema = z.string();
+
+const promptComponentSchema = z.union([promptComponentImageSchema, promptComponentStringSchema]);
+
+export type PromptComponent = z.infer<typeof promptComponentSchema>;
+
+export const promptSchema = z.union([promptComponentSchema, z.array(promptComponentSchema)]);
 
 //Later we'll allow passing images, too.
-export type Prompt = PromptComponent | PromptComponent[];
+export type Prompt = z.infer<typeof promptSchema>;
 
 export const compiledSproutSchema = z.object({
 	//TODO: should this be a more specific object name, to make it easier to verify it's indeded a sprout when loaded from a random place?
