@@ -69,7 +69,7 @@ import {
 import {
 	ATTACH_FILE_ICON,
 	IMAGE_ICON,
-	FAST_FORWARD_ICON
+	SEND_ICON
 } from './my-icons.js';
 
 import {
@@ -207,9 +207,8 @@ class SproutView extends connect(store)(PageViewElement) {
 							title='Send'
 							?disabled=${this._sproutStreaming}
 						>
-							<!-- TODO: make this a send icon -->
 							<!-- TODO: Cmd-Enter to send -->
-							${FAST_FORWARD_ICON}
+							${SEND_ICON}
 						</button>
 						<!-- TODO: allow dragging and dropping -->
 						<input
