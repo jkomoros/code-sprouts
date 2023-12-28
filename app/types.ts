@@ -17,9 +17,9 @@ export type SproutDataMap = z.infer<typeof sproutDataMapSchema>;
 
 export type URLHashArgs = z.infer<typeof urlHashArgs>;
 
-type ConverastionTurn = {
+export type ConversationTurn = {
 	speaker: 'user' | 'sprout',
 	text: string
 };
 
-export type Conversation = ConverastionTurn[];
+export type Conversation = ConversationTurn[];

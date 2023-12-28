@@ -50,6 +50,7 @@ import {
 
 import {
 	Conversation,
+	ConversationTurn,
 	SproutDataMap,
 	SproutLocation
 } from '../types.js';
@@ -126,7 +127,7 @@ class SproutView extends connect(store)(PageViewElement) {
 						`)}
 					</select>
 				</div>
-				${this._conversation.map((message) => html`${JSON.stringify(message, null, '\t')}`)}
+				${this._conversation.map((turn) => this._renderConversation(turn))}
 			</div>
 		`;
 	}
@@ -181,6 +182,15 @@ class SproutView extends connect(store)(PageViewElement) {
 				}
 			}
 		}
+	}
+
+	private _renderConversation(turn : ConversationTurn) : TemplateResult {
+		return html`
+			<div class='conversation-turn'>
+				<div class='conversation-turn-speaker'>${turn.speaker}</div>
+				<div class='conversation-turn-text'>${turn.text}</div>
+			</div>
+		`;
 	}
 
 	private _handleHashChange() {
