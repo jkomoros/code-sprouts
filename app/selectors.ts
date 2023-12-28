@@ -6,6 +6,7 @@ export const selectPage = (state : RootState) => state.app ? state.app.page : ''
 export const selectPageExtra = (state : RootState) => state.app ? state.app.pageExtra : '';
 export const selectHash = (state : RootState) => state.app ? state.app.hash : '';
 
+export const selectCurrentSprout = (state : RootState) => state.data ? state.data.currentSprout : null;
 export const selectSproutData = (state : RootState) => state.data ? state.data.sprouts : {};
 export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
 

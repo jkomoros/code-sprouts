@@ -31,7 +31,8 @@ import {
 
 import {
 	addDefaultSprouts,
-	setOpenAIAPIKey
+	setOpenAIAPIKey,
+	updateWithMainPageExtra
 } from '../actions/data.js';
 
 import {
@@ -100,6 +101,9 @@ class SproutView extends connect(store)(PageViewElement) {
 	override updated(changedProps : Map<keyof SproutView, SproutView[keyof SproutView]>) {
 		if (changedProps.has('_hashForCurrentState')) {
 			store.dispatch(canonicalizeHash());
+		}
+		if ((changedProps.has('_pageExtra')) && this._pageExtra) {
+			store.dispatch(updateWithMainPageExtra(this._pageExtra));
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
