@@ -50,7 +50,7 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				...state.conversation,
 				{
 					speaker: 'sprout',
-					text: ''
+					message: ''
 				}
 			]
 		};
@@ -61,7 +61,7 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				...state.conversation.slice(0, state.conversation.length - 1),
 				{
 					speaker: 'sprout',
-					text: state.conversation[state.conversation.length - 1].text + action.message
+					message: state.conversation[state.conversation.length - 1].message + action.message
 				}
 			]
 		};
@@ -77,7 +77,7 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				...state.conversation,
 				{
 					speaker: 'user',
-					text: action.response
+					message: action.response
 				}
 			]
 		};

@@ -256,7 +256,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			assertUnreachable(turn.speaker);
 		}
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
-		const text = textForPrompt(turn.text);
+		const text = textForPrompt(turn.message);
 		//TODO: render images too
 		return html`
 			<div class='conversation-turn'>

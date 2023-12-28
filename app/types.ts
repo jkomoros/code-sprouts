@@ -23,7 +23,7 @@ export type URLHashArgs = z.infer<typeof urlHashArgs>;
 
 export type ConversationTurn = {
 	speaker: 'user' | 'sprout',
-	text: Prompt
+	message: Prompt
 };
 
 export type Conversation = ConversationTurn[];
