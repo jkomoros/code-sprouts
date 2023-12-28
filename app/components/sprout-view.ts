@@ -336,7 +336,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					${speaker}
 					${showLoading ? html`<span class='loading'>${SYNC_ICON}</span>` : ''}
 				</div>
-				<div class='conversation-turn-text'>${text}</div>
+				<div class='conversation-turn-text'>${text.trim() ? html`${text}` : html`<em>Thinking...</em>`}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
 					${images.map((image) => html`<img src=${image.image} />`)}
 				</div>` : ''}
