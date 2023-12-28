@@ -74,6 +74,10 @@ import {
 	assertUnreachable
 } from '../../src/util.js';
 
+import {
+	textForPrompt
+} from '../../src/llm.js';
+
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
 
@@ -252,6 +256,8 @@ class SproutView extends connect(store)(PageViewElement) {
 			assertUnreachable(turn.speaker);
 		}
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
+		const text = textForPrompt(turn.text);
+		//TODO: render images too
 		return html`
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
@@ -259,7 +265,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					<!-- better loading indicator -->
 					${showLoading ? html`<span class='loading'>...</span>` : ''}
 				</div>
-				<div class='conversation-turn-text'>${turn.text}</div>
+				<div class='conversation-turn-text'>${text}</div>
 			</div>
 		`;
 	}
