@@ -374,6 +374,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _attachFile(file : File) {
+		if (!file.type.startsWith('image/')) throw new Error('Not an image');
 		const reader = new FileReader();
 		//TODO: don't allow submitting the text if an image is uploading
 		reader.onload = () => {
