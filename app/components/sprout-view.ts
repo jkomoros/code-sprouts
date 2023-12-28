@@ -67,7 +67,7 @@ import {
 } from '../runner.js';
 
 import {
-	AREA_CHART_ICON,
+	ATTACH_FILE_ICON,
 	FAST_FORWARD_ICON,
 	PLAY_ICON
 } from './my-icons.js';
@@ -227,7 +227,7 @@ class SproutView extends connect(store)(PageViewElement) {
 								?disabled=${this._sproutStreaming}
 							>
 								<!-- TODO: make this an image icon -->
-								${this._imageUpload ? AREA_CHART_ICON : PLAY_ICON}
+								${this._imageUpload ? ATTACH_FILE_ICON : PLAY_ICON}
 							</button>
 						`: ''}
 					</div>
