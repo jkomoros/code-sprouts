@@ -4,6 +4,7 @@ import {
 	SET_OPENAI_API_KEY,
 	SPROUT_STOPPED_STREAMING,
 	START_STREAMING_SPROUT,
+	STREAM_INCREMENTAL_MESSAGE,
 	SomeAction
 } from '../actions.js';
 
@@ -49,6 +50,17 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				{
 					speaker: 'sprout',
 					text: ''
+				}
+			]
+		};
+	case STREAM_INCREMENTAL_MESSAGE:
+		return {
+			...state,
+			conversation: [
+				...state.conversation.slice(0, state.conversation.length - 1),
+				{
+					speaker: 'sprout',
+					text: state.conversation[state.conversation.length - 1].text + action.message
 				}
 			]
 		};

@@ -12,6 +12,7 @@ import {
 } from '../types.js';
 
 import {
+	selectConversation,
 	selectCurrentSproutName,
 	selectSproutData
 } from '../selectors.js';
@@ -61,6 +62,20 @@ export const startStreamingSprout = () : SomeAction => {
 	return {
 		type: START_STREAMING_SPROUT
 	};
+};
+
+export const streamIncrementalMessage = (message : string) : ThunkSomeAction => (dispatch, getState) => {
+	const conversation = selectConversation(getState());
+	if (conversation.length === 0) {
+		throw new Error('No conversation to add to');
+	}
+	if (conversation[conversation.length - 1].speaker !== 'sprout') {
+		throw new Error('Last message in conversation was not from sprout');
+	}
+	dispatch({
+		type: 'STREAM_INCREMENTAL_MESSAGE',
+		message
+	});
 };
 
 export const sproutStoppedStreaming = () : SomeAction => {
