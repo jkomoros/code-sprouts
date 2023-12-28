@@ -22,6 +22,7 @@ import fetcher from '../../src/fetcher-browser.js';
 import {
 	canonicalizePath
 } from './app.js';
+import { Signaller } from '../runner.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
@@ -82,6 +83,14 @@ export const sproutStoppedStreaming = () : SomeAction => {
 	return {
 		type: SPROUT_STOPPED_STREAMING
 	};
+};
+
+export const provideUserResponse = (response : string, signaller : Signaller) : ThunkSomeAction => (dispatch) => {
+	dispatch({
+		type: 'SPROUT_PROVIDED_USER_RESPONSE',
+		response
+	});
+	signaller.provideUserResponse(response);
 };
 
 export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {

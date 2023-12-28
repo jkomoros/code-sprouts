@@ -16,6 +16,7 @@ export const SELECT_SPROUT = 'SELECT_SPROUT';
 export const SET_OPENAI_API_KEY = 'SET_OPENAI_API_KEY';
 export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
 export const STREAM_INCREMENTAL_MESSAGE = 'STREAM_INCREMENTAL_MESSAGE';
+export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
 export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
 
 const actionUpdatePage = z.object({
@@ -64,6 +65,11 @@ const actionSproutStoppedStreaming = z.object({
 	type: z.literal(SPROUT_STOPPED_STREAMING)
 }).strict();
 
+const actionSproutProvidedUserResponse = z.object({
+	type: z.literal(SPROUT_PROVIDED_USER_RESPONSE),
+	response: z.string()
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -73,7 +79,8 @@ const someAction = z.discriminatedUnion('type', [
 	actionSetOpenAPIKey,
 	actionStartStreamingSprout,
 	actionStreamIncrementalMessage,
-	actionSproutStoppedStreaming
+	actionSproutStoppedStreaming,
+	actionSproutProvidedUserResponse
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

@@ -36,6 +36,7 @@ import {
 
 import {
 	addDefaultSprouts,
+	provideUserResponse,
 	selectSprout,
 	setOpenAIAPIKey,
 	sproutStoppedStreaming,
@@ -221,7 +222,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		const text = textarea.value;
 		textarea.value = '';
 		if (!this._lastSignaller) throw new Error('No signaller');
-		this._lastSignaller.provideUserResponse(text);
+		store.dispatch(provideUserResponse(text, this._lastSignaller));
 	}
 
 	private _handleHashChange() {

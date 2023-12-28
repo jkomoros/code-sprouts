@@ -2,6 +2,7 @@ import {
 	ADD_SPROUTS,
 	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
+	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
 	START_STREAMING_SPROUT,
 	STREAM_INCREMENTAL_MESSAGE,
@@ -68,6 +69,17 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			sproutStreaming: false
+		};
+	case SPROUT_PROVIDED_USER_RESPONSE:
+		return {
+			...state,
+			conversation: [
+				...state.conversation,
+				{
+					speaker: 'user',
+					text: action.response
+				}
+			]
 		};
 	default:
 		return state;
