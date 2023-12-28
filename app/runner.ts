@@ -2,6 +2,10 @@ import {
 	Sprout
 } from '../src/sprout.js';
 
+import {
+	Prompt
+} from '../src/types.js';
+
 type VoidFunction = () => void;
 type MessageFunction = (message : string) => void;
 
@@ -16,8 +20,8 @@ type SignallerOptions = {
 export class Signaller {
 	private _done = false;
 	private _opts :SignallerOptions;
-	private _userMessageCallback : ((response : string) => void) | null = null;
-	private _userMessage : string | null = null;
+	private _userMessageCallback : ((response : Prompt) => void) | null = null;
+	private _userMessage : Prompt | null = null;
 
 	constructor(opts : SignallerOptions) {
 		this._opts = opts;
@@ -35,7 +39,7 @@ export class Signaller {
 		this._opts.streamIncrementalMessage(message);
 	}
 
-	provideUserResponse(response : string) : void {
+	provideUserResponse(response : Prompt) : void {
 		if (this._userMessageCallback) {
 			this._userMessageCallback(response);
 			this._userMessageCallback = null;
@@ -45,7 +49,7 @@ export class Signaller {
 		this._userMessage = response;
 	}
 
-	async getUserMessage() : Promise<string> {
+	async getUserMessage() : Promise<Prompt> {
 		if (this._userMessage) {
 			const message = this._userMessage;
 			this._userMessage = null;
