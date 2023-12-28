@@ -75,7 +75,8 @@ import {
 	PLUS_ICON,
 	SEND_ICON,
 	SYNC_ICON,
-	WARNING_ICON
+	WARNING_ICON,
+	LOCK_ICON
 } from './my-icons.js';
 
 import {
@@ -213,9 +214,13 @@ class SproutView extends connect(store)(PageViewElement) {
 					margin-bottom: 0;
 				}
 
-				.title p.warnings svg {
+				.title svg {
 					height: 1em;
 					width: 1em;
+					fill: var(--dark-gray-color);
+				}
+
+				.warning svg {
 					fill: var(--app-warning-color);
 				}
 
@@ -353,8 +358,11 @@ class SproutView extends connect(store)(PageViewElement) {
 							<p class='description'>
 								${this._currentSproutConfig?.description || 'A sprout without a description'}
 							</p>
-							<p class='warnings'>
-								${remoteDomain ? html`${WARNING_ICON} This is a remote sprout from <strong>${remoteDomain}</strong>` : ''}
+							<p class='messages'>
+								${remoteDomain ? html`<span class='warning'>${WARNING_ICON}</span> This is a remote sprout from <strong>${remoteDomain}</strong>` : ''}
+							</p>
+							<p class='messages'>
+								${remoteDomain ? html`${LOCK_ICON} <strong>${remoteDomain}</strong> cannot see your private information or keys` : ''}
 							</p>
 						</div>
 					</div>
