@@ -70,6 +70,8 @@ class MyApp extends connect(store)(LitElement) {
 					--controls-width: 18em;
 					--default-border: 1px solid var(--dark-gray-color);
 
+                    --disabled-filter: opacity(30%);
+
                     --fast-animation: 0.5s;
                     --slow-animation: 2s;
 					font-size: 0.8em;

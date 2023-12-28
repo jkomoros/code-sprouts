@@ -24,11 +24,11 @@ export const ButtonSharedStyles = css`
 
 		button:disabled {
 			cursor:default;
-			background-color: var(--disabled-color);
+            filter: var(--disabled-filter);
 		}
 
 		button:disabled:hover {
-			filter: none;
+			filter: var(--disabled-filter);
 		}
 
 		button.default {

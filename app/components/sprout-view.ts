@@ -303,7 +303,7 @@ class SproutView extends connect(store)(PageViewElement) {
 							</button>
 						`: ''}
 						<button
-							class='button round'
+							class='button round default'
 							@click=${this._handleConversationInputSubmit}
 							title='Send'
 							?disabled=${this._sproutStreaming}
