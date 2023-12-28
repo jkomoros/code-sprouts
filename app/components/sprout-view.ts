@@ -346,6 +346,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		const text = textForPrompt(turn.message);
 		const images = promptImages(turn.message);
+		//TODO: sometimes the text is empty and the stream is done, in that case show 'No response'
 		return html`
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
