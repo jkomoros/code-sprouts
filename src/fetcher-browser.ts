@@ -8,11 +8,23 @@ import {
 	DIRECTORY_LISTING_FILE
 } from './constants.js';
 
+const makeFinalPath = (path : Path) : Path => {
+	const parts = path.split('/');
+	if (parts.length == 0) return path;
+	const firstPart = parts[0];
+	if (firstPart.includes('.')) {
+		//We'll assume the path is a URL
+		return 'https://' + path;
+	}
+	return path;
+};
+
 class BrowserFetcher {
 
 	writable: false = false as const;
 
 	async fileFetch(path: Path): Promise<string> {
+		path = makeFinalPath(path);
 		const response = await fetch(path);
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
@@ -21,6 +33,7 @@ class BrowserFetcher {
 	}
 
 	async fileExists(path: Path): Promise<boolean> {
+		path = makeFinalPath(path);
 		try {
 			const response = await fetch(path, { method: 'HEAD' });
 			return response.status === 200;
@@ -35,6 +48,7 @@ class BrowserFetcher {
 	}
 
 	async listDirectory(path: Path): Promise<Path[]> {
+		path = makeFinalPath(path);
 		const response = await fetch(this.joinPath(path, DIRECTORY_LISTING_FILE));
 		if (!response.ok) throw new Error(`Could not list directory ${path}`);
 		const json = await response.json();
@@ -45,7 +59,8 @@ class BrowserFetcher {
 	async listSprouts(basePaths: string[] = ['examples', 'sprouts']): Promise<Path[]> {
 		//This requires a directory.json file in each folder.
 		const result: Path[] = [];
-		for (const basePath of basePaths) {
+		for (let basePath of basePaths) {
+			basePath = makeFinalPath(basePath);
 			try {
 				const response = await fetch(`${basePath}/${DIRECTORY_LISTING_FILE}`);
 				if (!response.ok) {
