@@ -233,6 +233,10 @@ class SproutView extends connect(store)(PageViewElement) {
 					width: 100%;
 					display: flex;
 					position: relative;
+					box-sizing: border-box;
+					padding-top: 1em;
+					margin-top: 1em;
+					border-top: var(--subtle-border);
 				}
 
 				#conversation-input textarea {
