@@ -86,7 +86,8 @@ import {
 
 import {
 	ImageURL,
-	Prompt
+	Prompt,
+	SproutConfig
 } from '../../src/types.js';
 
 @customElement('sprout-view')
@@ -109,6 +110,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_currentSprout : Sprout | null = null;
+
+	@state()
+		_currentSproutConfig : SproutConfig | null = null;
 
 	@state()
 		_currentSproutAllowsImages = false;
@@ -360,6 +364,10 @@ class SproutView extends connect(store)(PageViewElement) {
 			this._currentSproutAllowsImages = false;
 			this._currentSprout.allowImages().then(allowImages => {
 				this._currentSproutAllowsImages = allowImages;
+			});
+			this._currentSproutConfig = null;
+			this._currentSprout.config().then(config => {
+				this._currentSproutConfig = config;
 			});
 			if (this._lastSignaller) this._lastSignaller.finish();
 			this._lastSignaller = new Signaller({
