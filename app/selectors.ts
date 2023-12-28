@@ -42,7 +42,8 @@ export const selectCurrentSprout = createSelector(
 		const debugLogger = (msg : string) => console.log(msg);
 		return new Sprout(sproutName, {
 			ai: aiProvider,
-			debugLogger
+			debugLogger,
+			disallowCompilation: true
 		});
 	}
 );
