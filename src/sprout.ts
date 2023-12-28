@@ -119,6 +119,22 @@ export class Sprout {
 		return this._path;
 	}
 
+	async allowImages() : Promise<boolean> {
+		const config = await this.config();
+		if(!config.allowImages) return false;
+		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
+		try {
+			this._aiProvider.modelForOptions({
+				modelRequirements: {
+					imageInput: true
+				}
+			});
+			return true;
+		} catch(err) {
+			return false;
+		}
+	}
+
 	async compiled() : Promise<boolean> {
 		const compiled = await this._compiled();
 		return Boolean(compiled);
