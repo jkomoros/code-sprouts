@@ -3,6 +3,7 @@ import {
 } from '../src/sprout.js';
 
 //TODO: rename this to StreamSignaller
+//TODO: should this be the way that the runSproutInCLI interacts with it too?
 export class Signaller {
 	private _done = false;
 	private _streamStarted : () => void;
