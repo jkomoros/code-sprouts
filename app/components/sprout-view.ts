@@ -170,7 +170,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					</select>
 				</div>
 				<div id='conversation'>
-					${this._conversation.map((turn) => this._renderConversation(turn))}
+					${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
 					<div id='conversation-input'>
 						<textarea id='conversation-input-textarea'>
 						</textarea>
@@ -240,7 +240,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
-	private _renderConversation(turn : ConversationTurn) : TemplateResult {
+	private _renderConversation(turn : ConversationTurn, lastTurn : boolean) : TemplateResult {
 		let speaker = '';
 		switch (turn.speaker) { 
 		case 'sprout':
@@ -252,9 +252,14 @@ class SproutView extends connect(store)(PageViewElement) {
 		default:
 			assertUnreachable(turn.speaker);
 		}
+		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		return html`
 			<div class='conversation-turn'>
-				<div class='conversation-turn-speaker'>${speaker}</div>
+				<div class='conversation-turn-speaker'>
+					${speaker}
+					<!-- better loading indicator -->
+					${showLoading ? html`<span class='loading'>...</span>` : ''}
+				</div>
 				<div class='conversation-turn-text'>${turn.text}</div>
 			</div>
 		`;
