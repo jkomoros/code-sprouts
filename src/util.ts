@@ -48,5 +48,6 @@ export const makeFinalPath = (path : Path) : FinalPath => {
 
 export const joinPath = (...parts: Path[]): Path => {
 	// Assuming the parts are URL segments, this will join them with '/' separators
-	return parts.join('/');
+	const intermediate = parts.join('/');
+	return intermediate.split('/').filter(val => val !== '').join('/');
 };
