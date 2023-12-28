@@ -70,6 +70,10 @@ import {
 	FAST_FORWARD_ICON
 } from './my-icons.js';
 
+import {
+	assertUnreachable
+} from '../../src/util.js';
+
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
 
@@ -140,6 +144,10 @@ class SproutView extends connect(store)(PageViewElement) {
 
 				#conversation-input textarea {
 					flex-grow: 1;
+				}
+
+				.conversation-turn-speaker {
+					font-weight: bold;
 				}
 			`
 		];
@@ -232,9 +240,20 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _renderConversation(turn : ConversationTurn) : TemplateResult {
+		let speaker = '';
+		switch (turn.speaker) { 
+		case 'sprout':
+			speaker = 'Sprout';
+			break;
+		case 'user':
+			speaker = 'User';
+			break;
+		default:
+			assertUnreachable(turn.speaker);
+		}
 		return html`
 			<div class='conversation-turn'>
-				<div class='conversation-turn-speaker'>${turn.speaker}</div>
+				<div class='conversation-turn-speaker'>${speaker}</div>
 				<div class='conversation-turn-text'>${turn.text}</div>
 			</div>
 		`;
