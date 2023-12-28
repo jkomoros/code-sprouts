@@ -14,6 +14,7 @@ import {
 	selectOpenAIAPIKey,
 	selectPageExtra,
 	selectSproutData,
+	selectSproutStreaming,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -90,6 +91,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		_currentSprout : Sprout | null = null;
 
 	@state()
+		_sproutStreaming = false;
+
+	@state()
 		_conversation : Conversation = [];
 
 	_lastSignaller : Signaller | null = null;
@@ -141,8 +145,8 @@ class SproutView extends connect(store)(PageViewElement) {
 							class='button round'
 							@click=${this._handleConversationInputSubmit}
 							title='Send'
+							?disabled=${this._sproutStreaming}
 						>
-							<!-- TODO: disable while input still streaming -->
 							<!-- TODO: make this a send icon -->
 							<!-- TODO: Cmd-Enter to send -->
 							${FAST_FORWARD_ICON}
@@ -160,6 +164,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._openAIAPIKey = selectOpenAIAPIKey(state);
 		this._sprouts = selectSproutData(state);
 		this._currentSproutName = selectCurrentSproutName(state);
+		this._sproutStreaming = selectSproutStreaming(state);
 		this._currentSprout = selectCurrentSprout(state);
 		this._conversation = selectConversation(state);
 	}
