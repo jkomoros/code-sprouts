@@ -172,8 +172,7 @@ class SproutView extends connect(store)(PageViewElement) {
 				<div id='conversation'>
 					${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
 					<div id='conversation-input'>
-						<textarea id='conversation-input-textarea'>
-						</textarea>
+						<textarea autofocus id='conversation-input-textarea'></textarea>
 						<!-- TODO: allow image input -->
 						<button
 							class='button round'
