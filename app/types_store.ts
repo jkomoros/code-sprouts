@@ -9,11 +9,17 @@ export type AppState = {
 	hash: string;
 };
 
+type ConverastionTurn = {
+	speaker: 'user' | 'sprout',
+	text: string
+};
+
 export type DataState = {
 	openAIAPIKey : string,
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
-	sproutStreaming: boolean
+	sproutStreaming: boolean,
+	conversation: ConverastionTurn[]
 }
 
 export type RootState = {

@@ -15,7 +15,8 @@ const INITIAL_STATE : DataState = {
 	openAIAPIKey: '',
 	sprouts: {},
 	currentSproutName: null,
-	sproutStreaming: false
+	sproutStreaming: false,
+	conversation: []
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -42,7 +43,14 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case START_STREAMING_SPROUT:
 		return {
 			...state,
-			sproutStreaming: true
+			sproutStreaming: true,
+			conversation: [
+				...state.conversation,
+				{
+					speaker: 'sprout',
+					text: ''
+				}
+			]
 		};
 	case SPROUT_STOPPED_STREAMING:
 		return {
