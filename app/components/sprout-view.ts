@@ -74,11 +74,13 @@ import {
 	IMAGE_ICON,
 	PLUS_ICON,
 	SEND_ICON,
-	SYNC_ICON
+	SYNC_ICON,
+	WARNING_ICON
 } from './my-icons.js';
 
 import {
 	assertUnreachable,
+	pathIsRemote,
 	shortenDisplayPath
 } from '../../src/util.js';
 
@@ -211,6 +213,12 @@ class SproutView extends connect(store)(PageViewElement) {
 					margin-bottom: 0;
 				}
 
+				.title p.warnings svg {
+					height: 1em;
+					width: 1em;
+					fill: var(--app-warning-color);
+				}
+
 				.conversation-turn {
 					width: 100%;
 				}
@@ -306,6 +314,9 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	override render() : TemplateResult {
+
+		const remoteDomain = pathIsRemote(this._currentSproutName || '');
+
 		return html`
 			<div class='container'>
 				<div class='column'>
@@ -341,6 +352,9 @@ class SproutView extends connect(store)(PageViewElement) {
 							<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
 							<p class='description'>
 								${this._currentSproutConfig?.description || 'A sprout without a description'}
+							</p>
+							<p class='warnings'>
+								${remoteDomain ? html`${WARNING_ICON} This is a remote sprout from <strong>${remoteDomain}</strong>` : ''}
 							</p>
 						</div>
 					</div>

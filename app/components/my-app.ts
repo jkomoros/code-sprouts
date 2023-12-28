@@ -67,6 +67,7 @@ class MyApp extends connect(store)(LitElement) {
 					--app-primary-color: #51b9a3;
                     --app-secondary-color: #5e2b97;
 					--app-light-text-color: white;
+                    --app-warning-color: #CC0000;
 					/* Also encoded as CONTROLS_WIDTH above */
 					--controls-width: 18em;
 					--default-border: 1px solid var(--dark-gray-color);
