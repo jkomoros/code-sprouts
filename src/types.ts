@@ -11,6 +11,8 @@ export const pathSchema = z.string();
 
 export type Path = z.infer<typeof pathSchema>;
 
+export type FinalPath = string;
+
 const sproutName = z.string();
 
 export type SproutName = z.infer<typeof sproutName>;

@@ -8,16 +8,9 @@ import {
 	DIRECTORY_LISTING_FILE
 } from './constants.js';
 
-const makeFinalPath = (path : Path) : Path => {
-	const parts = path.split('/');
-	if (parts.length == 0) return path;
-	const firstPart = parts[0];
-	if (firstPart.includes('.')) {
-		//We'll assume the path is a URL
-		return 'https://' + path;
-	}
-	return path;
-};
+import {
+	makeFinalPath
+} from './util.js';
 
 class BrowserFetcher {
 
