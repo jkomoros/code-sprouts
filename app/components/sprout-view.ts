@@ -78,6 +78,7 @@ import {
 import {
 	textForPrompt
 } from '../../src/llm.js';
+import { ImageURL, Prompt } from '../../src/types.js';
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -105,6 +106,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_conversation : Conversation = [];
+	
+	@state()
+		_imageUpload : ImageURL = '';
 
 	_lastSignaller : Signaller | null = null;
 
@@ -290,11 +294,19 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	private _handleConversationInputSubmit() {
 		if (this._sproutStreaming) throw new Error('Cannot submit while streaming');
+		if (!this._lastSignaller) throw new Error('No signaller');
 		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
 		const text = textarea.value;
 		textarea.value = '';
-		if (!this._lastSignaller) throw new Error('No signaller');
-		store.dispatch(provideUserResponse(text, this._lastSignaller));
+		const image = this._imageUpload;
+		this._imageUpload = '';		
+		const message : Prompt = image ? [
+			text,
+			{
+				image
+			}
+		] : text;
+		store.dispatch(provideUserResponse(message, this._lastSignaller));
 	}
 
 	private _handleConversationImageInputClicked() {
@@ -303,7 +315,17 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleConversationImageInputChanged() {
-		throw new Error('Not implemented');
+		const input = this.shadowRoot!.getElementById('image-upload') as HTMLInputElement;
+		if (!input.files) throw new Error('No files');
+		const file = input.files[0];
+		if (!file) throw new Error('No file');
+		const reader = new FileReader();
+		//TODO: don't allow submitting the text if an image is uploading
+		reader.onload = () => {
+			//We told it to be a dataURL so it's a file
+			this._imageUpload = reader.result as string;
+		};
+		reader.readAsDataURL(file);	
 	}
 
 	private _handleHashChange() {
