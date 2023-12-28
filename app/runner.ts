@@ -2,31 +2,40 @@ import {
 	Sprout
 } from '../src/sprout.js';
 
+type VoidFunction = () => void;
+type MessageFunction = (message : string) => void;
+
+type SignallerOptions = {
+	streamStarted: VoidFunction,
+	streamStopped: VoidFunction,
+	streamIncrementalMessage: MessageFunction
+	getUserMessage: (previousSproutMessage : string) => Promise<string>;
+}
+
 //TODO: rename this to StreamSignaller
 //TODO: should this be the way that the runSproutInCLI interacts with it too?
 export class Signaller {
 	private _done = false;
-	private _streamStarted : () => void;
-	private _streamStopped : () => void;
-	private _streamIncrementalMessage: (message : string) => void;
+	private _opts :SignallerOptions;
 
-	constructor(opts : {streamStarted: () => void, streamStopped: () => void, streamIncrementalMessage : (message : string) => void}) {
-		const {streamStarted, streamStopped, streamIncrementalMessage} = opts;
-		this._streamStarted = streamStarted;
-		this._streamStopped = streamStopped;
-		this._streamIncrementalMessage = streamIncrementalMessage;
+	constructor(opts : SignallerOptions) {
+		this._opts = opts;
 	}
 
 	streamStarted() : void {
-		this._streamStarted();
+		this._opts.streamStarted();
 	}
 
 	streamStopped() : void {
-		this._streamStopped();
+		this._opts.streamStopped();
 	}
 
 	streamIncrementalMessage(message : string) : void {
-		this._streamIncrementalMessage(message);
+		this._opts.streamIncrementalMessage(message);
+	}
+
+	getUserMessage(previousSproutMessage : string) : Promise<string> {
+		return this._opts.getUserMessage(previousSproutMessage);
 	}
 
 	finish() : void {
@@ -49,9 +58,7 @@ export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller)
 			streamLogger: (message : string) => signaller.streamIncrementalMessage(message)
 		});
 		signaller.streamStopped();
-		console.log('result', message);
-		//TODO: better UI to allow user to provide a response.
-		const response = prompt(`The AI said:\n${message}\n\nWhat is your response?`);
+		const response = await signaller.getUserMessage(message);
 		if (!response) {
 			signaller.finish();
 			break;
