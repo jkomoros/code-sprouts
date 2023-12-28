@@ -68,8 +68,8 @@ import {
 
 import {
 	ATTACH_FILE_ICON,
-	FAST_FORWARD_ICON,
-	PLAY_ICON
+	IMAGE_ICON,
+	FAST_FORWARD_ICON
 } from './my-icons.js';
 
 import {
@@ -226,8 +226,7 @@ class SproutView extends connect(store)(PageViewElement) {
 								title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
 								?disabled=${this._sproutStreaming}
 							>
-								<!-- TODO: make this an image icon -->
-								${this._imageUpload ? ATTACH_FILE_ICON : PLAY_ICON}
+								${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
 							</button>
 						`: ''}
 					</div>
