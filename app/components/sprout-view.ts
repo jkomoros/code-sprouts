@@ -420,6 +420,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleDragOver(e : DragEvent) {
+		if (this._sproutStreaming) return;
 		e.preventDefault();
 		this._renderDropTarget = true;
 	}
@@ -430,6 +431,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleDrop(e : DragEvent) {
+		if (this._sproutStreaming) return;
 		e.preventDefault();
 		this._renderDropTarget = false;
 		if (!e.dataTransfer) throw new Error('No data transfer');
