@@ -138,6 +138,7 @@ class SproutView extends connect(store)(PageViewElement) {
 
 				#conversation {
 					width: 60em;
+					height: 100%;
 				}
 
 				#conversation-messages {
