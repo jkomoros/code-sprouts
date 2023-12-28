@@ -28,6 +28,7 @@ import {
 } from '../runner.js';
 
 import {
+	Path,
 	Prompt
 } from '../../src/types.js';
 
@@ -108,6 +109,11 @@ export const provideUserResponse = (response : Prompt, signaller : Signaller) : 
 export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {
 	const sprouts = await fetcher.listSprouts();
 	dispatch(addSprouts(Object.fromEntries(sprouts.map(sprout => [sprout, true]))));
+};
+
+export const addSprout = (sproutLocation : Path) : ThunkSomeAction => async (dispatch) => {
+	dispatch(addSprouts({[sproutLocation]: true}));
+	dispatch(selectSprout(sproutLocation));
 };
 
 export const updateWithMainPageExtra = (pageExtra : string) : ThunkSomeAction => (dispatch) => {
