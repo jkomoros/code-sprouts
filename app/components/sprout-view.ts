@@ -470,7 +470,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			if (this._openAIAPIKey) {
 				storeOpenAIAPIKeyToStorage(this._openAIAPIKey);
 			} else {
-				const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.');
+				const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.\nNo sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.');
 				if (key) {
 					store.dispatch(setOpenAIAPIKey(key));
 				}
