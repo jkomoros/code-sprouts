@@ -161,6 +161,12 @@ class SproutView extends connect(store)(PageViewElement) {
 					font-size: 0.8em;
 					color: var(--dark-gray-color);
 				}
+
+				img {
+					max-width: 100%;
+					max-height: 100%;
+					object-fit: contain;
+				}
 			`
 		];
 	}
