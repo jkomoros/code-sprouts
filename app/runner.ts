@@ -3,7 +3,7 @@ import {
 } from '../src/sprout.js';
 
 //TODO: accept a way to signal that this should cancel.
-export const runSprout = async (sprout : Sprout) => {
+export const runSproutInBrowser = async (sprout : Sprout) => {
 	await sprout.validate();
 
 	const active = true;

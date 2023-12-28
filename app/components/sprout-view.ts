@@ -45,10 +45,17 @@ import {
 } from '../util.js';
 
 import {
-	SproutDataMap, SproutLocation
+	SproutDataMap,
+	SproutLocation
 } from '../types.js';
-import { Sprout } from '../../src/sprout.js';
-import { runSprout } from '../runner.js';
+
+import {
+	Sprout
+} from '../../src/sprout.js';
+
+import {
+	runSproutInBrowser
+} from '../runner.js';
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -140,7 +147,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			store.dispatch(updateWithMainPageExtra(this._pageExtra));
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
-			runSprout(this._currentSprout);
+			runSproutInBrowser(this._currentSprout);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
