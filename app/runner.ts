@@ -9,7 +9,6 @@ type SignallerOptions = {
 	streamStarted: VoidFunction,
 	streamStopped: VoidFunction,
 	streamIncrementalMessage: MessageFunction
-	getUserMessage: (previousSproutMessage : string) => Promise<string>;
 }
 
 //TODO: rename this to StreamSignaller
@@ -17,6 +16,8 @@ type SignallerOptions = {
 export class Signaller {
 	private _done = false;
 	private _opts :SignallerOptions;
+	private _userMessageCallback : ((response : string) => void) | null = null;
+	private _userMessage : string | null = null;
 
 	constructor(opts : SignallerOptions) {
 		this._opts = opts;
@@ -34,8 +35,26 @@ export class Signaller {
 		this._opts.streamIncrementalMessage(message);
 	}
 
-	getUserMessage(previousSproutMessage : string) : Promise<string> {
-		return this._opts.getUserMessage(previousSproutMessage);
+	provideUserResponse(response : string) : void {
+		if (this._userMessageCallback) {
+			this._userMessageCallback(response);
+			this._userMessageCallback = null;
+			this._userMessage = null;
+			return;
+		}
+		this._userMessage = response;
+	}
+
+	async getUserMessage() : Promise<string> {
+		if (this._userMessage) {
+			const message = this._userMessage;
+			this._userMessage = null;
+			this._userMessageCallback = null;
+			return message;
+		}
+		return new Promise((resolve) => {
+			this._userMessageCallback = resolve;
+		});
 	}
 
 	finish() : void {
@@ -53,12 +72,12 @@ export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller)
 	//TODO: support images
 	while(!signaller.done) {
 		signaller.streamStarted();
-		const message = await sprout.conversationTurn({
+		await sprout.conversationTurn({
 			//Use a => to bind to this
 			streamLogger: (message : string) => signaller.streamIncrementalMessage(message)
 		});
 		signaller.streamStopped();
-		const response = await signaller.getUserMessage(message);
+		const response = await signaller.getUserMessage();
 		if (!response) {
 			signaller.finish();
 			break;

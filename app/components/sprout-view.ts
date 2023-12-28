@@ -164,11 +164,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			this._lastSignaller = new Signaller({
 				streamStarted: () => store.dispatch(startStreamingSprout()),
 				streamStopped: () => store.dispatch(sproutStoppedStreaming()),
-				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message)),
-				getUserMessage: async (previousSproutMessage : string) : Promise<string> => {
-					const response = prompt(`The AI said:\n${previousSproutMessage}\n\nWhat do you want to say?`);
-					return response || '';
-				}
+				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message))
 			});
 			runSproutInBrowser(this._currentSprout, this._lastSignaller);
 		}
