@@ -77,6 +77,7 @@ import {
 } from '../../src/util.js';
 
 import {
+	promptImages,
 	textForPrompt
 } from '../../src/llm.js';
 import { ImageURL, Prompt } from '../../src/types.js';
@@ -280,7 +281,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		const text = textForPrompt(turn.message);
-		//TODO: render images too
+		const images = promptImages(turn.message);
 		return html`
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
@@ -289,6 +290,9 @@ class SproutView extends connect(store)(PageViewElement) {
 					${showLoading ? html`<span class='loading'>...</span>` : ''}
 				</div>
 				<div class='conversation-turn-text'>${text}</div>
+				${images.length > 0 ? html`<div class='conversation-turn-images'>
+					${images.map((image) => html`<img src=${image.image} />`)}
+				</div>` : ''}
 			</div>
 		`;
 	}
