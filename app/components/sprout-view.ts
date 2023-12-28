@@ -10,6 +10,7 @@ import {
 	selectConversation,
 	selectCurrentSprout,
 	selectCurrentSproutName,
+	selectDraftMessage,
 	selectHashForCurrentState,
 	selectOpenAIAPIKey,
 	selectPageExtra,
@@ -42,6 +43,7 @@ import {
 	sproutStoppedStreaming,
 	startStreamingSprout,
 	streamIncrementalMessage,
+	updateDraftMessage,
 	updateWithMainPageExtra
 } from '../actions/data.js';
 
@@ -122,6 +124,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_renderDropTarget : boolean = false;
+
+	@state()
+		_draftMessage : string = '';
 
 	_lastSignaller : Signaller | null = null;
 
@@ -284,6 +289,8 @@ class SproutView extends connect(store)(PageViewElement) {
 							autofocus
 							id='conversation-input-textarea'
 							?disabled=${this._sproutStreaming}
+							.value=${this._draftMessage}
+							@input=${this._handleDraftMessageInput}
 						></textarea>
 						<input
 							type='file'
@@ -327,6 +334,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._sproutStreaming = selectSproutStreaming(state);
 		this._currentSprout = selectCurrentSprout(state);
 		this._conversation = selectConversation(state);
+		this._draftMessage = selectDraftMessage(state);
 	}
 
 	override firstUpdated() {
@@ -398,6 +406,11 @@ class SproutView extends connect(store)(PageViewElement) {
 				</div>` : ''}
 			</div>
 		`;
+	}
+
+	private _handleDraftMessageInput(e : Event) {
+		const textarea = e.target as HTMLTextAreaElement;
+		store.dispatch(updateDraftMessage(textarea.value));
 	}
 
 	private _handleDragOver(e : DragEvent) {
