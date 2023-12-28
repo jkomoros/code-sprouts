@@ -338,11 +338,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		input.click();
 	}
 
-	private _handleConversationImageInputChanged() {
-		const input = this.shadowRoot!.getElementById('image-upload') as HTMLInputElement;
-		if (!input.files) throw new Error('No files');
-		const file = input.files[0];
-		if (!file) throw new Error('No file');
+	private _attachFile(file : File) {
 		const reader = new FileReader();
 		//TODO: don't allow submitting the text if an image is uploading
 		reader.onload = () => {
@@ -351,6 +347,14 @@ class SproutView extends connect(store)(PageViewElement) {
 		};
 		//TODO: resize the image
 		reader.readAsDataURL(file);	
+	}
+
+	private _handleConversationImageInputChanged() {
+		const input = this.shadowRoot!.getElementById('image-upload') as HTMLInputElement;
+		if (!input.files) throw new Error('No files');
+		const file = input.files[0];
+		if (!file) throw new Error('No file');
+		this._attachFile(file);
 	}
 
 	private _handleHashChange() {
