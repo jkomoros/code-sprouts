@@ -27,7 +27,10 @@ export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller)
 		console.log('result', message);
 		//TODO: better UI to allow user to provide a response.
 		const response = prompt(`The AI said:\n${message}\n\nWhat is your response?`);
-		if (!response) break;
+		if (!response) {
+			signaller.finish();
+			break;
+		}
 		sprout.provideUserResponse(response || '');
 	}
 };
