@@ -155,7 +155,7 @@ class SproutView extends connect(store)(PageViewElement) {
 				}
 
 				.container {
-					height: 100%;
+					height: 100vh;
 					width: 100%;
 					display: flex;
 					flex-direction: column;
@@ -171,6 +171,9 @@ class SproutView extends connect(store)(PageViewElement) {
 				.column {
 					width:60em;
 					height: 100%;
+					box-sizing: border-box;
+					display: flex;
+					flex-direction: column;
 					background-color: white;
 					padding: 1em;
 					//A subtle dropshadow spreading out left to right
@@ -179,10 +182,8 @@ class SproutView extends connect(store)(PageViewElement) {
 
 				#conversation {
 					width: 100%;
-				}
-
-				#conversation-messages {
 					overflow-y: scroll;
+					flex-grow:1;
 					display: flex;
 					flex-direction: column;
 					justify-content: center;
@@ -367,53 +368,51 @@ class SproutView extends connect(store)(PageViewElement) {
 						</div>
 					</div>
 					<div id='conversation'>
-						<div id='conversation-messages'>
-							${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+						${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+					</div>
+					<div
+						id='conversation-input'
+						class='${this._renderDropTarget ? 'drop-target' : ''}'
+						@dragover=${this._handleDragOver}
+						@dragleave=${this._handleDragLeave}
+						@drop=${this._handleDrop}
+					>
+						<div class='drop-target-message'>
+							<span>${IMAGE_ICON} Drop images here</span>
 						</div>
-						<div
-							id='conversation-input'
-							class='${this._renderDropTarget ? 'drop-target' : ''}'
-							@dragover=${this._handleDragOver}
-							@dragleave=${this._handleDragLeave}
-							@drop=${this._handleDrop}
-						>
-							<div class='drop-target-message'>
-								<span>${IMAGE_ICON} Drop images here</span>
-							</div>
-							<textarea
-								autofocus
-								id='conversation-input-textarea'
-								?disabled=${this._sproutStreaming}
-								.value=${this._draftMessage}
-								@input=${this._handleDraftMessageInput}
-							></textarea>
-							<input
-								type='file'
-								id='image-upload'
-								accept='image/*'
-								?hidden=${true}
-								@change=${this._handleConversationImageInputChanged}
-							></input>
-							${this._currentSproutAllowsImages ? html`
-								<button
-									class='button round ${this._imageUpload ? 'highlight' : ''}'
-									@click=${this._handleConversationImageInputClicked}
-									title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
-									?disabled=${this._sproutStreaming}
-								>
-									${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
-								</button>
-							`: ''}
+						<textarea
+							autofocus
+							id='conversation-input-textarea'
+							?disabled=${this._sproutStreaming}
+							.value=${this._draftMessage}
+							@input=${this._handleDraftMessageInput}
+						></textarea>
+						<input
+							type='file'
+							id='image-upload'
+							accept='image/*'
+							?hidden=${true}
+							@change=${this._handleConversationImageInputChanged}
+						></input>
+						${this._currentSproutAllowsImages ? html`
 							<button
-								class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
-								@click=${this._handleConversationInputSubmit}
-								title='Send'
+								class='button round ${this._imageUpload ? 'highlight' : ''}'
+								@click=${this._handleConversationImageInputClicked}
+								title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
 								?disabled=${this._sproutStreaming}
 							>
-								<!-- TODO: Cmd-Enter to send -->
-								${SEND_ICON}
+								${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
 							</button>
-						</div>
+						`: ''}
+						<button
+							class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
+							@click=${this._handleConversationInputSubmit}
+							title='Send'
+							?disabled=${this._sproutStreaming}
+						>
+							<!-- TODO: Cmd-Enter to send -->
+							${SEND_ICON}
+						</button>
 					</div>
 				</div>
 			</div>
