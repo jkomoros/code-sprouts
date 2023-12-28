@@ -436,9 +436,8 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _handleConversationInputSubmit() {
 		if (this._sproutStreaming) throw new Error('Cannot submit while streaming');
 		if (!this._lastSignaller) throw new Error('No signaller');
-		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
-		const text = textarea.value;
-		textarea.value = '';
+		const text = this._draftMessage;
+		store.dispatch(updateDraftMessage(''));
 		const image = this._imageUpload;
 		this._imageUpload = '';		
 		const message : Prompt = image ? [
