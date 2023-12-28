@@ -67,7 +67,8 @@ import {
 } from '../runner.js';
 
 import {
-	FAST_FORWARD_ICON
+	FAST_FORWARD_ICON,
+	PLAY_ICON
 } from './my-icons.js';
 
 import {
@@ -188,6 +189,15 @@ class SproutView extends connect(store)(PageViewElement) {
 							<!-- TODO: Cmd-Enter to send -->
 							${FAST_FORWARD_ICON}
 						</button>
+						<button
+							class='button round'
+							@click=${this._handleConversationImageInput}
+							title='Attach Image'
+							?disabled=${this._sproutStreaming}
+						>
+							<!-- TODO: make this an image icon -->
+							${PLAY_ICON}
+						</button>
 					</div>
 				</div>
 			</div>
@@ -277,6 +287,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		textarea.value = '';
 		if (!this._lastSignaller) throw new Error('No signaller');
 		store.dispatch(provideUserResponse(text, this._lastSignaller));
+	}
+
+	private _handleConversationImageInput() {
+		throw new Error('Not implemented');
 	}
 
 	private _handleHashChange() {
