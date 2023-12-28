@@ -169,6 +169,20 @@ class SproutView extends connect(store)(PageViewElement) {
 					align-items: center;	
 				}
 
+				.title {
+					font-size: 0.8em;
+					width: 100%;
+				}
+
+				.title h2 {
+					margin-bottom: 0;
+				}
+
+				.title p {
+					margin-top: 0;
+					margin-bottom: 0;
+				}
+
 				.conversation-turn {
 					width: 100%;
 				}
@@ -277,6 +291,12 @@ class SproutView extends connect(store)(PageViewElement) {
 							<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
 						`)}
 					</select>
+				</div>
+				<div class='title'>
+					<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
+					<p class='description'>
+						${this._currentSproutConfig?.description || 'A sprout without a description'}
+					</p>
 				</div>
 				<div id='conversation'>
 					<div id='conversation-messages'>
