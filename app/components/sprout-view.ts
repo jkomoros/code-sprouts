@@ -72,7 +72,7 @@ import {
 import {
 	ATTACH_FILE_ICON,
 	IMAGE_ICON,
-	OPEN_IN_NEW,
+	PLUS_ICON,
 	SEND_ICON,
 	SYNC_ICON
 } from './my-icons.js';
@@ -319,7 +319,7 @@ class SproutView extends connect(store)(PageViewElement) {
 								@click=${this._handleAddSprout}
 								title='Add a new sprout'
 							>
-								${OPEN_IN_NEW}
+								${PLUS_ICON}
 							</button>
 						</div>
 						<div class='title'>
