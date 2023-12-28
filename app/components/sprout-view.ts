@@ -266,8 +266,8 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
 			this._currentSproutAllowsImages = false;
-			this._currentSprout.config().then(config => {
-				this._currentSproutAllowsImages = config.allowImages || false;
+			this._currentSprout.allowImages().then(allowImages => {
+				this._currentSproutAllowsImages = allowImages;
 			});
 			if (this._lastSignaller) this._lastSignaller.finish();
 			this._lastSignaller = new Signaller({
