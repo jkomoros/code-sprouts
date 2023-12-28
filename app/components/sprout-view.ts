@@ -325,6 +325,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			//We told it to be a dataURL so it's a file
 			this._imageUpload = reader.result as string;
 		};
+		//TODO: resize the image
 		reader.readAsDataURL(file);	
 	}
 
