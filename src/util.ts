@@ -35,11 +35,13 @@ export const mergeObjects = <T extends Record<string, any>>(base: T, extend: T):
 };
 
 //path should be a non-final path, like `examples/codenames` or `github.com/jkomoros/code-sprout/examples/codenames`
-export const pathIsRemote = (path : Path) : boolean => {
+//it will return either '' if it is not a remote path, or the domain name if it is.
+export const pathIsRemote = (path : Path) : string => {
 	const parts = path.split('/');
-	if (parts.length == 0) return false;
+	if (parts.length == 0) return '';
 	const firstPart = parts[0];
-	return firstPart.includes('.');
+	//We assume that if it has a dot, it's a remote path.
+	return firstPart.includes('.') ? firstPart : '';
 };
 
 export const makeFinalPath = (path : Path) : FinalPath => {
