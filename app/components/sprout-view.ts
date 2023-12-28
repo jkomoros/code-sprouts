@@ -7,9 +7,11 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 import {
+	selectCurrentSprout,
 	selectHashForCurrentState,
 	selectOpenAIAPIKey,
 	selectPageExtra,
+	selectSproutData,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -31,6 +33,7 @@ import {
 
 import {
 	addDefaultSprouts,
+	selectSprout,
 	setOpenAIAPIKey,
 	updateWithMainPageExtra
 } from '../actions/data.js';
@@ -39,6 +42,10 @@ import {
 	fetchOpenAIAPIKeyFromStorage,
 	storeOpenAIAPIKeyToStorage
 } from '../util.js';
+
+import {
+	SproutDataMap, SproutLocation
+} from '../types.js';
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -51,6 +58,12 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_openAIAPIKey = '';
+
+	@state()
+		_sprouts : SproutDataMap = {};
+
+	@state()
+		_currentSprout : SproutLocation | null = null;
 
 	static override get styles() {
 		return [
@@ -77,6 +90,18 @@ class SproutView extends connect(store)(PageViewElement) {
 	override render() : TemplateResult {
 		return html`
 			<div>
+				<div class='toolbar'>
+					<label for='sprout-select'>Sprout:</label>
+					<select
+						id='sprout-select'
+						.value=${this._currentSprout || ''}
+						@change=${this._handleSproutChanged}
+					>
+						${Object.keys(this._sprouts).map((key) => html`
+							<option .value=${key} .selected=${key == this._currentSprout}>${key}</option>
+						`)}
+					</select>
+				</div>
 				Hello, world!
 			</div>
 		`;
@@ -87,6 +112,8 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._pageExtra = selectPageExtra(state);
 		this._hashForCurrentState = selectHashForCurrentState(state);
 		this._openAIAPIKey = selectOpenAIAPIKey(state);
+		this._sprouts = selectSproutData(state);
+		this._currentSprout = selectCurrentSprout(state);
 	}
 
 	override firstUpdated() {
@@ -119,6 +146,13 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	_handleHashChange() {
 		store.dispatch(updateHash(window.location.hash, true));
+	}
+
+	_handleSproutChanged(e : Event) {
+		const sproutName = (e.target as HTMLSelectElement).value;
+		if (sproutName) {
+			store.dispatch(selectSprout(sproutName));
+		}
 	}
 
 }
