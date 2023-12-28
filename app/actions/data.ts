@@ -1,7 +1,10 @@
 import { ThunkSomeAction } from '../store.js';
 
 import {
-	SET_OPENAI_API_KEY
+	SET_OPENAI_API_KEY,
+	SPROUT_STOPPED_STREAMING,
+	START_STREAMING_SPROUT,
+	SomeAction
 } from '../actions.js';
 
 import {
@@ -52,6 +55,18 @@ export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) =>
 		type: SET_OPENAI_API_KEY,
 		key
 	});
+};
+
+export const startStreamingSprout = () : SomeAction => {
+	return {
+		type: START_STREAMING_SPROUT
+	};
+};
+
+export const sproutStoppedStreaming = () : SomeAction => {
+	return {
+		type: SPROUT_STOPPED_STREAMING
+	};
 };
 
 export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {

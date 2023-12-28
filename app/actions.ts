@@ -1,7 +1,11 @@
 import {
 	z
 } from 'zod';
-import { sproutDataMapSchema, sproutLocationSchema } from './types';
+
+import {
+	sproutDataMapSchema,
+	sproutLocationSchema
+} from './types.js';
 
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
@@ -10,6 +14,8 @@ export const UPDATE_HASH = 'UPDATE_HASH';
 export const ADD_SPROUTS = 'ADD_SPROUTS';
 export const SELECT_SPROUT = 'SELECT_SPROUT';
 export const SET_OPENAI_API_KEY = 'SET_OPENAI_API_KEY';
+export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
+export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -44,13 +50,24 @@ const actionSetOpenAPIKey = z.object({
 	key: z.string()
 }).strict();
 
+const actionStartStreamingSprout = z.object({
+	type: z.literal(START_STREAMING_SPROUT)
+}).strict();
+
+const actionSproutStoppedStreaming = z.object({
+	type: z.literal(SPROUT_STOPPED_STREAMING)
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
 	actionUpdateHash,
 	actionAddSprouts,
 	actionSelectSprout,
-	actionSetOpenAPIKey
+	actionSetOpenAPIKey,
+	actionStartStreamingSprout,
+	actionSproutStoppedStreaming
+
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

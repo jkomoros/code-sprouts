@@ -20,6 +20,7 @@ export const selectHash = (state : RootState) => state.app ? state.app.hash : ''
 
 export const selectCurrentSproutName = (state : RootState) => state.data ? state.data.currentSproutName : null;
 export const selectSproutData = (state : RootState) => state.data ? state.data.sprouts : {};
+export const selectSproutStreaming = (state : RootState) => state.data ? state.data.sproutStreaming : false;
 export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
 
 export const selectHashForCurrentState = (_state : RootState) => '';

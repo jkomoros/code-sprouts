@@ -13,6 +13,7 @@ export type DataState = {
 	openAIAPIKey : string,
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
+	sproutStreaming: boolean
 }
 
 export type RootState = {

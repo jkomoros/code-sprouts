@@ -2,6 +2,8 @@ import {
 	ADD_SPROUTS,
 	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
+	SPROUT_STOPPED_STREAMING,
+	START_STREAMING_SPROUT,
 	SomeAction
 } from '../actions.js';
 
@@ -12,7 +14,8 @@ import {
 const INITIAL_STATE : DataState = {
 	openAIAPIKey: '',
 	sprouts: {},
-	currentSproutName: null
+	currentSproutName: null,
+	sproutStreaming: false
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -35,6 +38,16 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			currentSproutName: action.sprout
+		};
+	case START_STREAMING_SPROUT:
+		return {
+			...state,
+			sproutStreaming: true
+		};
+	case SPROUT_STOPPED_STREAMING:
+		return {
+			...state,
+			sproutStreaming: false
 		};
 	default:
 		return state;
