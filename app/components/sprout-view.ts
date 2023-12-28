@@ -69,7 +69,8 @@ import {
 import {
 	ATTACH_FILE_ICON,
 	IMAGE_ICON,
-	SEND_ICON
+	SEND_ICON,
+	SYNC_ICON
 } from './my-icons.js';
 
 import {
@@ -80,7 +81,11 @@ import {
 	promptImages,
 	textForPrompt
 } from '../../src/llm.js';
-import { ImageURL, Prompt } from '../../src/types.js';
+
+import {
+	ImageURL,
+	Prompt
+} from '../../src/types.js';
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -183,6 +188,12 @@ class SproutView extends connect(store)(PageViewElement) {
 					max-width: 100%;
 					max-height: 100%;
 					object-fit: contain;
+				}
+
+				svg {
+					fill: var(--dark-gray-color);
+					height:1.0em;
+					width:1.0em;
 				}
 			`
 		];
@@ -323,8 +334,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
 					${speaker}
-					<!-- better loading indicator -->
-					${showLoading ? html`<span class='loading'>...</span>` : ''}
+					${showLoading ? html`<span class='loading'>${SYNC_ICON}</span>` : ''}
 				</div>
 				<div class='conversation-turn-text'>${text}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
