@@ -216,6 +216,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleConversationInputSubmit() {
+		if (this._sproutStreaming) throw new Error('Cannot submit while streaming');
 		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
 		const text = textarea.value;
 		textarea.value = '';
