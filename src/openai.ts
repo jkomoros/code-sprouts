@@ -18,7 +18,9 @@ import {
 
 export const computePromptStreamOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) => {
 	const openai = new OpenAI({
-		apiKey
+		apiKey,
+		//We never expose our own key in the browser, it's BYO-Key.
+		dangerouslyAllowBrowser: true
 	});
 	
 	const responseType = modelInfo.supportsJSONResponseFormat && opts.jsonResponse ? 'json_object' : 'text';
@@ -75,7 +77,9 @@ const contentForAPI = (prompt : Prompt) : ChatCompletionContentPart[] => {
 export const computePromptOpenAI = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, opts : PromptOptions) : Promise<string> => {
 	//TODO: factor out with computePromptStreamOpenAI
 	const openai = new OpenAI({
-		apiKey
+		apiKey,
+		//We never expose our own key in the browser, it's BYO-Key.
+		dangerouslyAllowBrowser: true
 	});
 	
 	const responseType = modelInfo.supportsJSONResponseFormat && opts.jsonResponse ? 'json_object' : 'text';
