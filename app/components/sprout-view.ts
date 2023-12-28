@@ -215,7 +215,6 @@ class SproutView extends connect(store)(PageViewElement) {
 						@drop=${this._handleDrop}
 					>
 						<textarea autofocus id='conversation-input-textarea'></textarea>
-						<!-- TODO: allow dragging and dropping -->
 						<input
 							type='file'
 							id='image-upload'
