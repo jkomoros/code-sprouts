@@ -178,8 +178,15 @@ class SproutView extends connect(store)(PageViewElement) {
 				}
 
 				.title {
+					margin-left: 2em;
 					font-size: 0.8em;
 					width: 100%;
+				}
+
+				.toolbar {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
 					padding-bottom: 1em;
 					margin-bottom: 1em;
 					border-bottom: var(--subtle-border);
@@ -294,22 +301,24 @@ class SproutView extends connect(store)(PageViewElement) {
 			<div class='container'>
 				<div class='column'>
 					<div class='toolbar'>
-						<label for='sprout-select'>Sprout:</label>
-						<select
-							id='sprout-select'
-							.value=${this._currentSproutName || ''}
-							@change=${this._handleSproutChanged}
-						>
-							${Object.keys(this._sprouts).map((key) => html`
-								<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
-							`)}
-						</select>
-					</div>
-					<div class='title'>
-						<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
-						<p class='description'>
-							${this._currentSproutConfig?.description || 'A sprout without a description'}
-						</p>
+						<div class='controls'>
+							<label for='sprout-select'>Sprout:</label>
+							<select
+								id='sprout-select'
+								.value=${this._currentSproutName || ''}
+								@change=${this._handleSproutChanged}
+							>
+								${Object.keys(this._sprouts).map((key) => html`
+									<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
+								`)}
+							</select>
+						</div>
+						<div class='title'>
+							<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
+							<p class='description'>
+								${this._currentSproutConfig?.description || 'A sprout without a description'}
+							</p>
+						</div>
 					</div>
 					<div id='conversation'>
 						<div id='conversation-messages'>
