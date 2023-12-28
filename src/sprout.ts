@@ -56,7 +56,7 @@ const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
 const CONVERSATION_TURN_SCHEMA_SECOND_PART = `{
   type: 'default',
   //The message that will be shown to the user.
-  userMessage: string
+  messageForUser: string
   //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
   patch : JSONPatchRFC6902
 }`;
@@ -455,7 +455,7 @@ Provide a patch to update the state object based on the users's last message and
 				} else {
 					streamLogger(
 						parser.incrementalProperty(content, (input: unknown) : string => {
-							return partialConversationTurnSchema.parse(input).userMessage || '';
+							return partialConversationTurnSchema.parse(input).messageForUser || '';
 						})
 					);
 				}
@@ -487,6 +487,6 @@ Provide a patch to update the state object based on the users's last message and
 		const newState = fastJSONPatch.applyPatch(oldState, turn.patch as any).newDocument;
 		this._states.push(newState);
 		if (debugLogger) debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
-		return turn.userMessage;
+		return turn.messageForUser;
 	}
 }

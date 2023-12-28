@@ -157,7 +157,7 @@ export type CompletionInfo = {
 //TODO: use function calling instead.
 const defaultConversationTurnSchema = z.object({
 	type: z.literal('default'),
-	userMessage: z.string().describe('The message that will be shown to the user'),
+	messageForUser: z.string().describe('The message that will be shown to the user'),
 	patch : jsonPatchRFC6902Schema.describe('The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].')
 	//TODO: add a userConcludedConversation boolean, as a way for the LLM to report that the user requested conversation to be over.
 });
@@ -178,7 +178,7 @@ export const strictConversationTurnSchema = z.union([
 	defaultConversationTurnSchema.strict()
 ]);
 
-export const partialConversationTurnSchema = defaultConversationTurnSchema.pick({userMessage: true}).partial();
+export const partialConversationTurnSchema = defaultConversationTurnSchema.pick({messageForUser: true}).partial();
 
 export type ConversationTurn = z.infer<typeof converationTurnSchema>;
 
