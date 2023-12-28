@@ -35,8 +35,11 @@ export const selectCurrentSprout = createSelector(
 	(sproutName, aiProvider) => {
 		if (!sproutName) return null;
 		if (!aiProvider) return null;
+		//TODO: only include if user wants it.
+		const debugLogger = (msg : string) => console.log(msg);
 		return new Sprout(sproutName, {
-			ai: aiProvider
+			ai: aiProvider,
+			debugLogger
 		});
 	}
 );
