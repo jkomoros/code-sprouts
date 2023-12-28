@@ -16,7 +16,8 @@ export type DataState = {
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
 	sproutStreaming: boolean,
-	conversation: Conversation
+	conversation: Conversation,
+	draftMessage: string
 }
 
 export type RootState = {

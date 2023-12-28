@@ -22,6 +22,7 @@ export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
 export const STREAM_INCREMENTAL_MESSAGE = 'STREAM_INCREMENTAL_MESSAGE';
 export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
 export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
+export const UPDATE_DRAFT_MESSAGE = 'UPDATE_DRAFT_MESSAGE';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -74,6 +75,11 @@ const actionSproutProvidedUserResponse = z.object({
 	response: promptSchema
 }).strict();
 
+const actionUpdateDraftMessage = z.object({
+	type: z.literal(UPDATE_DRAFT_MESSAGE),
+	message: z.string()
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -84,7 +90,8 @@ const someAction = z.discriminatedUnion('type', [
 	actionStartStreamingSprout,
 	actionStreamIncrementalMessage,
 	actionSproutStoppedStreaming,
-	actionSproutProvidedUserResponse
+	actionSproutProvidedUserResponse,
+	actionUpdateDraftMessage
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

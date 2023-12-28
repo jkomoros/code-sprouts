@@ -116,3 +116,10 @@ export const updateWithMainPageExtra = (pageExtra : string) : ThunkSomeAction =>
 	const sproutName = parts.join('/');
 	dispatch(selectSprout(sproutName, true));
 };
+
+export const updateDraftMessage = (message : string) : SomeAction => {
+	return {
+		type: 'UPDATE_DRAFT_MESSAGE',
+		message
+	};
+};

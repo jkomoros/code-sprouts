@@ -6,7 +6,8 @@ import {
 	SPROUT_STOPPED_STREAMING,
 	START_STREAMING_SPROUT,
 	STREAM_INCREMENTAL_MESSAGE,
-	SomeAction
+	SomeAction,
+	UPDATE_DRAFT_MESSAGE
 } from '../actions.js';
 
 import {
@@ -18,7 +19,8 @@ const INITIAL_STATE : DataState = {
 	sprouts: {},
 	currentSproutName: null,
 	sproutStreaming: false,
-	conversation: []
+	conversation: [],
+	draftMessage: ''
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -81,6 +83,11 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 					message: action.response
 				}
 			]
+		};
+	case UPDATE_DRAFT_MESSAGE:
+		return {
+			...state,
+			draftMessage: action.message
 		};
 	default:
 		return state;
