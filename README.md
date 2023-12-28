@@ -31,6 +31,16 @@ A sprout is a named folder (typically in `sprouts/` but with version-controlled 
 
 Sprouts are passed the current state object as of the last turn, and also the last user message they received, and are then asked to return a message to show to the user, and optionally a JSON Patch to modify the state object for the next turn.
 
+## Why not just build this as a GPT?
+
+GPTs are a great way to build things like this. However, there's a few problems.
+
+First, GPTs have no way to hide part of their response from a user. For the pattern of maintaining state by repeating it after every turn, this provides a lot of mess.
+
+Second, for brevity we want state object updates to be a patch, not having to repeat the whole object each time.
+
+Finally, ChatGPT is a proto-aggregator. That's convenient, but the more you invest in building experiences for it, the more you're ensuring that it's the only source of user demand in the future--and the more beholden you will be to it as a creator. Having your own GPT-like experiences outside of an aggregator allows you to experiment without worrying about empowering a proto-aggregator.
+
 ## What is the logic of doing it this way?
 
 This approach is in someways exactly the opposite of how most LLM-powered things are done.
