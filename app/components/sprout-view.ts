@@ -104,6 +104,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		_currentSprout : Sprout | null = null;
 
 	@state()
+		_currentSproutAllowsImages = false;
+
+	@state()
 		_sproutStreaming = false;
 
 	@state()
@@ -216,15 +219,17 @@ class SproutView extends connect(store)(PageViewElement) {
 							?hidden=${true}
 							@change=${this._handleConversationImageInputChanged}
 						></input>
-						<button
-							class='button round'
-							@click=${this._handleConversationImageInputClicked}
-							title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
-							?disabled=${this._sproutStreaming}
-						>
-							<!-- TODO: make this an image icon -->
-							${this._imageUpload ? AREA_CHART_ICON : PLAY_ICON}
-						</button>
+						${this._currentSproutAllowsImages ? html`
+							<button
+								class='button round'
+								@click=${this._handleConversationImageInputClicked}
+								title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
+								?disabled=${this._sproutStreaming}
+							>
+								<!-- TODO: make this an image icon -->
+								${this._imageUpload ? AREA_CHART_ICON : PLAY_ICON}
+							</button>
+						`: ''}
 					</div>
 				</div>
 			</div>
@@ -260,6 +265,10 @@ class SproutView extends connect(store)(PageViewElement) {
 			store.dispatch(updateWithMainPageExtra(this._pageExtra));
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
+			this._currentSproutAllowsImages = false;
+			this._currentSprout.config().then(config => {
+				this._currentSproutAllowsImages = config.allowImages || false;
+			});
 			if (this._lastSignaller) this._lastSignaller.finish();
 			this._lastSignaller = new Signaller({
 				streamStarted: () => store.dispatch(startStreamingSprout()),
