@@ -216,6 +216,15 @@ class SproutView extends connect(store)(PageViewElement) {
 					animation-timing-function: linear;
 				}
 
+				span.loading.disabled {
+					opacity:0;
+					transition: opacity var(--fast-animation);
+				}
+
+				span.loading {
+					opacity: 1;
+				}
+
 				@keyframes spin {
 					from { transform:rotate(360deg); }
 					to { transform:rotate(0deg); }
@@ -360,7 +369,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
 					${speaker}
-					${showLoading ? html`<span class='loading'>${SYNC_ICON}</span>` : ''}
+					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
 				</div>
 				<div class='conversation-turn-text'>${text.trim() ? html`${text}` : html`<em class='loading'>Thinking...</em>`}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
