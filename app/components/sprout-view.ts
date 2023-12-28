@@ -36,6 +36,8 @@ import {
 	addDefaultSprouts,
 	selectSprout,
 	setOpenAIAPIKey,
+	sproutStoppedStreaming,
+	startStreamingSprout,
 	updateWithMainPageExtra
 } from '../actions/data.js';
 
@@ -151,7 +153,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
 			if (this._lastSignaller) this._lastSignaller.finish();
-			this._lastSignaller = new Signaller();
+			this._lastSignaller = new Signaller({
+				streamStarted: () => store.dispatch(startStreamingSprout()),
+				streamStopped: () => store.dispatch(sproutStoppedStreaming()),
+			});
 			runSproutInBrowser(this._currentSprout, this._lastSignaller);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
