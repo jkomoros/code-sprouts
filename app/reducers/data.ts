@@ -40,7 +40,8 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case SELECT_SPROUT:
 		return {
 			...state,
-			currentSproutName: action.sprout
+			currentSproutName: action.sprout,
+			conversation: []
 		};
 	case START_STREAMING_SPROUT:
 		return {

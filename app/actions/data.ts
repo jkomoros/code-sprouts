@@ -52,6 +52,10 @@ export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) 
 	if (!sprouts[sprout]) {
 		throw new Error(`No sprout with id ${sprout}`);
 	}
+	if (sprout === selectCurrentSproutName(getState())) {
+		//Already selected
+		return;
+	}
 	dispatch({
 		type: 'SELECT_SPROUT',
 		sprout
