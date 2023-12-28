@@ -147,7 +147,8 @@ class SproutView extends connect(store)(PageViewElement) {
 				}
 
 				.conversation-turn-speaker {
-					font-weight: bold;
+					font-size: 0.8em;
+					color: var(--dark-gray-color);
 				}
 			`
 		];
