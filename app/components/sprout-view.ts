@@ -188,6 +188,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					font-size: 2.0em;
 					display: none;
 					color: var(--lighter-gray-color);
+					fill: var(--lighter-gray-color);
 					outline: 2px dashed var(--disabled-color); /* Dashed border to indicate drop area */
 					background-color: rgba(255, 255, 255, 0.7); /* Slight background highlight */
 				}
@@ -277,7 +278,7 @@ class SproutView extends connect(store)(PageViewElement) {
 						@drop=${this._handleDrop}
 					>
 						<div class='drop-target-message'>
-							Drop images here
+							<span>${IMAGE_ICON} Drop images here</span>
 						</div>
 						<textarea
 							autofocus
