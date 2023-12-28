@@ -156,9 +156,17 @@ class SproutView extends connect(store)(PageViewElement) {
 					align-items: center;
 				}
 
-				#conversation {
-					width: 60em;
+				.column {
+					width:60em;
 					height: 100%;
+					background-color: white;
+					padding: 1em;
+					//A subtle dropshadow spreading out left to right
+					box-shadow: 0px 0px 3em 3em rgba(0,0,0,1.0), 0px 0px 3em 3em rgba(0,0,0,1.0);
+				}
+
+				#conversation {
+					width: 100%;
 				}
 
 				#conversation-messages {
@@ -172,9 +180,13 @@ class SproutView extends connect(store)(PageViewElement) {
 				.title {
 					font-size: 0.8em;
 					width: 100%;
+					padding-bottom: 1em;
+					margin-bottom: 1em;
+					border-bottom: var(--subtle-border);
 				}
 
 				.title h2 {
+					margin-top: 0;
 					margin-bottom: 0;
 				}
 
@@ -280,71 +292,73 @@ class SproutView extends connect(store)(PageViewElement) {
 	override render() : TemplateResult {
 		return html`
 			<div class='container'>
-				<div class='toolbar'>
-					<label for='sprout-select'>Sprout:</label>
-					<select
-						id='sprout-select'
-						.value=${this._currentSproutName || ''}
-						@change=${this._handleSproutChanged}
-					>
-						${Object.keys(this._sprouts).map((key) => html`
-							<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
-						`)}
-					</select>
-				</div>
-				<div class='title'>
-					<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
-					<p class='description'>
-						${this._currentSproutConfig?.description || 'A sprout without a description'}
-					</p>
-				</div>
-				<div id='conversation'>
-					<div id='conversation-messages'>
-						${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+				<div class='column'>
+					<div class='toolbar'>
+						<label for='sprout-select'>Sprout:</label>
+						<select
+							id='sprout-select'
+							.value=${this._currentSproutName || ''}
+							@change=${this._handleSproutChanged}
+						>
+							${Object.keys(this._sprouts).map((key) => html`
+								<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
+							`)}
+						</select>
 					</div>
-					<div
-						id='conversation-input'
-						class='${this._renderDropTarget ? 'drop-target' : ''}'
-						@dragover=${this._handleDragOver}
-						@dragleave=${this._handleDragLeave}
-						@drop=${this._handleDrop}
-					>
-						<div class='drop-target-message'>
-							<span>${IMAGE_ICON} Drop images here</span>
+					<div class='title'>
+						<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
+						<p class='description'>
+							${this._currentSproutConfig?.description || 'A sprout without a description'}
+						</p>
+					</div>
+					<div id='conversation'>
+						<div id='conversation-messages'>
+							${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
 						</div>
-						<textarea
-							autofocus
-							id='conversation-input-textarea'
-							?disabled=${this._sproutStreaming}
-							.value=${this._draftMessage}
-							@input=${this._handleDraftMessageInput}
-						></textarea>
-						<input
-							type='file'
-							id='image-upload'
-							accept='image/*'
-							?hidden=${true}
-							@change=${this._handleConversationImageInputChanged}
-						></input>
-						${this._currentSproutAllowsImages ? html`
+						<div
+							id='conversation-input'
+							class='${this._renderDropTarget ? 'drop-target' : ''}'
+							@dragover=${this._handleDragOver}
+							@dragleave=${this._handleDragLeave}
+							@drop=${this._handleDrop}
+						>
+							<div class='drop-target-message'>
+								<span>${IMAGE_ICON} Drop images here</span>
+							</div>
+							<textarea
+								autofocus
+								id='conversation-input-textarea'
+								?disabled=${this._sproutStreaming}
+								.value=${this._draftMessage}
+								@input=${this._handleDraftMessageInput}
+							></textarea>
+							<input
+								type='file'
+								id='image-upload'
+								accept='image/*'
+								?hidden=${true}
+								@change=${this._handleConversationImageInputChanged}
+							></input>
+							${this._currentSproutAllowsImages ? html`
+								<button
+									class='button round ${this._imageUpload ? 'highlight' : ''}'
+									@click=${this._handleConversationImageInputClicked}
+									title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
+									?disabled=${this._sproutStreaming}
+								>
+									${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
+								</button>
+							`: ''}
 							<button
-								class='button round ${this._imageUpload ? 'highlight' : ''}'
-								@click=${this._handleConversationImageInputClicked}
-								title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
+								class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
+								@click=${this._handleConversationInputSubmit}
+								title='Send'
 								?disabled=${this._sproutStreaming}
 							>
-								${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
+								<!-- TODO: Cmd-Enter to send -->
+								${SEND_ICON}
 							</button>
-						`: ''}
-						<button
-							class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
-							@click=${this._handleConversationInputSubmit}
-							title='Send'
-							?disabled=${this._sproutStreaming}
-						>
-							<!-- TODO: Cmd-Enter to send -->
-							${SEND_ICON}
-						</button>
+						</div>
 					</div>
 				</div>
 			</div>

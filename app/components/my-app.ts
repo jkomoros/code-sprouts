@@ -70,6 +70,7 @@ class MyApp extends connect(store)(LitElement) {
 					/* Also encoded as CONTROLS_WIDTH above */
 					--controls-width: 18em;
 					--default-border: 1px solid var(--dark-gray-color);
+                    --subtle-border: 1px solid var(--disabled-color);
 
                     --disabled-filter: opacity(30%);
 
