@@ -138,11 +138,14 @@ class SproutView extends connect(store)(PageViewElement) {
 
 				#conversation {
 					width: 60em;
+				}
+
+				#conversation-messages {
+					overflow-y: scroll;
 					display: flex;
 					flex-direction: column;
 					justify-content: center;
-					align-items: center;
-					overflow-y: scroll;
+					align-items: center;	
 				}
 
 				.conversation-turn {
@@ -188,7 +191,9 @@ class SproutView extends connect(store)(PageViewElement) {
 					</select>
 				</div>
 				<div id='conversation'>
-					${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+					<div id='conversation-messages'>
+						${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+					</div>
 					<div id='conversation-input'>
 						<textarea autofocus id='conversation-input-textarea'></textarea>
 						<!-- TODO: allow image input -->
