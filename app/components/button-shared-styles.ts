@@ -22,6 +22,15 @@ export const ButtonSharedStyles = css`
 			transition: background-color var(--transition-fade), color var(--transition-fade), box-shadow var(--transition-fade);
 		}
 
+		button:disabled {
+			cursor:default;
+			background-color: var(--disabled-color);
+		}
+
+		button:disabled:hover {
+			filter: none;
+		}
+
 		button.default {
 			background: var(--app-primary-color);
 		}
