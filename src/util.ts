@@ -51,3 +51,9 @@ export const joinPath = (...parts: Path[]): Path => {
 	const intermediate = parts.join('/');
 	return intermediate.split('/').filter(val => val !== '').join('/');
 };
+
+export const normalizeSproutPath = (path : Path) : Path => {
+	if (path.startsWith('https://')) path = path.slice('https://'.length);
+	if (path.endsWith('/')) path = path.slice(0, -1);
+	return path;
+};
