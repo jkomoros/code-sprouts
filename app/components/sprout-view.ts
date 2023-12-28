@@ -207,10 +207,13 @@ class SproutView extends connect(store)(PageViewElement) {
 					color: var(--dark-gray-color);
 				}
 
+				.conversation-turn-text em.error, .conversation-turn-text em.loading {
+					color: var(--dark-gray-color);
+				}
+
 				.conversation-turn-text em.loading {
 					//Animate opacity to make it fade in and out
 					opacity: 0;
-					color: var(--dark-gray-color);
 					animation-name: fade-in-out;
 					animation-duration: var(--slow-animation);
 					animation-iteration-count: infinite;
@@ -393,14 +396,17 @@ class SproutView extends connect(store)(PageViewElement) {
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		const text = textForPrompt(turn.message);
 		const images = promptImages(turn.message);
-		//TODO: sometimes the text is empty and the stream is done, in that case show 'No response'
+		let textEle = html`${text}`;
+		if (!text.trim()) {
+			textEle = this._sproutStreaming && turn.speaker == 'sprout' ? html`<em class='loading'>Thinking...</em>` : html`<em class='error'>No message</em>`;
+		}
 		return html`
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
 					${speaker}
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
 				</div>
-				<div class='conversation-turn-text'>${text.trim() ? html`${text}` : html`<em class='loading'>Thinking...</em>`}</div>
+				<div class='conversation-turn-text'>${textEle}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
 					${images.map((image) => html`<img src=${image.image} />`)}
 				</div>` : ''}
