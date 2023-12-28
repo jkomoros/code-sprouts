@@ -1,8 +1,7 @@
 import { ThunkSomeAction } from '../store.js';
 
 import {
-	SET_OPENAI_API_KEY,
-	SomeAction
+	SET_OPENAI_API_KEY
 } from '../actions.js';
 
 import {
@@ -10,6 +9,7 @@ import {
 } from '../types.js';
 
 import {
+	selectCurrentSprout,
 	selectSproutData
 } from '../selectors.js';
 
@@ -19,11 +19,20 @@ import {
 	canonicalizePath
 } from './app.js';
 
-export const addSprouts = (sprouts : SproutDataMap) : SomeAction => {
-	return {
+export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
+	dispatch({
 		type: 'ADD_SPROUTS',
 		sprouts
-	};
+	});
+
+	const state = getState();
+
+	const currentSprout = selectCurrentSprout(state);
+	if (currentSprout) return;
+
+	const sproutNames = Object.keys(sprouts);
+	if (sproutNames.length === 0) return;
+	dispatch(selectSprout(sproutNames[0]));
 };
 
 export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) : ThunkSomeAction => (dispatch, getState) => {
@@ -47,10 +56,7 @@ export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) =>
 
 export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {
 	const sprouts = await fetcher.listSprouts();
-	dispatch({
-		type: 'ADD_SPROUTS',
-		sprouts: Object.fromEntries(sprouts.map(sprout => [sprout, true]))
-	});
+	dispatch(addSprouts(Object.fromEntries(sprouts.map(sprout => [sprout, true]))));
 };
 
 export const updateWithMainPageExtra = (pageExtra : string) : ThunkSomeAction => (dispatch) => {

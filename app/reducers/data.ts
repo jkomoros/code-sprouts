@@ -24,14 +24,12 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 			openAIAPIKey: action.key
 		};
 	case ADD_SPROUTS:
-		const newSprouts = {
-			...state.sprouts,
-			...action.sprouts
-		};
 		return {
 			...state,
-			sprouts: newSprouts,
-			currentSprout: state.currentSprout || Object.keys(newSprouts)[0] || null
+			sprouts: {
+				...state.sprouts,
+				...action.sprouts
+			}
 		};
 	case SELECT_SPROUT:
 		return {
