@@ -189,9 +189,17 @@ class SproutView extends connect(store)(PageViewElement) {
 							<!-- TODO: Cmd-Enter to send -->
 							${FAST_FORWARD_ICON}
 						</button>
+						<!-- TODO: allow dragging and dropping -->
+						<input
+							type='file'
+							id='image-upload'
+							accept='image/*'
+							?hidden=${true}
+							@change=${this._handleConversationImageInputChanged}
+						></input>
 						<button
 							class='button round'
-							@click=${this._handleConversationImageInput}
+							@click=${this._handleConversationImageInputClicked}
 							title='Attach Image'
 							?disabled=${this._sproutStreaming}
 						>
@@ -289,7 +297,12 @@ class SproutView extends connect(store)(PageViewElement) {
 		store.dispatch(provideUserResponse(text, this._lastSignaller));
 	}
 
-	private _handleConversationImageInput() {
+	private _handleConversationImageInputClicked() {
+		const input = this.shadowRoot!.getElementById('image-upload') as HTMLInputElement;
+		input.click();
+	}
+
+	private _handleConversationImageInputChanged() {
 		throw new Error('Not implemented');
 	}
 
