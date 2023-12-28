@@ -77,6 +77,7 @@ export const startStreamingSprout = () : SomeAction => {
 };
 
 export const streamIncrementalMessage = (message : string) : ThunkSomeAction => (dispatch, getState) => {
+	if (message == '') return;
 	const conversation = selectConversation(getState());
 	if (conversation.length === 0) {
 		throw new Error('No conversation to add to');
