@@ -142,6 +142,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					flex-direction: column;
 					justify-content: center;
 					align-items: center;
+					overflow-y: scroll;
 				}
 
 				.conversation-turn {
