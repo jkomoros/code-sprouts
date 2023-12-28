@@ -210,6 +210,15 @@ class SproutView extends connect(store)(PageViewElement) {
 					fill: var(--dark-gray-color);
 					height:1.0em;
 					width:1.0em;
+					animation-name: spin;
+					animation-duration: var(--slow-animation);
+					animation-iteration-count: infinite;
+					animation-timing-function: linear;
+				}
+
+				@keyframes spin {
+					from { transform:rotate(360deg); }
+					to { transform:rotate(0deg); }
 				}
 			`
 		];
