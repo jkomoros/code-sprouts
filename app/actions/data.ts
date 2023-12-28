@@ -9,7 +9,7 @@ import {
 } from '../types.js';
 
 import {
-	selectCurrentSprout,
+	selectCurrentSproutName,
 	selectSproutData
 } from '../selectors.js';
 
@@ -27,7 +27,7 @@ export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispat
 
 	const state = getState();
 
-	const currentSprout = selectCurrentSprout(state);
+	const currentSprout = selectCurrentSproutName(state);
 	if (currentSprout) return;
 
 	const sproutNames = Object.keys(sprouts);

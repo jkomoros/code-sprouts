@@ -12,7 +12,7 @@ import {
 const INITIAL_STATE : DataState = {
 	openAIAPIKey: '',
 	sprouts: {},
-	currentSprout: null
+	currentSproutName: null
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -34,7 +34,7 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case SELECT_SPROUT:
 		return {
 			...state,
-			currentSprout: action.sprout
+			currentSproutName: action.sprout
 		};
 	default:
 		return state;

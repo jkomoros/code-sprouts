@@ -12,7 +12,7 @@ export type AppState = {
 export type DataState = {
 	openAIAPIKey : string,
 	sprouts: SproutDataMap,
-	currentSprout: SproutLocation | null,
+	currentSproutName: SproutLocation | null,
 }
 
 export type RootState = {

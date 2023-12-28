@@ -5,7 +5,7 @@ import {
 } from '../actions.js';
 
 import {
-	selectCurrentSprout,
+	selectCurrentSproutName,
 	selectHash,
 	selectHashForCurrentState,
 	selectPage,
@@ -48,7 +48,7 @@ export const canonicalizePath = () : ThunkSomeAction => (dispatch ,getState) => 
 	if (page != 'sprout') {
 		path.push(pageExtra);
 	} else {
-		const sprout = selectCurrentSprout(state);
+		const sprout = selectCurrentSproutName(state);
 		if (sprout) path.push(sprout);
 		path.push(''); //Add a trailing slash
 	}

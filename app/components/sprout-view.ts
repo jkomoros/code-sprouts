@@ -7,7 +7,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 import {
-	selectCurrentSprout,
+	selectCurrentSproutName,
 	selectHashForCurrentState,
 	selectOpenAIAPIKey,
 	selectPageExtra,
@@ -113,7 +113,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._hashForCurrentState = selectHashForCurrentState(state);
 		this._openAIAPIKey = selectOpenAIAPIKey(state);
 		this._sprouts = selectSproutData(state);
-		this._currentSprout = selectCurrentSprout(state);
+		this._currentSprout = selectCurrentSproutName(state);
 	}
 
 	override firstUpdated() {
