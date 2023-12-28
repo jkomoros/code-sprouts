@@ -64,6 +64,10 @@ import {
 	runSproutInBrowser
 } from '../runner.js';
 
+import {
+	FAST_FORWARD_ICON
+} from './my-icons.js';
+
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
 
@@ -127,7 +131,24 @@ class SproutView extends connect(store)(PageViewElement) {
 						`)}
 					</select>
 				</div>
-				${this._conversation.map((turn) => this._renderConversation(turn))}
+				<div id='conversation'>
+					${this._conversation.map((turn) => this._renderConversation(turn))}
+					<div id='conversation-input'>
+						<textarea id='conversation-input-textarea'>
+						</textarea>
+						<!-- TODO: allow image input -->
+						<button
+							class='button round'
+							@click=${this._handleConversationInputSubmit}
+							title='Send'
+						>
+							<!-- TODO: disable while input still streaming -->
+							<!-- TODO: make this a send icon -->
+							<!-- TODO: Cmd-Enter to send -->
+							${FAST_FORWARD_ICON}
+						</button>
+					</div>
+				</div>
 			</div>
 		`;
 	}
@@ -187,6 +208,14 @@ class SproutView extends connect(store)(PageViewElement) {
 				<div class='conversation-turn-text'>${turn.text}</div>
 			</div>
 		`;
+	}
+
+	private _handleConversationInputSubmit() {
+		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
+		const text = textarea.value;
+		textarea.value = '';
+		if (!this._lastSignaller) throw new Error('No signaller');
+		this._lastSignaller.provideUserResponse(text);
 	}
 
 	private _handleHashChange() {
