@@ -27,6 +27,10 @@ import {
 	Signaller
 } from '../runner.js';
 
+import {
+	Prompt
+} from '../../src/types.js';
+
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
 		type: 'ADD_SPROUTS',
@@ -88,7 +92,7 @@ export const sproutStoppedStreaming = () : SomeAction => {
 	};
 };
 
-export const provideUserResponse = (response : string, signaller : Signaller) : ThunkSomeAction => (dispatch) => {
+export const provideUserResponse = (response : Prompt, signaller : Signaller) : ThunkSomeAction => (dispatch) => {
 	dispatch({
 		type: 'SPROUT_PROVIDED_USER_RESPONSE',
 		response

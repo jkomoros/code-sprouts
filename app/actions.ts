@@ -7,6 +7,10 @@ import {
 	sproutLocationSchema
 } from './types.js';
 
+import {
+	promptSchema
+} from '../src/types.js';
+
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_HASH = 'UPDATE_HASH';
@@ -67,7 +71,7 @@ const actionSproutStoppedStreaming = z.object({
 
 const actionSproutProvidedUserResponse = z.object({
 	type: z.literal(SPROUT_PROVIDED_USER_RESPONSE),
-	response: z.string()
+	response: promptSchema
 }).strict();
 
 const someAction = z.discriminatedUnion('type', [
