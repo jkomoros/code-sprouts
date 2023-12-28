@@ -301,7 +301,7 @@ class SproutView extends connect(store)(PageViewElement) {
 						></input>
 						${this._currentSproutAllowsImages ? html`
 							<button
-								class='button round'
+								class='button round ${this._imageUpload ? 'highlight' : ''}'
 								@click=${this._handleConversationImageInputClicked}
 								title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
 								?disabled=${this._sproutStreaming}

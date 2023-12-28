@@ -35,6 +35,10 @@ export const ButtonSharedStyles = css`
 			background: var(--app-primary-color);
 		}
 
+        button.highlight {
+            background: var(--app-secondary-color);
+        }
+
 		button.help {
 			cursor:default;
 		}
