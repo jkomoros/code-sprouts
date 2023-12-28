@@ -51,7 +51,7 @@ export const canonicalizePath = () : ThunkSomeAction => (dispatch ,getState) => 
 
 export const navigate = (path : string) : ThunkSomeAction => (dispatch) => {
 	// Extract the page name from path.
-	const page = path === '/' ? 'main' : path.slice(1);
+	const page = path === '/' ? 'sprout' : path.slice(1);
 
 	// Any other info you might want to extract from the path (like page type),
 	// you can do here
