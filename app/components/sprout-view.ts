@@ -7,6 +7,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 import {
+	selectConversation,
 	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectHashForCurrentState,
@@ -47,6 +48,7 @@ import {
 } from '../util.js';
 
 import {
+	Conversation,
 	SproutDataMap,
 	SproutLocation
 } from '../types.js';
@@ -80,6 +82,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_currentSprout : Sprout | null = null;
+
+	@state()
+		_conversation : Conversation = [];
 
 	_lastSignaller : Signaller | null = null;
 
@@ -120,7 +125,7 @@ class SproutView extends connect(store)(PageViewElement) {
 						`)}
 					</select>
 				</div>
-				Hello, world!
+				${this._conversation.map((message) => html`${JSON.stringify(message, null, '\t')}`)}
 			</div>
 		`;
 	}
@@ -133,6 +138,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._sprouts = selectSproutData(state);
 		this._currentSproutName = selectCurrentSproutName(state);
 		this._currentSprout = selectCurrentSprout(state);
+		this._conversation = selectConversation(state);
 	}
 
 	override firstUpdated() {
