@@ -42,11 +42,9 @@ export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller)
 
 	//TODO: support images
 	while(!signaller.done) {
-		//TODO: stream to output
 		signaller.streamStarted();
 		const message = await sprout.conversationTurn({
-			//For some reason if you don't pass a stream logger it doesn't work.
-			streamLogger: () => {}
+			streamLogger: signaller.streamIncrementalMessage
 		});
 		signaller.streamStopped();
 		console.log('result', message);
