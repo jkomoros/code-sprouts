@@ -63,7 +63,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		_sprouts : SproutDataMap = {};
 
 	@state()
-		_currentSprout : SproutLocation | null = null;
+		_currentSproutName : SproutLocation | null = null;
 
 	static override get styles() {
 		return [
@@ -94,11 +94,11 @@ class SproutView extends connect(store)(PageViewElement) {
 					<label for='sprout-select'>Sprout:</label>
 					<select
 						id='sprout-select'
-						.value=${this._currentSprout || ''}
+						.value=${this._currentSproutName || ''}
 						@change=${this._handleSproutChanged}
 					>
 						${Object.keys(this._sprouts).map((key) => html`
-							<option .value=${key} .selected=${key == this._currentSprout}>${key}</option>
+							<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
 						`)}
 					</select>
 				</div>
@@ -113,7 +113,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._hashForCurrentState = selectHashForCurrentState(state);
 		this._openAIAPIKey = selectOpenAIAPIKey(state);
 		this._sprouts = selectSproutData(state);
-		this._currentSprout = selectCurrentSproutName(state);
+		this._currentSproutName = selectCurrentSproutName(state);
 	}
 
 	override firstUpdated() {
