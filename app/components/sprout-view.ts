@@ -310,7 +310,7 @@ class SproutView extends connect(store)(PageViewElement) {
 							</button>
 						`: ''}
 						<button
-							class='button round default'
+							class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
 							@click=${this._handleConversationInputSubmit}
 							title='Send'
 							?disabled=${this._sproutStreaming}
