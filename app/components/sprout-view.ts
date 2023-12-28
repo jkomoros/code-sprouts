@@ -184,6 +184,22 @@ class SproutView extends connect(store)(PageViewElement) {
 					color: var(--dark-gray-color);
 				}
 
+				.conversation-turn-text em.loading {
+					//Animate opacity to make it fade in and out
+					opacity: 0;
+					color: var(--dark-gray-color);
+					animation-name: fade-in-out;
+					animation-duration: var(--slow-animation);
+					animation-iteration-count: infinite;
+					animation-timing-function: ease-in-out;
+				}
+
+				@keyframes fade-in-out {
+					0% { opacity: 0; }
+					50% { opacity: 1; }
+					100% { opacity: 0; }
+				}
+
 				img {
 					max-width: 100%;
 					max-height: 100%;
@@ -336,7 +352,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					${speaker}
 					${showLoading ? html`<span class='loading'>${SYNC_ICON}</span>` : ''}
 				</div>
-				<div class='conversation-turn-text'>${text.trim() ? html`${text}` : html`<em>Thinking...</em>`}</div>
+				<div class='conversation-turn-text'>${text.trim() ? html`${text}` : html`<em class='loading'>Thinking...</em>`}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
 					${images.map((image) => html`<img src=${image.image} />`)}
 				</div>` : ''}
