@@ -54,6 +54,7 @@ import {
 } from '../../src/sprout.js';
 
 import {
+	Signaller,
 	runSproutInBrowser
 } from '../runner.js';
 
@@ -77,6 +78,8 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_currentSprout : Sprout | null = null;
+
+	_lastSignaller : Signaller | null = null;
 
 	static override get styles() {
 		return [
@@ -147,7 +150,9 @@ class SproutView extends connect(store)(PageViewElement) {
 			store.dispatch(updateWithMainPageExtra(this._pageExtra));
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
-			runSproutInBrowser(this._currentSprout);
+			if (this._lastSignaller) this._lastSignaller.finish();
+			this._lastSignaller = new Signaller();
+			runSproutInBrowser(this._currentSprout, this._lastSignaller);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {

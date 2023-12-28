@@ -2,13 +2,23 @@ import {
 	Sprout
 } from '../src/sprout.js';
 
-//TODO: accept a way to signal that this should stop (for example, right now if you select a different codename it doesn't end).
-export const runSproutInBrowser = async (sprout : Sprout) => {
+export class Signaller {
+	private _done = false;
+
+	finish() : void {
+		this._done = true;
+	}
+
+	get done() : boolean {
+		return this._done;
+	}
+}
+
+export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller) => {
 	await sprout.validate();
 
-	const active = true;
 	//TODO: support images
-	while(active) {
+	while(!signaller.done) {
 		//TODO: stream to output
 		const message = await sprout.conversationTurn({
 			//For some reason if you don't pass a stream logger it doesn't work.
