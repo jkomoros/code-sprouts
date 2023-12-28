@@ -116,6 +116,30 @@ class SproutView extends connect(store)(PageViewElement) {
 				.container {
 					height: 100%;
 					width: 100%;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+				}
+
+				#conversation {
+					width: 60em;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+				}
+
+				.conversation-turn {
+					width: 100%;
+				}
+
+				#conversation-input {
+					width: 100%;
+					display: flex;
+				}
+
+				#conversation-input textarea {
+					flex-grow: 1;
 				}
 			`
 		];
@@ -123,7 +147,7 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	override render() : TemplateResult {
 		return html`
-			<div>
+			<div class='container'>
 				<div class='toolbar'>
 					<label for='sprout-select'>Sprout:</label>
 					<select
