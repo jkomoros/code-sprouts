@@ -57,3 +57,10 @@ export const normalizeSproutPath = (path : Path) : Path => {
 	if (path.endsWith('/')) path = path.slice(0, -1);
 	return path;
 };
+
+export const shortenDisplayPath = (path : Path) : Path => {
+	const parts = path.split('/');
+	if (parts.length <= 3) return path;
+	//Replace the middle parts with ellipses
+	return [parts[0], '...', parts[parts.length - 1]].join('/');
+};

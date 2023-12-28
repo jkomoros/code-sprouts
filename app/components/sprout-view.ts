@@ -78,7 +78,8 @@ import {
 } from './my-icons.js';
 
 import {
-	assertUnreachable
+	assertUnreachable,
+	shortenDisplayPath
 } from '../../src/util.js';
 
 import {
@@ -318,7 +319,13 @@ class SproutView extends connect(store)(PageViewElement) {
 									@change=${this._handleSproutChanged}
 								>
 									${Object.keys(this._sprouts).map((key) => html`
-										<option .value=${key} .selected=${key == this._currentSproutName}>${key}</option>
+										<option
+											.value=${key}
+											.selected=${key == this._currentSproutName}
+											.title=${key}
+										>
+											${shortenDisplayPath(key)}
+										</option>
 									`)}
 								</select>
 								<button
