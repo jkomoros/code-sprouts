@@ -170,7 +170,7 @@ class SproutView extends connect(store)(PageViewElement) {
 
 				.column {
 					width:60em;
-					height: 100%;
+					height: 100vh;
 					box-sizing: border-box;
 					display: flex;
 					flex-direction: column;
@@ -181,13 +181,16 @@ class SproutView extends connect(store)(PageViewElement) {
 				}
 
 				#conversation {
+					overflow-y: auto;
 					width: 100%;
-					overflow-y: scroll;
-					flex-grow:1;
+					flex:1;
 					display: flex;
 					flex-direction: column;
-					justify-content: end;
-					align-items: center;	
+					align-items: center;
+				}
+
+				#conversation .inner {
+					width: 100%;
 				}
 
 				.title {
@@ -372,7 +375,9 @@ class SproutView extends connect(store)(PageViewElement) {
 						</div>
 					</div>
 					<div id='conversation'>
-						${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+						<div class='inner'>
+							${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+						</div>
 					</div>
 					<div
 						id='conversation-input'
