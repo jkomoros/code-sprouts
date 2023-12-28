@@ -7,6 +7,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 import {
+	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectHashForCurrentState,
 	selectOpenAIAPIKey,
@@ -46,6 +47,8 @@ import {
 import {
 	SproutDataMap, SproutLocation
 } from '../types.js';
+import { Sprout } from '../../src/sprout.js';
+import { runSprout } from '../runner.js';
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -64,6 +67,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_currentSproutName : SproutLocation | null = null;
+
+	@state()
+		_currentSprout : Sprout | null = null;
 
 	static override get styles() {
 		return [
@@ -114,6 +120,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._openAIAPIKey = selectOpenAIAPIKey(state);
 		this._sprouts = selectSproutData(state);
 		this._currentSproutName = selectCurrentSproutName(state);
+		this._currentSprout = selectCurrentSprout(state);
 	}
 
 	override firstUpdated() {
@@ -131,6 +138,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		if ((changedProps.has('_pageExtra')) && this._pageExtra) {
 			store.dispatch(updateWithMainPageExtra(this._pageExtra));
+		}
+		if (changedProps.has('_currentSprout') && this._currentSprout) {
+			runSprout(this._currentSprout);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
