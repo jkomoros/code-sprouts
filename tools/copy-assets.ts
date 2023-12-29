@@ -24,7 +24,7 @@ const configSchema = z.array(z.string());
 type Config = z.infer<typeof configSchema>;
 
 
-const loadConfig = (configPath = CONFIG_PATH) : Config => {
+export const loadConfig = (configPath = CONFIG_PATH) : Config => {
 	return configSchema.parse(JSON.parse(readFileSync(configPath).toString()));
 };
 
