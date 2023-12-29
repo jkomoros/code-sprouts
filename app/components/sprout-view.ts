@@ -7,6 +7,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { store } from '../store.js';
 
 import {
+	selectAttachedImage,
 	selectConversation,
 	selectCurrentSprout,
 	selectCurrentSproutName,
@@ -38,6 +39,7 @@ import {
 import {
 	addDefaultSprouts,
 	addSprout,
+	attachImage,
 	provideUserResponse,
 	selectSprout,
 	setOpenAIAPIKey,
@@ -130,7 +132,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		_conversation : Conversation = [];
 	
 	@state()
-		_imageUpload : ImageURL = '';
+		_imageUpload : ImageURL | null = '';
 
 	@state()
 		_renderDropTarget : boolean = false;
@@ -449,6 +451,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._currentSprout = selectCurrentSprout(state);
 		this._conversation = selectConversation(state);
 		this._draftMessage = selectDraftMessage(state);
+		this._imageUpload = selectAttachedImage(state);
 	}
 
 	override firstUpdated() {
@@ -579,10 +582,12 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _handleConversationInputSubmit() {
 		if (this._sproutStreaming) throw new Error('Cannot submit while streaming');
 		if (!this._lastSignaller) throw new Error('No signaller');
+		//TODO: pop this into a action creator instead of relying on state from this.
 		const text = this._draftMessage;
-		store.dispatch(updateDraftMessage(''));
 		const image = this._imageUpload;
-		this._imageUpload = '';		
+		//TODO: don't allow submitting the text if an image is uploading
+		store.dispatch(updateDraftMessage(''));
+		store.dispatch(attachImage(null));
 		const message : Prompt = image ? [
 			text,
 			{
@@ -598,15 +603,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _attachFile(file : File) {
-		if (!file.type.startsWith('image/')) throw new Error('Not an image');
-		const reader = new FileReader();
-		//TODO: don't allow submitting the text if an image is uploading
-		reader.onload = () => {
-			//We told it to be a dataURL so it's a file
-			this._imageUpload = reader.result as string;
-		};
-		//TODO: resize the image
-		reader.readAsDataURL(file);	
+		store.dispatch(attachImage(file));
 	}
 
 	private _handleConversationImageInputChanged() {

@@ -147,9 +147,26 @@ export const updateDraftMessage = (message : string) : SomeAction => {
 	};
 };
 
-export const attachImage = (image : ImageURL | null) : SomeAction => {
-	return {
+const getImageURL = async (file : File | null) : Promise<ImageURL | null> => {
+	if (!file) return null;
+	if (!file.type.startsWith('image/')) throw new Error('Not an image');
+	const promise = new Promise<ImageURL>((resolve) => {
+		const reader = new FileReader();		
+		reader.onload = () => {
+			//We told it to be a dataURL so it's a file
+			resolve(reader.result as string);
+		};
+		//TODO: resize the image
+		reader.readAsDataURL(file);
+	});
+
+	return promise;
+};
+
+export const attachImage = (file : File | null) : ThunkSomeAction => async (dispatch) => {
+	const image = await getImageURL(file);
+	dispatch({
 		type: 'ATTACH_IMAGE',
 		image
-	};
+	});
 };
