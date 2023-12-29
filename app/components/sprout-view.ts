@@ -278,6 +278,10 @@ class SproutView extends connect(store)(PageViewElement) {
 					color: var(--dark-gray-color);
 				}
 
+				.conversation-turn-speaker details {
+					display: inline-block;
+				}
+
 				.conversation-turn-text em.loading {
 					//Animate opacity to make it fade in and out
 					opacity: 0;
@@ -512,9 +516,8 @@ class SproutView extends connect(store)(PageViewElement) {
 				<div class='conversation-turn-speaker'>
 					${speaker}
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
-				</div>
-				${speakerType == 'sprout' 
-		? html`<details class='conversation-turn-state'>
+					${speakerType == 'sprout' 
+		? html`<details>
 						<summary>
 							State
 						</summary>
@@ -524,6 +527,7 @@ class SproutView extends connect(store)(PageViewElement) {
 }		
 					</details>` : ''
 }
+				</div>
 				<div class='conversation-turn-text'>${textEle}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
 					${images.map((image) => html`<img src=${image.image} />`)}
