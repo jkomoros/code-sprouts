@@ -489,9 +489,8 @@ Provide a patch to update the state object based on the users's last message and
 		}
 
 		const oldState = await this.lastState();
-		//TODO: fix typing to not need this cast
-		//eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const newState = fastJSONPatch.applyPatch(oldState, turn.patch as any).newDocument;
+		//fastJSONPatch applies the patch in place by default. The second true is for mutateDocumen: false
+		const newState = fastJSONPatch.applyPatch(oldState, fastJSONPatch.deepClone(turn.patch), false, false).newDocument;
 		this._states.push(newState);
 		if (debugLogger) debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
 		return turn.messageForUser;
