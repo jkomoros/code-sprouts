@@ -60,7 +60,7 @@ const CONFIG : WatchConfig = {
 			]
 		},
 		'npm run build:copy': {
-			include: assetConfig
+			include: assetConfig.map(item => item.includes('.') ? item : item + '/**')
 		}
 	}
 };
