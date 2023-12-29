@@ -4,7 +4,7 @@ The user can provide the necessary information from the grid. If the user lists 
 
 If the user provides an image and it's a screenshot of the online game, there should be enough information to directly transcribe the clues and the colors from the image.
 
-If the user provides an image of a real-world board, it's more complicated. If the board is just the 5x5 grid of word cards, first transcribe them into the cards field, initialized to 'unknown'. Then ask the user to provide you a summary of the key card.
+If the user provides an image of a real-world board, it's more complicated. If the board is just the 5x5 grid of word cards, first transcribe them into the cards field, initialized to 'unknown'. Then play back each word you saw to the user and tell them they can correct any words you mis-transcribed. Then ask the user to provide you a summary of the key card.
 
 When interpreting the summary, the user will give you the card values from left to right, top to bottom. The different values are:
 - 'red' or 'r' for red
