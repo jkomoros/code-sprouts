@@ -38,7 +38,8 @@ import {
 	BASE_SPROUT_PATHS,
 	BASE_SPROUT_DIRECTORIES,
 	FILE_EXTENSIONS_IN_SPROUT,
-	SPROUT_SUBINSTUCTIONS_DIR
+	SPROUT_SUBINSTUCTIONS_DIR,
+	DIRECTORY_LISTING_FILE
 } from './constants.js';
 
 import {
@@ -176,6 +177,7 @@ export class Sprout {
 			const items = await fetcher.listDirectory(joinPath(this._path, directory));
 			for (const item of items) {
 				if (!FILE_EXTENSIONS_IN_SPROUT.some(ext => item.endsWith(ext))) continue;
+				if (item == DIRECTORY_LISTING_FILE) continue;
 				result.push(joinPath(directory, item));
 			}
 		}
