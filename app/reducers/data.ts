@@ -76,7 +76,7 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				{
 					speaker: 'sprout',
 					message: state.conversation[state.conversation.length - 1].message,
-					state: action.state
+					state: {...action.state}
 				}
 			],
 			sproutStreaming: false
