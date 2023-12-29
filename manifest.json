@@ -1,7 +1,7 @@
 {
-    "name": "Prompt Garden Editor",
-    "short_name": "Prompt Garden",
-    "description": "A simple tool to view editors",
+    "name": "Code Sprout Viewer",
+    "short_name": "Code Sprout",
+    "description": "A simple tool to view code sprouts",
     "start_url": "/",
     "display": "standalone",
     "theme_color": "#51b9a3",
