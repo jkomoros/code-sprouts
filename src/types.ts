@@ -17,9 +17,9 @@ const sproutName = z.string();
 
 export type SproutName = z.infer<typeof sproutName>;
 
-const sproutState = z.record(z.string(), z.unknown());
+export const sproutStateSchema = z.record(z.string(), z.unknown());
 //The state a given sprout defines. This library doesn't really care too much as long as it's JSONable.
-export type SproutState = z.infer<typeof sproutState>;
+export type SproutState = z.infer<typeof sproutStateSchema>;
 
 //Note: when changing, re-run `npm run generate:schemas`
 export const sproutConfigSchema = z.object({
@@ -81,7 +81,7 @@ export const compiledSproutSchema = z.object({
 	baseInstructions: z.string(),
 	subInstructions: subInstructionsMapSchema,
 	schemaText: z.string(),
-	starterState: sproutState
+	starterState: sproutStateSchema
 });
 
 export type CompiledSprout = z.infer<typeof compiledSproutSchema>;

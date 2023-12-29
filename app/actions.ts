@@ -8,7 +8,8 @@ import {
 } from './types.js';
 
 import {
-	promptSchema
+	promptSchema,
+	sproutStateSchema
 } from '../src/types.js';
 
 export const UPDATE_PAGE = 'UPDATE_PAGE';
@@ -67,7 +68,8 @@ const actionStreamIncrementalMessage = z.object({
 }).strict();
 
 const actionSproutStoppedStreaming = z.object({
-	type: z.literal(SPROUT_STOPPED_STREAMING)
+	type: z.literal(SPROUT_STOPPED_STREAMING),
+	state: sproutStateSchema
 }).strict();
 
 const actionSproutProvidedUserResponse = z.object({

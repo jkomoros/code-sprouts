@@ -29,7 +29,8 @@ import {
 
 import {
 	Path,
-	Prompt
+	Prompt,
+	SproutState
 } from '../../src/types.js';
 
 import {
@@ -104,9 +105,10 @@ export const streamIncrementalMessage = (message : string) : ThunkSomeAction => 
 	});
 };
 
-export const sproutStoppedStreaming = () : SomeAction => {
+export const sproutStoppedStreaming = (state : SproutState) : SomeAction => {
 	return {
-		type: SPROUT_STOPPED_STREAMING
+		type: SPROUT_STOPPED_STREAMING,
+		state
 	};
 };
 

@@ -3,7 +3,8 @@ import {
 } from 'zod';
 
 import {
-	Prompt
+	Prompt,
+	SproutState
 } from '../src/types';
 
 export const urlHashArgs = z.object({
@@ -22,8 +23,12 @@ export type SproutDataMap = z.infer<typeof sproutDataMapSchema>;
 export type URLHashArgs = z.infer<typeof urlHashArgs>;
 
 export type ConversationTurn = {
-	speaker: 'user' | 'sprout',
+	speaker: 'user'
 	message: Prompt
+} | {
+	speaker: 'sprout',
+	message: Prompt,
+	state?: SproutState
 };
 
 export type Conversation = ConversationTurn[];

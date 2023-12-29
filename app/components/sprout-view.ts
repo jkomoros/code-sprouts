@@ -469,7 +469,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			if (this._lastSignaller) this._lastSignaller.finish();
 			this._lastSignaller = new Signaller({
 				streamStarted: () => store.dispatch(startStreamingSprout()),
-				streamStopped: () => store.dispatch(sproutStoppedStreaming()),
+				streamStopped: (state) => store.dispatch(sproutStoppedStreaming(state)),
 				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message))
 			});
 			runSproutInBrowser(this._currentSprout, this._lastSignaller);
@@ -488,7 +488,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	private _renderConversation(turn : ConversationTurn, lastTurn : boolean) : TemplateResult {
 		let speaker = '';
-		switch (turn.speaker) { 
+		//Typescript assertUnreachable doesn't work with a union type otherwise
+		const speakerType = turn.speaker;
+		switch (speakerType) { 
 		case 'sprout':
 			speaker = 'Sprout';
 			break;
@@ -496,7 +498,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			speaker = 'User';
 			break;
 		default:
-			assertUnreachable(turn.speaker);
+			assertUnreachable(speakerType);
 		}
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		const text = textForPrompt(turn.message);

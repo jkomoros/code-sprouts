@@ -71,6 +71,14 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case SPROUT_STOPPED_STREAMING:
 		return {
 			...state,
+			conversation: [
+				...state.conversation.slice(0, state.conversation.length - 1),
+				{
+					speaker: 'sprout',
+					message: state.conversation[state.conversation.length - 1].message,
+					state: action.state
+				}
+			],
 			sproutStreaming: false
 		};
 	case SPROUT_PROVIDED_USER_RESPONSE:

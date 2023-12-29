@@ -3,7 +3,8 @@ import {
 } from '../src/sprout.js';
 
 import {
-	Prompt
+	Prompt,
+	SproutState
 } from '../src/types.js';
 
 type VoidFunction = () => void;
@@ -11,7 +12,7 @@ type MessageFunction = (message : string) => void;
 
 type SignallerOptions = {
 	streamStarted: VoidFunction,
-	streamStopped: VoidFunction,
+	streamStopped: (state : SproutState) => void,
 	streamIncrementalMessage: MessageFunction
 }
 
@@ -31,8 +32,8 @@ export class Signaller {
 		this._opts.streamStarted();
 	}
 
-	streamStopped() : void {
-		this._opts.streamStopped();
+	streamStopped(state : SproutState) : void {
+		this._opts.streamStopped(state);
 	}
 
 	streamIncrementalMessage(message : string) : void {
@@ -80,7 +81,7 @@ export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller)
 			//Use a => to bind to this
 			streamLogger: (message : string) => signaller.streamIncrementalMessage(message)
 		});
-		signaller.streamStopped();
+		signaller.streamStopped(await sprout.lastState());
 		const response = await signaller.getUserMessage();
 		if (!response) {
 			signaller.finish();
