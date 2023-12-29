@@ -11,7 +11,7 @@
         "build:typescript": "tsc",
         "build:rollup": "rollup -c",
         "build:copy": "node ./build/tools/copy-assets.js",
-        "serve": "npm run serve:typescript & npm run serve:app",
+        "serve": "npm run serve:typescript & npm run serve:app & npm run serve:generate",
         "serve:typescript": "tsc --watch --preserveWatchOutput",
         "serve:app": "wds --node-resolve --port=8081",
         "serve:generate": "node ./build/tools/watch.js",
