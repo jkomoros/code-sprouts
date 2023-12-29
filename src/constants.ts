@@ -1,7 +1,7 @@
 export const SPROUT_EXAMPLE_DIR = 'examples';
 export const SPROUT_SPROUT_DIR = 'sprouts';
 
-export const DEFAULT_SPROUT_DIRECTORIES = [SPROUT_EXAMPLE_DIR, SPROUT_SPROUT_DIR];
+export const DEFAULT_SPROUT_DIRECTORIES = [SPROUT_SPROUT_DIR, SPROUT_EXAMPLE_DIR];
 
 //Also in .vscode/settings.json
 export const DIRECTORY_LISTING_FILE = 'directory.json';
