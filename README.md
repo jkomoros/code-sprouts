@@ -30,7 +30,7 @@ A sprout is a named folder (typically in `sprouts/` but with version-controlled 
     deal_cards.md - An example that will be called deal_cards.
 ```
 
-You can run `npm run compile:sprouts` to compile any local sprouts that require it.
+Sprouts can be run by pointing at the sprout directory they reside in. However, running an uncompiled sprout requires fetching multiple files and possibly generating some expensive intermediate results. Sprouts can also be compiled into a single file that contains all of the information necessary to run them. When you use `npm run start` or any other node commands, the sprouts will be compiled automatically. You can also run `npm run compile:sprouts` to compile any local sprouts that require it.
 
 Sprouts are passed the current state object as of the last turn, and also the last user message they received, and are then asked to return a message to show to the user, and optionally a JSON Patch to modify the state object for the next turn.
 
