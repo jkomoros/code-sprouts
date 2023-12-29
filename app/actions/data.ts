@@ -28,6 +28,7 @@ import {
 } from '../runner.js';
 
 import {
+	ImageURL,
 	Path,
 	Prompt,
 	SproutState
@@ -143,5 +144,12 @@ export const updateDraftMessage = (message : string) : SomeAction => {
 	return {
 		type: 'UPDATE_DRAFT_MESSAGE',
 		message
+	};
+};
+
+export const attachImage = (image : ImageURL | null) : SomeAction => {
+	return {
+		type: 'ATTACH_IMAGE',
+		image
 	};
 };

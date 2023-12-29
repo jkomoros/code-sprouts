@@ -1,5 +1,6 @@
 import {
 	ADD_SPROUTS,
+	ATTACH_IMAGE,
 	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
@@ -20,7 +21,8 @@ const INITIAL_STATE : DataState = {
 	currentSproutName: null,
 	sproutStreaming: false,
 	conversation: [],
-	draftMessage: ''
+	draftMessage: '',
+	attachedImage: null
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -96,6 +98,11 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			draftMessage: action.message
+		};
+	case ATTACH_IMAGE:
+		return {
+			...state,
+			attachedImage: action.image
 		};
 	default:
 		return state;

@@ -1,4 +1,8 @@
 import {
+	ImageURL
+} from '../src/types.js';
+
+import {
 	SproutDataMap,
 	SproutLocation,
 	Conversation
@@ -18,6 +22,7 @@ export type DataState = {
 	sproutStreaming: boolean,
 	conversation: Conversation,
 	draftMessage: string
+	attachedImage: ImageURL | null
 }
 
 export type RootState = {

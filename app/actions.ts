@@ -8,6 +8,7 @@ import {
 } from './types.js';
 
 import {
+	imageURLSchema,
 	promptSchema,
 	sproutStateSchema
 } from '../src/types.js';
@@ -24,6 +25,7 @@ export const STREAM_INCREMENTAL_MESSAGE = 'STREAM_INCREMENTAL_MESSAGE';
 export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
 export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
 export const UPDATE_DRAFT_MESSAGE = 'UPDATE_DRAFT_MESSAGE';
+export const ATTACH_IMAGE = 'ATTACH_IMAGE';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -82,6 +84,11 @@ const actionUpdateDraftMessage = z.object({
 	message: z.string()
 }).strict();
 
+const actionAttachImage = z.object({
+	type: z.literal(ATTACH_IMAGE),
+	image: z.union([imageURLSchema, z.literal(null)])
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -93,7 +100,8 @@ const someAction = z.discriminatedUnion('type', [
 	actionStreamIncrementalMessage,
 	actionSproutStoppedStreaming,
 	actionSproutProvidedUserResponse,
-	actionUpdateDraftMessage
+	actionUpdateDraftMessage,
+	actionAttachImage
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

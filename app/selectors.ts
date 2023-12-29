@@ -23,6 +23,7 @@ export const selectSproutData = (state : RootState) => state.data ? state.data.s
 export const selectSproutStreaming = (state : RootState) => state.data ? state.data.sproutStreaming : false;
 export const selectConversation = (state : RootState) => state.data ? state.data.conversation : [];
 export const selectDraftMessage = (state : RootState) => state.data ? state.data.draftMessage : '';
+export const selectAttachedImage = (state : RootState) => state.data ? state.data.attachedImage : null;
 export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
 
 export const selectHashForCurrentState = (_state : RootState) => '';
