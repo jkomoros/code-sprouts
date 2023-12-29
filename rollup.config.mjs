@@ -10,7 +10,7 @@ import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 export default {
 	input: 'build/app/components/my-app.js',
 	output: {
-		dir: 'build/app/components',
+		dir: 'dist/app/components',
 		format: 'es',
 	},
 	plugins: [
@@ -18,12 +18,12 @@ export default {
 		dynamicImportVars(),
 		copy({
 			targets: [
-				{ src: 'images', dest: 'build' },
-				{ src: 'fonts', dest: 'build' },
-				{ src: 'manifest.json', dest: 'build' },
-				{ src: 'index.html', dest: 'build' },
-				{ src: 'examples', dest: 'build' },
-				{ src: 'sprouts', dest: 'build' }
+				{ src: 'images', dest: 'dist' },
+				{ src: 'fonts', dest: 'dist' },
+				{ src: 'manifest.json', dest: 'dist' },
+				{ src: 'index.html', dest: 'dist' },
+				{ src: 'examples', dest: 'dist' },
+				{ src: 'sprouts', dest: 'dist' }
 			],
 		}),
 		resolve(),

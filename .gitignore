@@ -5,6 +5,7 @@ _site/
 .DS_Store
 lib/
 build/
+dist/
 
 # Ignore the non-version controlled sprouts folder
 sprouts/
