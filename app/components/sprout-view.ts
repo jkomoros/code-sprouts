@@ -513,6 +513,17 @@ class SproutView extends connect(store)(PageViewElement) {
 					${speaker}
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
 				</div>
+				${speakerType == 'sprout' 
+		? html`<details class='conversation-turn-state'>
+						<summary>
+							State
+						</summary>
+						${turn.state ? 
+		html`<pre>${JSON.stringify(turn.state, null, '\t')}</pre>` :
+		html`<em class='error'>Calculating state<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span></em>`
+}		
+					</details>` : ''
+}
 				<div class='conversation-turn-text'>${textEle}</div>
 				${images.length > 0 ? html`<div class='conversation-turn-images'>
 					${images.map((image) => html`<img src=${image.image} />`)}
