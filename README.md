@@ -28,9 +28,72 @@ A sprout is a named folder (typically in `sprouts/` but with version-controlled 
     deal_cards.md - An example that will be called deal_cards.
 ```
 
+You can run `npm run compile:sprouts` to compile any local sprouts that require it.
+
 Sprouts are passed the current state object as of the last turn, and also the last user message they received, and are then asked to return a message to show to the user, and optionally a JSON Patch to modify the state object for the next turn.
 
-You can run `npm run compile:sprouts` to compile any local sprouts that require it.
+Let's work through `examples/default-demo` example to make this more concrete.
+
+It defines the following base instructions in `instructions.md`:
+```
+Your job is to say either 'a', 'b', or 'c', without quotes each time a user says something.
+
+Never say two of the same letters in a row.
+```
+
+It also defines the following schema to store its state: `schema.ts`;
+```
+export type State = {
+    //The responses we've given to the user, in ascending order.
+    responses: string[]
+};
+```
+
+For each turn of the conversation, the Sprout runner constructs a new prompt to
+pass to the bot and get its response. It passes in the last state object and
+last user message. Here's an example of the prompt passed to the bot for the first turn:
+
+```
+Your job is to say either 'a', 'b', or 'c', without quotes each time a user says something.
+
+Never say two of the same letters in a row.
+
+You will manage your state in an object conforming to the following schema:
+
+export type State = {
+    //The responses we've given to the user, in ascending order.
+    responses: string[]
+};
+
+When relevant or requested, summarize the state in a way that a non-technical user would understand. If the user explicitly asks what is in the state object, reproduce it exactly.
+
+Your current state is:
+{
+	"responses": []
+}
+
+The last user message (VERY IMPORTANT that you respond to this):
+
+<INITIAL>
+---
+
+It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
+{
+  type: 'default',
+  //The message that will be shown to the user.
+  messageForUser: string
+  //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
+  patch : JSONPatchRFC6902
+}
+
+You are not configured to receive images from the user
+
+Provide a patch to update the state object based on the users's last message and your response.
+```
+
+On subsequent turns, a fresh history is passed to the bot, including the last messages from the user and the updated state object after the patch from the last turn was applied.
+
+More complex sprouts might have sub-instructions, which are summarized for the bot and it can ask for more detail on before responding. You can look at `examples/codenames` for a complex example.
 
 ## Deploying
 
