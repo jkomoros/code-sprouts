@@ -272,6 +272,8 @@ class SproutView extends connect(store)(PageViewElement) {
 				.conversation-turn-speaker {
 					font-size: 0.8em;
 					color: var(--dark-gray-color);
+					display: flex;
+					flex-direction: row;
 				}
 
 				.conversation-turn-text em.error, .conversation-turn-text em.loading {
@@ -280,6 +282,10 @@ class SproutView extends connect(store)(PageViewElement) {
 
 				.conversation-turn-speaker details {
 					display: inline-block;
+				}
+
+				.flex {
+					flex:1;
 				}
 
 				.conversation-turn-text em.loading {
@@ -514,8 +520,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		return html`
 			<div class='conversation-turn'>
 				<div class='conversation-turn-speaker'>
-					${speaker}
+					<span>${speaker}</span>
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
+					<div class='flex'></div>
 					${speakerType == 'sprout' 
 		? html`<details>
 						<summary>
