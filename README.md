@@ -10,9 +10,11 @@ Install dependencies with `npm install`.
 
 Open a terminal window and run `npm run start`.
 
-Run the tool with `node build/src/index.js`. The tool will ask for your OPENAI_API_KEY on first run if not set, and offer to save it in a `.env` file for you.
+You can now interact with the app at `https://localhost:8081`.
 
-You can also access a web app version at `https://localhost:8081`
+You can also interact with your sprouts from the command line via `node build/src/index.js`.
+
+The first time you run either the webapp or the CLI it will ask you to set your OPENAI_API_KEY if not already set.
 
 ## Creating a Sprout
 
