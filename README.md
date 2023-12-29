@@ -32,6 +32,11 @@ Sprouts are passed the current state object as of the last turn, and also the la
 
 You can run `npm run compile:sprouts` to compile any local sprouts that require it.
 
+## Deploying
+
+`npx firebase use <your-project-id>`
+`npm run deploy`
+
 ## Why not just build this as a GPT?
 
 GPTs are a great way to build things like this. However, there's a few problems.
