@@ -135,6 +135,10 @@ export const provideUserResponse = () : ThunkSomeAction => (dispatch, getState) 
 
 	const text = selectDraftMessage(state);
 	const image = selectAttachedImage(state);
+
+	//No message
+	if (!text && !image) return;
+
 	const response : Prompt = image ? [
 		text,
 		{
