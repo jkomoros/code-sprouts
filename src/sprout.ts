@@ -48,6 +48,7 @@ import {
 
 import fastJSONPatch from 'fast-json-patch';
 import { joinPath } from './util.js';
+import { ConversationSignaller } from './signaller.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
@@ -496,5 +497,26 @@ Provide a patch to update the state object based on the users's last message and
 		this._states.push(newState);
 		if (debugLogger) debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
 		return turn.messageForUser;
+	}
+
+	async run(signaller : ConversationSignaller) : Promise<void> {
+
+		await this.validate();
+
+		//TODO: support images
+		while(!signaller.done) {
+			signaller.streamStarted();
+			await this.conversationTurn({
+				//Use a => to bind to this
+				streamLogger: (message : string) => signaller.streamIncrementalMessage(message)
+			});
+			signaller.streamStopped(await this.lastState());
+			const response = await signaller.getUserMessage();
+			if (!response) {
+				signaller.finish();
+				break;
+			}
+			this.provideUserResponse(response || '');
+		}
 	}
 }

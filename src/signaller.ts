@@ -1,11 +1,8 @@
 import {
-	Sprout
-} from '../src/sprout.js';
-
-import {
 	Prompt,
 	SproutState
-} from '../src/types.js';
+} from './types.js';
+
 
 type VoidFunction = () => void;
 type MessageFunction = (message : string) => void;
@@ -16,7 +13,6 @@ type SignallerOptions = {
 	streamIncrementalMessage: MessageFunction
 }
 
-//TODO: rename this to StreamSignaller
 //TODO: should this be the way that the runSproutInCLI interacts with it too?
 export class ConversationSignaller {
 	private _done = false;
@@ -70,23 +66,3 @@ export class ConversationSignaller {
 		return this._done;
 	}
 }
-
-export const runSproutInBrowser = async (sprout : Sprout, signaller : ConversationSignaller) => {
-	await sprout.validate();
-
-	//TODO: support images
-	while(!signaller.done) {
-		signaller.streamStarted();
-		await sprout.conversationTurn({
-			//Use a => to bind to this
-			streamLogger: (message : string) => signaller.streamIncrementalMessage(message)
-		});
-		signaller.streamStopped(await sprout.lastState());
-		const response = await signaller.getUserMessage();
-		if (!response) {
-			signaller.finish();
-			break;
-		}
-		sprout.provideUserResponse(response || '');
-	}
-};

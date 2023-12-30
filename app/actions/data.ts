@@ -28,7 +28,7 @@ import {
 
 import {
 	ConversationSignaller
-} from '../runner.js';
+} from '../../src/signaller.js';
 
 import {
 	ImageURL,

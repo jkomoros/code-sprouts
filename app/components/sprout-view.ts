@@ -68,8 +68,7 @@ import {
 
 import {
 	ConversationSignaller,
-	runSproutInBrowser
-} from '../runner.js';
+} from '../../src/signaller.js';
 
 import {
 	ATTACH_FILE_ICON,
@@ -484,7 +483,7 @@ class SproutView extends connect(store)(PageViewElement) {
 				streamStopped: (state) => store.dispatch(sproutStoppedStreaming(state)),
 				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message))
 			});
-			runSproutInBrowser(this._currentSprout, this._lastSignaller);
+			this._currentSprout.run(this._lastSignaller);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
