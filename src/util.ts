@@ -66,3 +66,15 @@ export const shortenDisplayPath = (path : Path) : Path => {
 	//Replace the middle parts with ellipses
 	return [parts[0], '...', parts[parts.length - 1]].join('/');
 };
+
+const randomCharSetNumbers = '0123456789';
+const randomCharSetLetters = 'abcdef';
+const randomCharSet = randomCharSetNumbers + randomCharSetLetters;
+
+export const randomString = (length : number, charSet = randomCharSet) => {
+	let text = '';
+	for (let i = 0; i < length; i++) {
+		text += charSet.charAt(Math.floor(Math.random() * charSet.length));
+	}
+	return text;
+};
