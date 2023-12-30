@@ -94,6 +94,23 @@ import {
 	signaller
 } from '../signaller.js';
 
+import {
+	KeyboardActions,
+	executeKeyboardAction
+} from '../keyboard.js';
+
+const keyboardShortcuts : KeyboardActions = [
+	{
+		shortcut: {
+			key: 'Enter',
+			allowWhileEditing: true
+		},
+		action: () => {
+			store.dispatch(provideUserResponse());
+		}
+	}
+];
+
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
 
@@ -451,6 +468,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	override firstUpdated() {
 		//Using dispatch within updated can cause weird rentrant issues.
 		setTimeout(() => this.firstRunDispatch(), 0);
+		window.addEventListener('keydown', e => this._handleKeyDown(e));
 		window.addEventListener('hashchange', () => this._handleHashChange());
 		//We do this after packets have already been loaded from storage
 		this._handleHashChange();
@@ -545,6 +563,10 @@ class SproutView extends connect(store)(PageViewElement) {
 				</div>` : ''}
 			</div>
 		`;
+	}
+
+	private _handleKeyDown(e : KeyboardEvent) {
+		executeKeyboardAction(e, keyboardShortcuts);
 	}
 
 	private _handleDraftMessageInput(e : Event) {
