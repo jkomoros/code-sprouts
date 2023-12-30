@@ -3,38 +3,14 @@ import {
 	SproutState
 } from './types.js';
 
-
-type VoidFunction = () => void;
-type MessageFunction = (message : string) => void;
-
-type SignallerOptions = {
-	streamStarted: VoidFunction,
-	streamStopped: (state : SproutState) => void,
-	streamIncrementalMessage: MessageFunction
-}
-
-//TODO: should this be the way that the runSproutInCLI interacts with it too?
-export class ConversationSignaller {
+export abstract class ConversationSignaller {
 	private _done = false;
-	private _opts :SignallerOptions;
 	private _userMessageCallback : ((response : Prompt) => void) | null = null;
 	private _userMessage : Prompt | null = null;
 
-	constructor(opts : SignallerOptions) {
-		this._opts = opts;
-	}
-
-	streamStarted() : void {
-		this._opts.streamStarted();
-	}
-
-	streamStopped(state : SproutState) : void {
-		this._opts.streamStopped(state);
-	}
-
-	streamIncrementalMessage(message : string) : void {
-		this._opts.streamIncrementalMessage(message);
-	}
+	abstract streamStarted() : void;
+	abstract streamStopped(state : SproutState): void;
+	abstract streamIncrementalMessage(message : string): void;
 
 	provideUserResponse(response : Prompt) : void {
 		if (this._userMessageCallback) {

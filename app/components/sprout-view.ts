@@ -43,9 +43,6 @@ import {
 	provideUserResponse,
 	selectSprout,
 	setOpenAIAPIKey,
-	sproutStoppedStreaming,
-	startStreamingSprout,
-	streamIncrementalMessage,
 	updateDraftMessage,
 	updateWithMainPageExtra
 } from '../actions/data.js';
@@ -95,6 +92,10 @@ import {
 	ImageURL,
 	SproutConfig
 } from '../../src/types.js';
+
+import {
+	BrowserConversationSignaller
+} from '../signaller.js';
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -478,11 +479,7 @@ class SproutView extends connect(store)(PageViewElement) {
 				this._currentSproutConfig = config;
 			});
 			if (this._lastSignaller) this._lastSignaller.finish();
-			this._lastSignaller = new ConversationSignaller({
-				streamStarted: () => store.dispatch(startStreamingSprout()),
-				streamStopped: (state) => store.dispatch(sproutStoppedStreaming(state)),
-				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message))
-			});
+			this._lastSignaller = new BrowserConversationSignaller();
 			this._currentSprout.run(this._lastSignaller);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
