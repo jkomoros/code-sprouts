@@ -10,6 +10,7 @@
       "allowSyntheticDefaultImports": true,
       "lib": ["es2020", "DOM", "DOM.Iterable"],
       "declaration": true,
+      "noImplicitOverride": true,
       "outDir": "build/",
       "declarationMap": true,
       "sourceMap": true,
