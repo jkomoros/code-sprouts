@@ -47,8 +47,15 @@ import {
 } from 'zod';
 
 import fastJSONPatch from 'fast-json-patch';
-import { joinPath } from './util.js';
-import { ConversationSignaller } from './signaller.js';
+
+import {
+	joinPath,
+	randomString
+} from './util.js';
+
+import {
+	ConversationSignaller
+} from './signaller.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
@@ -107,6 +114,7 @@ export class Sprout {
 	private _debugLogger? : Logger;
 	private _userMessages : Prompt[];
 	private _states: SproutState[];
+	private _id : string;
 
 	static setFetcher(input : Fetcher) : void {
 		fetcher = input;
@@ -124,6 +132,12 @@ export class Sprout {
 		this._disallowCompilation = Boolean(disallowCompilation);
 		this._userMessages = [];
 		this._states = [];
+		this._id = randomString(8);
+	}
+
+	//A random ID for this sprout. Convenient to debug sprout identity issues.
+	get id() : string {
+		return this._id;
 	}
 
 	get name() : SproutName {
