@@ -83,8 +83,12 @@ type SproutOptions = {
 };
 
 export type ConversationTurnOptions = {
+	//Will be called with streaming incremental user-visible results.
 	streamLogger? : StreamLogger,
+	//Will be called with full messages
 	debugLogger? : Logger,
+	//Will be called with streaming raw turn object results
+	debugStreamLogger? : Logger,
 	subInstruction? : SubInstructionsName
 }
 
@@ -431,7 +435,7 @@ Provide a patch to update the state object based on the users's last message and
 		provideUserResponse, and then call conversationTurn() again.
 	*/
 	async conversationTurn(opts : ConversationTurnOptions = {}) : Promise<string> {
-		const {debugLogger, streamLogger, subInstruction} = opts;
+		const {debugLogger, debugStreamLogger, streamLogger, subInstruction} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt(subInstruction);
@@ -457,7 +461,7 @@ Provide a patch to update the state object based on the users's last message and
 			const incrementalUserMessage = parser.incrementalProperty(content, (input: unknown) : string => {
 				return partialConversationTurnSchema.parse(input).messageForUser || '';
 			});
-			if (debugLogger) debugLogger(content);
+			if (debugStreamLogger) debugStreamLogger(content);
 			if (streamLogger) streamLogger(incrementalUserMessage);
 		}
 		//Add a newline at the end for the next line

@@ -96,9 +96,10 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	const sproutConfig = await sprout.config();
 	const allowImages = sproutConfig.allowImages || false;
 	const debugLogger = opts.verbose ? console.info : undefined;
+	const debugStreamLogger = opts.verbose ? (input : string) => stdout.write(input) : undefined;
 	const streamLogger = debugLogger ? undefined : (input : string) => stdout.write(input);
 	while(active) {
-		await sprout.conversationTurn({streamLogger, debugLogger});
+		await sprout.conversationTurn({streamLogger, debugLogger, debugStreamLogger});
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',
