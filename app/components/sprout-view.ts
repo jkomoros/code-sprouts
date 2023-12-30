@@ -95,20 +95,24 @@ import {
 } from '../signaller.js';
 
 import {
+	KeyboardAction,
 	KeyboardActions,
-	executeKeyboardAction
+	executeKeyboardAction,
+	shortcutDisplayString
 } from '../keyboard.js';
 
-const keyboardShortcuts : KeyboardActions = [
-	{
-		shortcut: {
-			key: 'Enter',
-			allowWhileEditing: true
-		},
-		action: () => {
-			store.dispatch(provideUserResponse());
-		}
+const sendShortcut : KeyboardAction = {
+	shortcut: {
+		key: 'Enter',
+		allowWhileEditing: true
+	},
+	action: () => {
+		store.dispatch(provideUserResponse());
 	}
+};
+
+const keyboardShortcuts : KeyboardActions = [
+	sendShortcut
 ];
 
 @customElement('sprout-view')
@@ -439,7 +443,7 @@ class SproutView extends connect(store)(PageViewElement) {
 						<button
 							class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
 							@click=${this._handleConversationInputSubmit}
-							title='Send'
+							title=${'Send ' + shortcutDisplayString(sendShortcut.shortcut)}
 							?disabled=${this._sproutStreaming}
 						>
 							<!-- TODO: Cmd-Enter to send -->

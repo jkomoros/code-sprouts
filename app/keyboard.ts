@@ -81,6 +81,8 @@ const keyboardAction = z.object({
 	continue: z.boolean().optional()
 });
 
+export type KeyboardAction = z.infer<typeof keyboardAction>;
+
 const keyboardActions = z.array(keyboardAction);
 
 export type KeyboardActions = z.infer<typeof keyboardActions>;
