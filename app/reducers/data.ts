@@ -86,6 +86,8 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case SPROUT_PROVIDED_USER_RESPONSE:
 		return {
 			...state,
+			draftMessage: '',
+			attachedImage: null,
 			conversation: [
 				...state.conversation,
 				{

@@ -94,7 +94,6 @@ import {
 
 import {
 	ImageURL,
-	Prompt,
 	SproutConfig
 } from '../../src/types.js';
 
@@ -580,21 +579,8 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleConversationInputSubmit() {
-		if (this._sproutStreaming) throw new Error('Cannot submit while streaming');
 		if (!this._lastSignaller) throw new Error('No signaller');
-		//TODO: pop this into a action creator instead of relying on state from this.
-		const text = this._draftMessage;
-		const image = this._imageUpload;
-		//TODO: don't allow submitting the text if an image is uploading
-		store.dispatch(updateDraftMessage(''));
-		store.dispatch(attachImage(null));
-		const message : Prompt = image ? [
-			text,
-			{
-				image
-			}
-		] : text;
-		store.dispatch(provideUserResponse(message, this._lastSignaller));
+		store.dispatch(provideUserResponse(this._lastSignaller));
 	}
 
 	private _handleConversationImageInputClicked() {

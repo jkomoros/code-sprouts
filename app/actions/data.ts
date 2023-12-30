@@ -12,9 +12,12 @@ import {
 } from '../types.js';
 
 import {
+	selectAttachedImage,
 	selectConversation,
 	selectCurrentSproutName,
-	selectSproutData
+	selectDraftMessage,
+	selectSproutData,
+	selectSproutStreaming
 } from '../selectors.js';
 
 import fetcher from '../../src/fetcher-browser.js';
@@ -113,7 +116,22 @@ export const sproutStoppedStreaming = (state : SproutState) : SomeAction => {
 	};
 };
 
-export const provideUserResponse = (response : Prompt, signaller : Signaller) : ThunkSomeAction => (dispatch) => {
+export const provideUserResponse = (signaller : Signaller) : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const streaming = selectSproutStreaming(state);
+	if (streaming) throw new Error('Cannot provide user response while streaming');
+
+	//TODO: don't allow submitting the text if an image is uploading
+
+	const text = selectDraftMessage(state);
+	const image = selectAttachedImage(state);
+	const response : Prompt = image ? [
+		text,
+		{
+			image
+		}
+	] : text;
+
 	dispatch({
 		type: 'SPROUT_PROVIDED_USER_RESPONSE',
 		response
