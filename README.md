@@ -40,16 +40,15 @@ Let's work through `examples/default-demo` example to make this more concrete.
 
 It defines the following base instructions in `instructions.md`:
 ```
-Your job is to say either 'a', 'b', or 'c', without quotes each time a user says something.
+Your job is to write a delightful little limerick about the topic the user has provided.
 
-Never say two of the same letters in a row.
+If the topic is empty, ask for the topic first.
 ```
 
 It also defines the following schema to store its state: `schema.ts`;
 ```
 export type State = {
-    //The responses we've given to the user, in ascending order.
-    responses: string[]
+    limerickTopic : string; 
 };
 ```
 
@@ -58,22 +57,20 @@ pass to the bot and get its response. It passes in the last state object and
 last user message. Here's an example of the prompt passed to the bot for the first turn:
 
 ```
-Your job is to say either 'a', 'b', or 'c', without quotes each time a user says something.
+Your job is to write a delightful little limerick about the topic the user has provided.
 
-Never say two of the same letters in a row.
+If the topic is empty, ask for the topic first.
 
 You will manage your state in an object conforming to the following schema:
-
 export type State = {
-    //The responses we've given to the user, in ascending order.
-    responses: string[]
+    limerickTopic : string; 
 };
 
 When relevant or requested, summarize the state in a way that a non-technical user would understand. If the user explicitly asks what is in the state object, reproduce it exactly.
 
 Your current state is:
 {
-	"responses": []
+	"limerickTopic": ""
 }
 
 The last user message (VERY IMPORTANT that you respond to this):
