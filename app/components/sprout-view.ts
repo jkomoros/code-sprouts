@@ -581,7 +581,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleConversationInputSubmit() {
-		store.dispatch(provideUserResponse(signaller));
+		store.dispatch(provideUserResponse());
 	}
 
 	private _handleConversationImageInputClicked() {

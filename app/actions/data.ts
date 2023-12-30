@@ -29,8 +29,8 @@ import {
 } from './app.js';
 
 import {
-	ConversationSignaller
-} from '../../src/signaller.js';
+	signaller
+} from '../signaller.js';
 
 import {
 	ImageURL,
@@ -124,7 +124,7 @@ export const sproutStoppedStreaming = (state : SproutState) : SomeAction => {
 	};
 };
 
-export const provideUserResponse = (signaller : ConversationSignaller) : ThunkSomeAction => (dispatch, getState) => {
+export const provideUserResponse = () : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 	const streaming = selectSproutStreaming(state);
 	if (streaming) throw new Error('Cannot provide user response while streaming');
