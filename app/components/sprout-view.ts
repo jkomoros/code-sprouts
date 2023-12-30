@@ -41,6 +41,7 @@ import {
 	addSprout,
 	attachImage,
 	provideUserResponse,
+	resetConversation,
 	selectSprout,
 	setOpenAIAPIKey,
 	updateDraftMessage,
@@ -466,6 +467,9 @@ class SproutView extends connect(store)(PageViewElement) {
 			store.dispatch(updateWithMainPageExtra(this._pageExtra));
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
+			//TODO: we set new properties on the Element multiple times in this
+			//method, which can have unexpected timing results, and should be
+			//cleaned up.
 			this._currentSproutAllowsImages = false;
 			this._currentSprout.allowImages().then(allowImages => {
 				this._currentSproutAllowsImages = allowImages;
@@ -476,6 +480,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			});
 			const lastSprout = changedProps.get('_currentSprout');
 			if (lastSprout) signaller.finish(lastSprout);
+			store.dispatch(resetConversation());
 			this._currentSprout.run(signaller);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
