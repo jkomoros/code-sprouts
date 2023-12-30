@@ -451,12 +451,21 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	override firstUpdated() {
-		store.dispatch(addDefaultSprouts());
-		store.dispatch(canonicalizePath());
-		store.dispatch(setOpenAIAPIKey(fetchOpenAIAPIKeyFromStorage()));
+		//Using dispatch within updated can cause weird rentrant issues.
+		setTimeout(() => this.firstRunDispatch(), 0);
 		window.addEventListener('hashchange', () => this._handleHashChange());
 		//We do this after packets have already been loaded from storage
 		this._handleHashChange();
+	}
+
+	private firstRunDispatch() {
+		store.dispatch(addDefaultSprouts());
+		store.dispatch(canonicalizePath());
+		let key = fetchOpenAIAPIKeyFromStorage();
+		if (!key) key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.\nNo sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.') || '';
+		if (key) {
+			store.dispatch(setOpenAIAPIKey(key));
+		}
 	}
 
 	override updated(changedProps : PropertyValues<this>) {
@@ -486,11 +495,6 @@ class SproutView extends connect(store)(PageViewElement) {
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
 				storeOpenAIAPIKeyToStorage(this._openAIAPIKey);
-			} else {
-				const key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.\nNo sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.');
-				if (key) {
-					store.dispatch(setOpenAIAPIKey(key));
-				}
 			}
 		}
 	}
