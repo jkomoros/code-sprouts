@@ -59,10 +59,6 @@ const cliOptions = z.object({
 
 type CLIOptions = z.infer<typeof cliOptions>;
 
-const streamLogger = (input : string) : void => {
-	stdout.write(input);
-};
-
 const IMAGE_MAGIC_STRING = '@image';
 
 const absoluteFile = (input : string) : string => {
@@ -99,9 +95,10 @@ const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => 
 	const active = true;
 	const sproutConfig = await sprout.config();
 	const allowImages = sproutConfig.allowImages || false;
+	const debugLogger = opts.verbose ? console.info : undefined;
+	const streamLogger = debugLogger ? undefined : (input : string) => stdout.write(input);
 	while(active) {
-		const logger = opts.verbose ? console.info : undefined;
-		await sprout.conversationTurn({streamLogger, debugLogger: logger});
+		await sprout.conversationTurn({streamLogger, debugLogger});
 		const userInput = await enquirer.prompt<{userResponse:string}>({
 			type: 'input',
 			name: 'userResponse',

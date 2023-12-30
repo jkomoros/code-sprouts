@@ -454,22 +454,11 @@ Provide a patch to update the state object based on the users's last message and
 			const choice = chunk.choices[0];
 			if (choice.finish_reason && choice.finish_reason != 'stop') throw new Error(`Unexpected chunk stop reason: ${choice.finish_reason}`);
 			const content = choice.delta.content || '';
-			if (streamLogger) {
-				//If we have a debugLogger then we are in debug mode and should
-				//log the raw token. But if we don't, log the net new
-				//userMessage token.
-				if (debugLogger) {
-					//TODO: use parser.ingest here and use its final result.
-					streamLogger(content);
-					parser.ingest(content);
-				} else {
-					streamLogger(
-						parser.incrementalProperty(content, (input: unknown) : string => {
-							return partialConversationTurnSchema.parse(input).messageForUser || '';
-						})
-					);
-				}
-			}
+			const incrementalUserMessage = parser.incrementalProperty(content, (input: unknown) : string => {
+				return partialConversationTurnSchema.parse(input).messageForUser || '';
+			});
+			if (debugLogger) debugLogger(content);
+			if (streamLogger) streamLogger(incrementalUserMessage);
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
