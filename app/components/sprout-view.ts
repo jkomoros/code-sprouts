@@ -91,10 +91,8 @@ import {
 } from '../../src/types.js';
 
 import {
-	BrowserConversationSignaller
+	signaller
 } from '../signaller.js';
-
-const signaller = new BrowserConversationSignaller();
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {

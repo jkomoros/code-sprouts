@@ -20,7 +20,7 @@ import {
 	Sprout
 } from '../src/sprout.js';
 
-export class BrowserConversationSignaller extends ConversationSignaller {
+class BrowserConversationSignaller extends ConversationSignaller {
 	override async streamStarted(): Promise<void> {
 		store.dispatch(startStreamingSprout());
 	}
@@ -33,3 +33,5 @@ export class BrowserConversationSignaller extends ConversationSignaller {
 		store.dispatch(streamIncrementalMessage(message));
 	}
 }
+
+export const signaller = new BrowserConversationSignaller();
