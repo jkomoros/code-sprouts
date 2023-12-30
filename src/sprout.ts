@@ -502,6 +502,7 @@ Provide a patch to update the state object based on the users's last message and
 			await this.conversationTurn({
 				//Use a => to bind to this
 				streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
+				debugStreamLogger: (message : string) => signaller.streamIncrementalDebugMessage(this, message),
 				debugLogger: this._debugLogger
 			});
 			await signaller.streamStopped(this, await this.lastState());

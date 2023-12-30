@@ -13,7 +13,12 @@ export abstract class ConversationSignaller {
 	abstract streamStarted(sprout : Sprout) : Promise<void>;
 	abstract streamStopped(sprout : Sprout, state : SproutState): Promise<void>;
 	//This isn't async
+	//What streamLogger passes from conversationTurn
 	abstract streamIncrementalMessage(sprout : Sprout, message : string): void;
+	//What debugStreamLogger passes from converastionTurn.
+	streamIncrementalDebugMessage(_sprout : Sprout, _debugMessage : string) : void {
+		//By default does nothing
+	}
 
 	//TODO: this should also take sprout.
 	provideUserResponse(response : Prompt) : void {
