@@ -1,3 +1,4 @@
+import { Sprout } from './sprout.js';
 import {
 	Prompt,
 	SproutState
@@ -8,10 +9,11 @@ export abstract class ConversationSignaller {
 	private _userMessageCallback : ((response : Prompt) => void) | null = null;
 	private _userMessage : Prompt | null = null;
 
-	abstract streamStarted() : void;
-	abstract streamStopped(state : SproutState): void;
-	abstract streamIncrementalMessage(message : string): void;
+	abstract streamStarted(sprout : Sprout) : void;
+	abstract streamStopped(sprout : Sprout, state : SproutState): void;
+	abstract streamIncrementalMessage(sprout : Sprout, message : string): void;
 
+	//TODO: this should also take sprout.
 	provideUserResponse(response : Prompt) : void {
 		if (this._userMessageCallback) {
 			this._userMessageCallback(response);

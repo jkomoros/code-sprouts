@@ -498,13 +498,13 @@ Provide a patch to update the state object based on the users's last message and
 
 		//TODO: support images
 		while(!signaller.done) {
-			signaller.streamStarted();
+			signaller.streamStarted(this);
 			await this.conversationTurn({
 				//Use a => to bind to this
-				streamLogger: (message : string) => signaller.streamIncrementalMessage(message),
+				streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
 				debugLogger: this._debugLogger
 			});
-			signaller.streamStopped(await this.lastState());
+			signaller.streamStopped(this, await this.lastState());
 			const response = await signaller.getUserMessage();
 			if (!response) {
 				signaller.finish();
