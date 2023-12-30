@@ -4,10 +4,18 @@ import {
 	SproutState
 } from './types.js';
 
+type SignallerSproutInfo = {
+	userMessageCallback? : (response : Prompt) => void,
+	userMessage? : Prompt,
+	done : boolean
+}
+
 export abstract class ConversationSignaller {
-	private _done = false;
-	private _userMessageCallback : ((response : Prompt) => void) | null = null;
-	private _userMessage : Prompt | null = null;
+	private _sproutInfo : WeakMap<Sprout, SignallerSproutInfo>;
+
+	constructor() {
+		this._sproutInfo = new WeakMap();
+	}
 
 	//Async methods
 	abstract streamStarted(sprout : Sprout) : Promise<void>;
@@ -20,33 +28,46 @@ export abstract class ConversationSignaller {
 		//By default does nothing
 	}
 
-	provideUserResponse(_sprout : Sprout, response : Prompt) : void {
-		if (this._userMessageCallback) {
-			this._userMessageCallback(response);
-			this._userMessageCallback = null;
-			this._userMessage = null;
-			return;
+	private getSproutInfo(sprout : Sprout) : SignallerSproutInfo {
+		let info = this._sproutInfo.get(sprout);
+		if (!info) {
+			info = {done: false};
+			this._sproutInfo.set(sprout, info);
 		}
-		this._userMessage = response;
+		return info;
 	}
 
-	async getUserMessage(_sprout : Sprout) : Promise<Prompt> {
-		if (this._userMessage) {
-			const message = this._userMessage;
-			this._userMessage = null;
-			this._userMessageCallback = null;
+	provideUserResponse(sprout : Sprout, response : Prompt) : void {
+		const info = this.getSproutInfo(sprout);
+		if (info.userMessageCallback) {
+			info.userMessageCallback(response);
+			info.userMessageCallback = undefined;
+			info.userMessage = undefined;
+			return;
+		}
+		info.userMessage = response;
+	}
+
+	async getUserMessage(sprout : Sprout) : Promise<Prompt> {
+		const info = this.getSproutInfo(sprout);
+		if (info.userMessage) {
+			const message = info.userMessage;
+			info.userMessage = undefined;
+			info.userMessageCallback = undefined;
 			return message;
 		}
 		return new Promise((resolve) => {
-			this._userMessageCallback = resolve;
+			info.userMessageCallback = resolve;
 		});
 	}
 
-	finish(_sprout : Sprout) : void {
-		this._done = true;
+	finish(sprout : Sprout) : void {
+		const info = this.getSproutInfo(sprout);
+		info.done = true;
 	}
 
-	done(_sprout : Sprout) : boolean {
-		return this._done;
+	done(sprout : Sprout) : boolean {
+		const info = this.getSproutInfo(sprout);
+		return info.done;
 	}
 }

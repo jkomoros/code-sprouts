@@ -1,4 +1,4 @@
-import { html, css, TemplateResult} from 'lit';
+import { html, css, TemplateResult, PropertyValues} from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -64,10 +64,6 @@ import {
 } from '../../src/sprout.js';
 
 import {
-	ConversationSignaller,
-} from '../../src/signaller.js';
-
-import {
 	ATTACH_FILE_ICON,
 	IMAGE_ICON,
 	PLUS_ICON,
@@ -96,6 +92,8 @@ import {
 import {
 	BrowserConversationSignaller
 } from '../signaller.js';
+
+const signaller = new BrowserConversationSignaller();
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -138,8 +136,6 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_draftMessage : string = '';
-
-	_lastSignaller : ConversationSignaller | null = null;
 
 	static override get styles() {
 		return [
@@ -462,7 +458,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._handleHashChange();
 	}
 
-	override updated(changedProps : Map<keyof SproutView, SproutView[keyof SproutView]>) {
+	override updated(changedProps : PropertyValues<this>) {
 		if (changedProps.has('_hashForCurrentState')) {
 			store.dispatch(canonicalizeHash());
 		}
@@ -479,9 +475,8 @@ class SproutView extends connect(store)(PageViewElement) {
 				this._currentSproutConfig = config;
 			});
 			const lastSprout = changedProps.get('_currentSprout');
-			if (this._lastSignaller && lastSprout && lastSprout instanceof Sprout) this._lastSignaller.finish(lastSprout);
-			this._lastSignaller = new BrowserConversationSignaller();
-			this._currentSprout.run(this._lastSignaller);
+			if (lastSprout) signaller.finish(lastSprout);
+			this._currentSprout.run(signaller);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
@@ -576,8 +571,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleConversationInputSubmit() {
-		if (!this._lastSignaller) throw new Error('No signaller');
-		store.dispatch(provideUserResponse(this._lastSignaller));
+		store.dispatch(provideUserResponse(signaller));
 	}
 
 	private _handleConversationImageInputClicked() {
