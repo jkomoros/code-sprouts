@@ -497,7 +497,7 @@ Provide a patch to update the state object based on the users's last message and
 		await this.validate();
 
 		//TODO: support images
-		while(!signaller.done) {
+		while(!signaller.done(this)) {
 			await signaller.streamStarted(this);
 			await this.conversationTurn({
 				//Use a => to bind to this
