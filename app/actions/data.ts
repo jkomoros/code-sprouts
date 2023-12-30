@@ -27,7 +27,7 @@ import {
 } from './app.js';
 
 import {
-	Signaller
+	ConversationSignaller
 } from '../runner.js';
 
 import {
@@ -116,7 +116,7 @@ export const sproutStoppedStreaming = (state : SproutState) : SomeAction => {
 	};
 };
 
-export const provideUserResponse = (signaller : Signaller) : ThunkSomeAction => (dispatch, getState) => {
+export const provideUserResponse = (signaller : ConversationSignaller) : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 	const streaming = selectSproutStreaming(state);
 	if (streaming) throw new Error('Cannot provide user response while streaming');

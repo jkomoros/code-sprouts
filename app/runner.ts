@@ -18,7 +18,7 @@ type SignallerOptions = {
 
 //TODO: rename this to StreamSignaller
 //TODO: should this be the way that the runSproutInCLI interacts with it too?
-export class Signaller {
+export class ConversationSignaller {
 	private _done = false;
 	private _opts :SignallerOptions;
 	private _userMessageCallback : ((response : Prompt) => void) | null = null;
@@ -71,7 +71,7 @@ export class Signaller {
 	}
 }
 
-export const runSproutInBrowser = async (sprout : Sprout, signaller : Signaller) => {
+export const runSproutInBrowser = async (sprout : Sprout, signaller : ConversationSignaller) => {
 	await sprout.validate();
 
 	//TODO: support images

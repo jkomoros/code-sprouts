@@ -67,7 +67,7 @@ import {
 } from '../../src/sprout.js';
 
 import {
-	Signaller,
+	ConversationSignaller,
 	runSproutInBrowser
 } from '../runner.js';
 
@@ -139,7 +139,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	@state()
 		_draftMessage : string = '';
 
-	_lastSignaller : Signaller | null = null;
+	_lastSignaller : ConversationSignaller | null = null;
 
 	static override get styles() {
 		return [
@@ -479,7 +479,7 @@ class SproutView extends connect(store)(PageViewElement) {
 				this._currentSproutConfig = config;
 			});
 			if (this._lastSignaller) this._lastSignaller.finish();
-			this._lastSignaller = new Signaller({
+			this._lastSignaller = new ConversationSignaller({
 				streamStarted: () => store.dispatch(startStreamingSprout()),
 				streamStopped: (state) => store.dispatch(sproutStoppedStreaming(state)),
 				streamIncrementalMessage: (message) => store.dispatch(streamIncrementalMessage(message))
