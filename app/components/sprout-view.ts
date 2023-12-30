@@ -468,6 +468,21 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
+	private sproutChanged(lastSprout? : Sprout | null) {
+		if (!this._currentSprout) return;
+		this._currentSproutAllowsImages = false;
+		this._currentSprout.allowImages().then(allowImages => {
+			this._currentSproutAllowsImages = allowImages;
+		});
+		this._currentSproutConfig = null;
+		this._currentSprout.config().then(config => {
+			this._currentSproutConfig = config;
+		});
+		if (lastSprout) signaller.finish(lastSprout);
+		store.dispatch(resetConversation());
+		this._currentSprout.run(signaller);
+	}
+
 	override updated(changedProps : PropertyValues<this>) {
 		if (changedProps.has('_hashForCurrentState')) {
 			store.dispatch(canonicalizeHash());
@@ -476,21 +491,9 @@ class SproutView extends connect(store)(PageViewElement) {
 			store.dispatch(updateWithMainPageExtra(this._pageExtra));
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
-			//TODO: we set new properties on the Element multiple times in this
-			//method, which can have unexpected timing results, and should be
-			//cleaned up.
-			this._currentSproutAllowsImages = false;
-			this._currentSprout.allowImages().then(allowImages => {
-				this._currentSproutAllowsImages = allowImages;
-			});
-			this._currentSproutConfig = null;
-			this._currentSprout.config().then(config => {
-				this._currentSproutConfig = config;
-			});
 			const lastSprout = changedProps.get('_currentSprout');
-			if (lastSprout) signaller.finish(lastSprout);
-			store.dispatch(resetConversation());
-			this._currentSprout.run(signaller);
+			//Don't call store.dispatch things in the update.
+			setTimeout(() => this.sproutChanged(lastSprout), 0);
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
