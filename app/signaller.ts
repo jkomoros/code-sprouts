@@ -21,11 +21,11 @@ import {
 } from '../src/sprout.js';
 
 export class BrowserConversationSignaller extends ConversationSignaller {
-	override streamStarted(): void {
+	override async streamStarted(): Promise<void> {
 		store.dispatch(startStreamingSprout());
 	}
 
-	override streamStopped(_sprout : Sprout, state: SproutState): void {
+	override async streamStopped(_sprout : Sprout, state: SproutState): Promise<void> {
 		store.dispatch(sproutStoppedStreaming(state));
 	}
 

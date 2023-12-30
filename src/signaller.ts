@@ -9,8 +9,10 @@ export abstract class ConversationSignaller {
 	private _userMessageCallback : ((response : Prompt) => void) | null = null;
 	private _userMessage : Prompt | null = null;
 
-	abstract streamStarted(sprout : Sprout) : void;
-	abstract streamStopped(sprout : Sprout, state : SproutState): void;
+	//Async methods
+	abstract streamStarted(sprout : Sprout) : Promise<void>;
+	abstract streamStopped(sprout : Sprout, state : SproutState): Promise<void>;
+	//This isn't async
 	abstract streamIncrementalMessage(sprout : Sprout, message : string): void;
 
 	//TODO: this should also take sprout.
