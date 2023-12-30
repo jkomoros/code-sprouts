@@ -24,6 +24,7 @@ export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
 export const STREAM_INCREMENTAL_MESSAGE = 'STREAM_INCREMENTAL_MESSAGE';
 export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
 export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
+export const RESET_CONVERSATION = 'RESET_CONVERSATION';
 export const UPDATE_DRAFT_MESSAGE = 'UPDATE_DRAFT_MESSAGE';
 export const ATTACH_IMAGE = 'ATTACH_IMAGE';
 
@@ -79,6 +80,10 @@ const actionSproutProvidedUserResponse = z.object({
 	response: promptSchema
 }).strict();
 
+const actionResetConversation = z.object({
+	type: z.literal(RESET_CONVERSATION)
+});
+
 const actionUpdateDraftMessage = z.object({
 	type: z.literal(UPDATE_DRAFT_MESSAGE),
 	message: z.string()
@@ -100,6 +105,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionStreamIncrementalMessage,
 	actionSproutStoppedStreaming,
 	actionSproutProvidedUserResponse,
+	actionResetConversation,
 	actionUpdateDraftMessage,
 	actionAttachImage
 ]);

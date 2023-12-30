@@ -1,6 +1,7 @@
 import {
 	ADD_SPROUTS,
 	ATTACH_IMAGE,
+	RESET_CONVERSATION,
 	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
@@ -95,6 +96,11 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 					message: action.response
 				}
 			]
+		};
+	case RESET_CONVERSATION:
+		return {
+			...state,
+			conversation: []
 		};
 	case UPDATE_DRAFT_MESSAGE:
 		return {

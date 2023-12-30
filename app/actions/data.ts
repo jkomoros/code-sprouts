@@ -1,6 +1,7 @@
 import { ThunkSomeAction } from '../store.js';
 
 import {
+	RESET_CONVERSATION,
 	SET_OPENAI_API_KEY,
 	SPROUT_STOPPED_STREAMING,
 	START_STREAMING_SPROUT,
@@ -87,6 +88,12 @@ export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) =>
 		type: SET_OPENAI_API_KEY,
 		key
 	});
+};
+
+export const resetConversation = () : SomeAction => {
+	return {
+		type: RESET_CONVERSATION
+	};
 };
 
 export const startStreamingSprout = () : SomeAction => {
