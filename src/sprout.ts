@@ -506,9 +506,9 @@ Provide a patch to update the state object based on the users's last message and
 				debugLogger: this._debugLogger
 			});
 			await signaller.streamStopped(this, await this.lastState());
-			const response = await signaller.getUserMessage();
+			const response = await signaller.getUserMessage(this);
 			if (!response) {
-				signaller.finish();
+				signaller.finish(this);
 				break;
 			}
 			this.provideUserResponse(response || '');

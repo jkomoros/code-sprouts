@@ -20,8 +20,7 @@ export abstract class ConversationSignaller {
 		//By default does nothing
 	}
 
-	//TODO: this should also take sprout.
-	provideUserResponse(response : Prompt) : void {
+	provideUserResponse(_sprout : Sprout, response : Prompt) : void {
 		if (this._userMessageCallback) {
 			this._userMessageCallback(response);
 			this._userMessageCallback = null;
@@ -31,7 +30,7 @@ export abstract class ConversationSignaller {
 		this._userMessage = response;
 	}
 
-	async getUserMessage() : Promise<Prompt> {
+	async getUserMessage(_sprout : Sprout) : Promise<Prompt> {
 		if (this._userMessage) {
 			const message = this._userMessage;
 			this._userMessage = null;
@@ -43,11 +42,11 @@ export abstract class ConversationSignaller {
 		});
 	}
 
-	finish() : void {
+	finish(_sprout : Sprout) : void {
 		this._done = true;
 	}
 
-	get done() : boolean {
+	done(_sprout : Sprout) : boolean {
 		return this._done;
 	}
 }

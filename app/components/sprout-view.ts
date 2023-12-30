@@ -478,7 +478,8 @@ class SproutView extends connect(store)(PageViewElement) {
 			this._currentSprout.config().then(config => {
 				this._currentSproutConfig = config;
 			});
-			if (this._lastSignaller) this._lastSignaller.finish();
+			const lastSprout = changedProps.get('_currentSprout');
+			if (this._lastSignaller && lastSprout && lastSprout instanceof Sprout) this._lastSignaller.finish(lastSprout);
 			this._lastSignaller = new BrowserConversationSignaller();
 			this._currentSprout.run(this._lastSignaller);
 		}

@@ -14,6 +14,7 @@ import {
 import {
 	selectAttachedImage,
 	selectConversation,
+	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectDraftMessage,
 	selectSproutData,
@@ -120,6 +121,8 @@ export const provideUserResponse = (signaller : ConversationSignaller) : ThunkSo
 	const state = getState();
 	const streaming = selectSproutStreaming(state);
 	if (streaming) throw new Error('Cannot provide user response while streaming');
+	const sprout = selectCurrentSprout(state);
+	if (!sprout) throw new Error('No sprout');
 
 	//TODO: don't allow submitting the text if an image is uploading
 
@@ -136,7 +139,7 @@ export const provideUserResponse = (signaller : ConversationSignaller) : ThunkSo
 		type: 'SPROUT_PROVIDED_USER_RESPONSE',
 		response
 	});
-	signaller.provideUserResponse(response);
+	signaller.provideUserResponse(sprout, response);
 };
 
 export const addDefaultSprouts = () : ThunkSomeAction => async (dispatch) => {
