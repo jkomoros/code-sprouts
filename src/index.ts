@@ -7,6 +7,7 @@ import {
 import {
 	ImageURL,
 	Prompt,
+	SproutState,
 	pathSchema
 } from './types.js';
 
@@ -48,6 +49,7 @@ import {
 import sharp from 'sharp';
 
 import enquirer from 'enquirer';
+import { ConversationSignaller } from './signaller.js';
 
 dotEnvConfig();
 
@@ -88,46 +90,6 @@ const loadImage = async (imagePath : string) : Promise<ImageURL> => {
 	return `data:image/jpeg;base64,${data}`;
 };
 
-//This is not a method on sprout because Sprout doesn't  know how to get or give
-//input to the surrounding context.
-const runSprout = async (sprout : Sprout, opts : CLIOptions) : Promise<void> => {
-	//TODO: allow an exit
-	const active = true;
-	const sproutConfig = await sprout.config();
-	const allowImages = sproutConfig.allowImages || false;
-	const debugLogger = opts.verbose ? console.info : undefined;
-	const debugStreamLogger = opts.verbose ? (input : string) => stdout.write(input) : undefined;
-	const streamLogger = debugLogger ? undefined : (input : string) => stdout.write(input);
-	while(active) {
-		await sprout.conversationTurn({streamLogger, debugLogger, debugStreamLogger});
-		const userInput = await enquirer.prompt<{userResponse:string}>({
-			type: 'input',
-			name: 'userResponse',
-			message: `Your response ${allowImages ? `(include ${IMAGE_MAGIC_STRING} to include an image)` : ''}:`
-		});
-		let response : Prompt = userInput.userResponse;
-		if (allowImages && response.toLocaleLowerCase().includes(IMAGE_MAGIC_STRING.toLowerCase())) {
-			response = response.replace(IMAGE_MAGIC_STRING, 'image');
-			//TODO: auto complete.
-			const userInput = await enquirer.prompt<{imagePath:string}>({
-				type: 'input',
-				name: 'imagePath',
-				message: 'Path to an image to include:'
-			});
-			const imagePath = userInput.imagePath;
-			console.log(`Image path: ${imagePath}`);
-			const image = await loadImage(imagePath);
-			response = [
-				response,
-				{
-					image
-				}
-			];
-		}
-		sprout.provideUserResponse(response);
-	}
-
-};
 
 const ensureOpenAIAPIKey = async () : Promise<string> => {
 	let key = env.OPENAI_API_KEY;
@@ -159,6 +121,61 @@ const ensureOpenAIAPIKey = async () : Promise<string> => {
 
 };
 
+class NodeConversationSignaller extends ConversationSignaller {
+
+	private _debug : boolean;
+
+	constructor(opts: {debug?: boolean} = {}) {
+		super();
+		const {debug} = opts;
+		this._debug = Boolean(debug);
+	}
+
+	override async streamStarted(): Promise<void> {
+		//Nothing to do
+	}
+
+	async streamStopped(sprout : Sprout, _state: SproutState): Promise<void> {
+		const sproutConfig = await sprout.config();
+		const allowImages = sproutConfig.allowImages;
+		const userInput = await enquirer.prompt<{userResponse:string}>({
+			type: 'input',
+			name: 'userResponse',
+			message: `Your response ${allowImages ? `(include ${IMAGE_MAGIC_STRING} to include an image)` : ''}:`
+		});
+		let response : Prompt = userInput.userResponse;
+		if (allowImages && response.toLocaleLowerCase().includes(IMAGE_MAGIC_STRING.toLowerCase())) {
+			response = response.replace(IMAGE_MAGIC_STRING, 'image');
+			//TODO: auto complete.
+			const userInput = await enquirer.prompt<{imagePath:string}>({
+				type: 'input',
+				name: 'imagePath',
+				message: 'Path to an image to include:'
+			});
+			const imagePath = userInput.imagePath;
+			console.log(`Image path: ${imagePath}`);
+			const image = await loadImage(imagePath);
+			response = [
+				response,
+				{
+					image
+				}
+			];
+		}
+	}
+
+	streamIncrementalMessage(sprout : Sprout, message: string): void {
+		if (this._debug) return;
+		stdout.write(message);
+	}
+
+	override streamIncrementalDebugMessage(sprout: Sprout, debugMessage: string): void {
+		if (!this._debug) return;
+		stdout.write(debugMessage);
+	}
+
+}
+
 const main = async (opts : CLIOptions) : Promise<void> => {
 	
 	const OPENAI_API_KEY = await ensureOpenAIAPIKey();
@@ -187,7 +204,8 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	await sprout.validate();
 	//Ensure that we won't have to redo calculations in the future.
 	await sprout.compile();
-	await runSprout(sprout, opts);
+	const signaller = new NodeConversationSignaller({debug: opts.verbose});
+	await sprout.run(signaller);
 };
 
 (async() => {
