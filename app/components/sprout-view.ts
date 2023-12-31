@@ -299,6 +299,11 @@ class SproutView extends connect(store)(PageViewElement) {
 					color: var(--dark-gray-color);
 				}
 
+				.conversation-turn-text p {
+					margin-top: 0;
+					margin-bottom: 0;
+				}
+
 				.conversation-turn-speaker details {
 					display: inline-block;
 				}
@@ -551,9 +556,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		const text = textForPrompt(turn.message);
 		const images = promptImages(turn.message);
-		let textEle = html`${text}`;
+		let textEle : TemplateResult[] = text.split('\n').map((line) => html`<p>${line}</p>`);
 		if (!text.trim()) {
-			textEle = this._sproutStreaming && turn.speaker == 'sprout' ? html`<em class='loading'>Thinking...</em>` : html`<em class='error'>No message</em>`;
+			textEle = this._sproutStreaming && turn.speaker == 'sprout' ? [html`<em class='loading'>Thinking...</em>`] : [html`<em class='error'>No message</em>`];
 		}
 		return html`
 			<div class='conversation-turn'>
