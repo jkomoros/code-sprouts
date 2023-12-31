@@ -1,7 +1,15 @@
 import { html, css, TemplateResult, PropertyValues} from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
+
+import {
+	marked,
+
+} from 'marked';
+
+import DOMPurify from 'dompurify';
 
 // This element is connected to the Redux store.
 import { store } from '../store.js';
@@ -113,6 +121,23 @@ const sendShortcut : KeyboardAction = {
 const keyboardShortcuts : KeyboardActions = [
 	sendShortcut
 ];
+
+const markdownElement = (formattedString : string) => {
+	//Replace single paragraph breaks with double paragraph breaks, so \n
+	//renders a new paragraph. Markdown with collapse extra breaks anyway.
+	formattedString = formattedString.replace(/(?<!\n)\n(?!\n)/g, '\n\n');
+
+	// Convert Markdown to HTML
+	const rawHtml = marked.parse(formattedString);
+
+	if (typeof rawHtml != 'string') throw new Error('Expected string');
+
+	// Sanitize the HTML
+	const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+
+	// Render the sanitized HTML
+	return unsafeHTML(sanitizedHtml);
+};
 
 @customElement('sprout-view')
 class SproutView extends connect(store)(PageViewElement) {
@@ -556,9 +581,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
 		const text = textForPrompt(turn.message);
 		const images = promptImages(turn.message);
-		let textEle : TemplateResult[] = text.split('\n').map((line) => html`<p>${line}</p>`);
+		let textEle =  markdownElement(text);
 		if (!text.trim()) {
-			textEle = this._sproutStreaming && turn.speaker == 'sprout' ? [html`<em class='loading'>Thinking...</em>`] : [html`<em class='error'>No message</em>`];
+			textEle = this._sproutStreaming && turn.speaker == 'sprout' ? html`<em class='loading'>Thinking...</em>` : html`<em class='error'>No message</em>`;
 		}
 		return html`
 			<div class='conversation-turn'>
