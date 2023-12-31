@@ -523,6 +523,9 @@ class SproutView extends connect(store)(PageViewElement) {
 			//Don't call store.dispatch things in the update.
 			setTimeout(() => this.sproutChanged(lastSprout), 0);
 		}
+		if (changedProps.has('_sproutStreaming') && !this._sproutStreaming) {
+			this._focusTextArea();
+		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
 				storeOpenAIAPIKeyToStorage(this._openAIAPIKey);
@@ -576,6 +579,12 @@ class SproutView extends connect(store)(PageViewElement) {
 				</div>` : ''}
 			</div>
 		`;
+	}
+
+	private _focusTextArea() {
+		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
+		if (!textarea) throw new Error('No textarea');
+		textarea.focus();
 	}
 
 	private _handleKeyDown(e : KeyboardEvent) {
