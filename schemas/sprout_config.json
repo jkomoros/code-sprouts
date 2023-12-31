@@ -16,6 +16,10 @@
 		"allowImages": {
 			"type": "boolean",
 			"description": "Whether the bot allows images"
+		},
+		"allowFormatting": {
+			"type": "boolean",
+			"description": "Whether the bot should return markdown formatting"
 		}
 	},
 	"required": [

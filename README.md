@@ -183,6 +183,10 @@ The description of the bot to show to the user
 
 If true, then the bot will alow image input.
 
+#### allowFormatting (optional) : boolean
+
+If true, then the bot will be told it may return markdown formatting
+
 ## Deploying
 
 `npx firebase use <your-project-id>`

@@ -1,6 +1,7 @@
 {
     "version": 0,
     "allowImages": true,
+    "allowFormatting": true,
     "title": "Codenames Bot",
     "description": "A bot for giving Codenames clues"
 }

@@ -478,6 +478,8 @@ ${JSON.stringify(state, null, '\t')}
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${printableConversationTurnSchema(includeState, subInstruction ? {} : subInstructions)}
 
+${config.allowFormatting ? 'Your messageForUser may include markdown formatting if appropriate.' : ''}
+
 ${includeState ? 'Provide a patch to update the state object based on the users\'s last message and your response.'
 		: ''}`;
 
