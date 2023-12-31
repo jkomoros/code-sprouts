@@ -11,7 +11,7 @@ import {
 import {
 	CompiledSprout,
 	Conversation,
-	ConversationMessage,
+	ConversationMessageSprout,
 	Fetcher,
 	Logger,
 	Path,
@@ -470,6 +470,18 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		];
 	}
 
+	private prepareForConversation() : ConversationMessageSprout {
+		const sproutResponse : ConversationMessageSprout = {
+			speaker: 'sprout',
+			message: ''
+		};
+		this._conversation = [
+			...this._conversation,
+			sproutResponse
+		];
+		return sproutResponse;
+	}
+
 	/*
 		conversationTurn does the next LLM turn of a discussion, as visible to a
 		user.
@@ -481,7 +493,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		should display it to the user, pass any new response from a user via
 		provideUserResponse, and then call conversationTurn() again.
 	*/
-	private async conversationTurn(opts : ConversationTurnOptions = {}) : Promise<string> {
+	private async conversationTurn(sproutResponse : ConversationMessageSprout, opts : ConversationTurnOptions = {}) : Promise<string> {
 		const {debugLogger, debugStreamLogger, streamLogger, subInstruction} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
@@ -489,14 +501,6 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const schemaText = await this.schemaText();
 		const includeState = schemaText != '';
 		const promptHasImages = promptIncludesImage(prompt);
-		const sproutResponse : ConversationMessage = {
-			speaker: 'sprout',
-			message: ''
-		};
-		this._conversation = [
-			...this._conversation,
-			sproutResponse
-		];
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
@@ -547,7 +551,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 
 		if (turn.type == 'subInstruction') {
-			return await this.conversationTurn({...opts, subInstruction: turn.subInstructionToDescribe});
+			return await this.conversationTurn(sproutResponse, {...opts, subInstruction: turn.subInstructionToDescribe});
 		}
 
 		const oldState = await this.lastState();
@@ -564,13 +568,17 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 
 		//TODO: support images
 		while(!signaller.done(this)) {
+			const sproutResponse = this.prepareForConversation();
 			await signaller.streamStarted(this);
-			await this.conversationTurn({
-				//Use a => to bind to this
-				streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
-				debugStreamLogger: (message : string) => signaller.streamIncrementalDebugMessage(this, message),
-				debugLogger: this._debugLogger
-			});
+			await this.conversationTurn(
+				sproutResponse,
+				{
+					//Use a => to bind to this
+					streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
+					debugStreamLogger: (message : string) => signaller.streamIncrementalDebugMessage(this, message),
+					debugLogger: this._debugLogger
+				}
+			);
 			await signaller.streamStopped(this, await this.lastState());
 			const response = await signaller.getUserMessage(this);
 			if (!response) {

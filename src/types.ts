@@ -194,6 +194,8 @@ const conversationMessageSproutSchema = z.object({
 	state: sproutStateSchema.optional()
 });
 
+export type ConversationMessageSprout = z.infer<typeof conversationMessageSproutSchema>;
+
 const conversationMessageSchema = z.discriminatedUnion('speaker', [conversationMessageUserSchema, conversationMessageSproutSchema]);
 
 export type ConversationMessage = z.infer<typeof conversationMessageSchema>;
