@@ -614,21 +614,34 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			//want a new, empty sprout message to exist by the time
 			//streamStarted is called.
 			const sproutResponse = this.prepareForConversation();
-			await signaller.streamStarted(this);
-			await this.conversationTurn(
-				sproutResponse,
-				{
-					//Use a => to bind to this
-					streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
-					debugStreamLogger: (message : string) => signaller.streamIncrementalDebugMessage(this, message),
-				}
-			);
-			await signaller.streamStopped(this, await this.lastState());
-			const response = await signaller.getUserMessage(this);
-			if (!response) {
-				signaller.finish(this);
-				break;
-			}
+			await Promise.race([
+				signaller.streamStarted(this),
+				signaller.doneSignal(this)
+			]);
+			if (signaller.done(this)) break;
+			await Promise.race([
+				this.conversationTurn(
+					sproutResponse,
+					{
+						//Use a => to bind to this
+						streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
+						debugStreamLogger: (message : string) => signaller.streamIncrementalDebugMessage(this, message),
+					}
+				),
+				signaller.doneSignal(this)
+			]);
+			if (signaller.done(this)) break;
+			await Promise.race([
+				signaller.streamStopped(this, await this.lastState()),
+				signaller.doneSignal(this)
+			]);
+			if(signaller.done(this)) break;
+			const response = await Promise.race([
+				signaller.getUserMessage(this),
+				signaller.doneSignal(this)
+			]);
+			if (signaller.done(this)) break;
+			if (typeof response !== 'string') break;
 			this.provideUserResponse(response || '');
 		}
 	}
