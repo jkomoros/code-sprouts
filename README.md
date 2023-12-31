@@ -61,15 +61,16 @@ If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 Based on this configuration, for each conversation turn the bot is given something like this as its prompt:
 
 ```
+Prompt:
 Your job is to famous historical ELIZA bot in how you respond to the user's messages.
 
 If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 
 The last user message (VERY IMPORTANT that you respond to this):
 
+#User
 <INITIAL>
----
-
+#END
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 {
