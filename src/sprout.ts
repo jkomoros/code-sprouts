@@ -93,7 +93,8 @@ type SproutOptions = {
 	ai? : AIProvider,
 	debugLogger? : Logger,
 	//If true, and a file is not compiled, it will fail.
-	disallowCompilation? : boolean
+	disallowCompilation? : boolean,
+	disallowFormatting? : boolean
 };
 
 export type ConversationTurnOptions = {
@@ -134,6 +135,7 @@ export class Sprout {
 	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
 	private _disallowCompilation : boolean;
+	private _disallowFormatting : boolean;
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
@@ -146,12 +148,14 @@ export class Sprout {
 		const {
 			ai,
 			debugLogger,
-			disallowCompilation
+			disallowCompilation,
+			disallowFormatting
 		} = opts;
 		this._path = path;
 		this._aiProvider = ai;
 		this._debugLogger = debugLogger;
 		this._disallowCompilation = Boolean(disallowCompilation);
+		this._disallowFormatting = Boolean(disallowFormatting);
 		this._id = randomString(8);
 		this._conversation = [];
 	}
@@ -184,6 +188,12 @@ export class Sprout {
 		} catch(err) {
 			return false;
 		}
+	}
+
+	async allowFormatting() : Promise<boolean> {
+		const config = await this.config();
+		if (!config.allowFormatting) return false;
+		return !this._disallowFormatting;
 	}
 
 	async compiled() : Promise<boolean> {
@@ -443,11 +453,9 @@ ${schemaText}
 
 		const state = await this.lastState();
 
-		const config = await this.config();
-
 		const subInstructions = await this.subInstructions();
 
-		const allowFormatting = config.allowFormatting || false;
+		const allowFormatting = await this.allowFormatting();
 
 		const allowImages = await this.allowImages();
 

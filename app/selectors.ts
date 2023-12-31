@@ -44,7 +44,8 @@ export const selectCurrentSprout = createSelector(
 		return new Sprout(sproutName, {
 			ai: aiProvider,
 			debugLogger,
-			disallowCompilation: true
+			disallowCompilation: true,
+			disallowFormatting: true
 		});
 	}
 );

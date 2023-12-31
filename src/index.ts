@@ -200,7 +200,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 		openai_api_key: OPENAI_API_KEY
 	});
 	const debugLogger = opts.verbose ? console.info : undefined;
-	const sprout = new Sprout(sproutName, {ai, debugLogger});
+	const sprout = new Sprout(sproutName, {ai, debugLogger, disallowFormatting: true});
 	await sprout.validate();
 	//Ensure that we won't have to redo calculations in the future.
 	await sprout.compile();
