@@ -534,7 +534,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		should display it to the user, pass any new response from a user via
 		provideUserResponse, and then call conversationTurn() again.
 	*/
-	private async conversationTurn(sproutResponse : ConversationMessageSprout, opts : ConversationTurnOptions = {}) : Promise<string> {
+	private async conversationTurn(signaller : ConversationSignaller, sproutResponse : ConversationMessageSprout, opts : ConversationTurnOptions = {}) : Promise<string> {
 		const {debugStreamLogger, streamLogger, subInstruction} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
@@ -593,7 +593,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		if (this._debugLogger) this._debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 
 		if (turn.type == 'subInstruction') {
-			return await this.conversationTurn(sproutResponse, {...opts, subInstruction: turn.subInstructionToDescribe});
+			return await this.conversationTurn(signaller, sproutResponse, {...opts, subInstruction: turn.subInstructionToDescribe});
 		}
 
 		const oldState = await this.lastState();
@@ -620,6 +620,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			if (signaller.done(this)) break;
 			await Promise.race([
 				this.conversationTurn(
+					signaller,
 					sproutResponse,
 					{
 						//Use a => to bind to this
