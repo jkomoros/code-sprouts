@@ -462,7 +462,7 @@ ${previousConversation.length ? 'The previous conversation (for context only):\n
 
 The last user message (VERY IMPORTANT that you respond to this):
 
-${(lastUserMessage ? textForPrompt(lastUserMessage) : '<INITIAL>') + '\n#END\n\n'}
+${(textConversation([{speaker: 'user', message: lastUserMessage || '<INITIAL>'}]))}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${printableConversationTurnSchema(includeState, subInstruction ? {} : subInstructions)}
