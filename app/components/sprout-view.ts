@@ -402,7 +402,10 @@ class SproutView extends connect(store)(PageViewElement) {
 					</div>
 					<div id='conversation'>
 						<div class='inner'>
-							${this._conversation.map((turn, index) => this._renderConversation(turn, index == this._conversation.length - 1))}
+							${this._conversation.map((turn, index) => this._renderConversation(turn, {
+		lastTurn: index == this._conversation.length - 1,
+		showState: true
+	}))}
 						</div>
 					</div>
 					<div
@@ -520,7 +523,8 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
-	private _renderConversation(turn : ConversationMessage, lastTurn : boolean) : TemplateResult {
+	private _renderConversation(turn : ConversationMessage, opts : {lastTurn? : boolean, showState? : boolean} = {}) : TemplateResult {
+		const { lastTurn, showState } = opts;
 		let speaker = '';
 		//Typescript assertUnreachable doesn't work with a union type otherwise
 		const speakerType = turn.speaker;
@@ -547,7 +551,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					<span>${speaker}</span>
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
 					<div class='flex'></div>
-					${speakerType == 'sprout' 
+					${showState && speakerType == 'sprout' 
 		? html`<details>
 						<summary>
 							State
