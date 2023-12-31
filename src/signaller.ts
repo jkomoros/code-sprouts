@@ -7,8 +7,22 @@ import {
 type SignallerSproutInfo = {
 	userMessageCallback? : (response : Prompt) => void,
 	userMessage? : Prompt,
+	doneSignal : Promise<void>,
+	resolveDone : () => void,
 	done : boolean
 }
+
+//In a method to close over the thing we create.
+const createSproutInfo = () : SignallerSproutInfo => {
+	const info : Partial<SignallerSproutInfo> = {
+		done: false,
+	};
+	const doneSignal = new Promise<void>(resolve => {
+		info.resolveDone = resolve;
+	});
+	info.doneSignal = doneSignal;
+	return info as SignallerSproutInfo;
+};
 
 export abstract class ConversationSignaller {
 	private _sproutInfo : WeakMap<Sprout, SignallerSproutInfo>;
@@ -31,7 +45,7 @@ export abstract class ConversationSignaller {
 	private getSproutInfo(sprout : Sprout) : SignallerSproutInfo {
 		let info = this._sproutInfo.get(sprout);
 		if (!info) {
-			info = {done: false};
+			info = createSproutInfo();
 			this._sproutInfo.set(sprout, info);
 		}
 		return info;
@@ -64,6 +78,12 @@ export abstract class ConversationSignaller {
 	finish(sprout : Sprout) : void {
 		const info = this.getSproutInfo(sprout);
 		info.done = true;
+		info.resolveDone();
+	}
+
+	doneSignal(sprout : Sprout) : Promise<void> {
+		const info = this.getSproutInfo(sprout);
+		return info.doneSignal;
 	}
 
 	done(sprout : Sprout) : boolean {
