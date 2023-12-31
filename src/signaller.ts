@@ -1,7 +1,4 @@
-import {
-	Sprout
-} from './sprout.js';
-
+import { Sprout } from './sprout.js';
 import {
 	Prompt,
 	SproutState
@@ -9,13 +6,8 @@ import {
 
 type SignallerSproutInfo = {
 	userMessageCallback? : (response : Prompt) => void,
-	userMessageReject? : (error : Error) => void,
 	userMessage? : Prompt,
 	done : boolean
-}
-
-export class StreamCancelledError extends Error {
-	streamCancelledError = true;
 }
 
 export abstract class ConversationSignaller {
@@ -50,7 +42,6 @@ export abstract class ConversationSignaller {
 		if (info.userMessageCallback) {
 			info.userMessageCallback(response);
 			info.userMessageCallback = undefined;
-			info.userMessageReject = undefined;
 			info.userMessage = undefined;
 			return;
 		}
@@ -63,22 +54,16 @@ export abstract class ConversationSignaller {
 			const message = info.userMessage;
 			info.userMessage = undefined;
 			info.userMessageCallback = undefined;
-			info.userMessageReject = undefined;
 			return message;
 		}
-		return new Promise<Prompt>((resolve, reject) => {
+		return new Promise((resolve) => {
 			info.userMessageCallback = resolve;
-			info.userMessageReject = reject;
 		});
 	}
 
 	finish(sprout : Sprout) : void {
 		const info = this.getSproutInfo(sprout);
 		info.done = true;
-		if (info.userMessageReject) {
-			info.userMessageReject(new StreamCancelledError('Stream cancelled'));
-			info.userMessageReject = undefined;
-		}
 	}
 
 	done(sprout : Sprout) : boolean {
