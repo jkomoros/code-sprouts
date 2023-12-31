@@ -506,6 +506,11 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		];
 	}
 
+	async managesState() : Promise<boolean> {
+		const schemaText = await this.schemaText();
+		return schemaText != '';
+	}
+
 	private prepareForConversation() : ConversationMessageSprout {
 		const sproutResponse : ConversationMessageSprout = {
 			speaker: 'sprout',
@@ -534,8 +539,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt(subInstruction);
-		const schemaText = await this.schemaText();
-		const includeState = schemaText != '';
+		const includeState = await this.managesState();
 		const promptHasImages = promptIncludesImage(prompt);
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (this._debugLogger) this._debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
