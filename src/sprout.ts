@@ -97,8 +97,6 @@ type SproutOptions = {
 export type ConversationTurnOptions = {
 	//Will be called with streaming incremental user-visible results.
 	streamLogger? : StreamLogger,
-	//Will be called with full messages
-	debugLogger? : Logger,
 	//Will be called with streaming raw turn object results
 	debugStreamLogger? : Logger,
 	subInstruction? : SubInstructionsName
@@ -494,7 +492,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		provideUserResponse, and then call conversationTurn() again.
 	*/
 	private async conversationTurn(sproutResponse : ConversationMessageSprout, opts : ConversationTurnOptions = {}) : Promise<string> {
-		const {debugLogger, debugStreamLogger, streamLogger, subInstruction} = opts;
+		const {debugStreamLogger, streamLogger, subInstruction} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt(subInstruction);
@@ -502,10 +500,10 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const includeState = schemaText != '';
 		const promptHasImages = promptIncludesImage(prompt);
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
-		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
+		if (this._debugLogger) this._debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
-			debugLogger,
+			debugLogger: this._debugLogger,
 			modelRequirements: {
 				//It's not possible to allowImages and imageInput at the same time currently, because no openai model allows both.
 				jsonResponse: !promptHasImages,
@@ -515,7 +513,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
 			if (chunk.choices.length == 0) throw new Error('No choices');
-			if (debugLogger && AGGRESSIVE_LOGGING) debugLogger('Chunk:\n' + JSON.stringify(chunk, null, '\t'));
+			if (this._debugLogger && AGGRESSIVE_LOGGING) this._debugLogger('Chunk:\n' + JSON.stringify(chunk, null, '\t'));
 			const choice = chunk.choices[0];
 			if (choice.finish_reason && choice.finish_reason != 'stop') throw new Error(`Unexpected chunk stop reason: ${choice.finish_reason}`);
 			const content = choice.delta.content || '';
@@ -529,9 +527,9 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
-		if (debugLogger && AGGRESSIVE_LOGGING) {
-			debugLogger(`Raw Turn: ${parser.rawInput}`);
-			debugLogger(`Trimmed Turn: ${parser.input}`);
+		if (this._debugLogger && AGGRESSIVE_LOGGING) {
+			this._debugLogger(`Raw Turn: ${parser.rawInput}`);
+			this._debugLogger(`Trimmed Turn: ${parser.input}`);
 		}
 		let turnJSON : unknown = {};
 		try {
@@ -548,7 +546,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		}
 
 		const turn = strictConversationTurnSchema.parse(turnJSON);
-		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
+		if (this._debugLogger) this._debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 
 		if (turn.type == 'subInstruction') {
 			return await this.conversationTurn(sproutResponse, {...opts, subInstruction: turn.subInstructionToDescribe});
@@ -558,7 +556,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		//fastJSONPatch applies the patch in place by default. The second true is for mutateDocumen: false
 		const newState = fastJSONPatch.applyPatch(oldState, fastJSONPatch.deepClone(turn.patch), false, false).newDocument;
 		sproutResponse.state = newState;
-		if (debugLogger) debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
+		if (this._debugLogger) this._debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
 		return turn.messageForUser;
 	}
 
@@ -579,7 +577,6 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 					//Use a => to bind to this
 					streamLogger: (message : string) => signaller.streamIncrementalMessage(this, message),
 					debugStreamLogger: (message : string) => signaller.streamIncrementalDebugMessage(this, message),
-					debugLogger: this._debugLogger
 				}
 			);
 			await signaller.streamStopped(this, await this.lastState());
