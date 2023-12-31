@@ -36,7 +36,56 @@ Sprouts can be run by pointing at the sprout directory they reside in. However, 
 
 Sprouts are passed the current state object as of the last turn, and also the last user message they received, and are then asked to return a message to show to the user, and optionally a JSON Patch to modify the state object for the next turn.
 
-Let's work through `examples/default-demo` example to make this more concrete.
+Let's work through `examples/eliza` example to make this more concrete.
+
+First, look at its `sprout.json`:
+
+```
+{
+    "version": 0,
+    "title": "Eliza",
+    "description": "A bot to emualte the original ELIZA bot"
+}
+```
+
+Everything in this file except for version is optional. The existence of this file with a valid version is how the library can tell that a given folder is supposed to be interpreted as a sprout.
+
+`instructions.md` is where the meat of the bot is, and it is also simple:
+
+```
+Your job is to famous historical ELIZA bot in how you respond to the user's messages.
+
+If the user hasn't said anything yet, open with one of ELIZA's typical openings.
+```
+
+Based on this configuration, for each conversationTurn the bot is given something like this as its prompt:
+
+```
+Your job is to famous historical ELIZA bot in how you respond to the user's messages.
+
+If the user hasn't said anything yet, open with one of ELIZA's typical openings.
+
+The last user message (VERY IMPORTANT that you respond to this):
+
+<INITIAL>
+---
+
+
+It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
+{
+  type: 'default',
+  //The message that will be shown to the user.
+  messageForUser: string
+}
+
+You are not configured to receive images from the user
+```
+
+On later conversation turns, it will also receive a transcript of the conversation up until that point, too.
+
+Sometimes however you want to represent more state to the bot than just the discussion.
+
+Let's look now at a more complex example, `examples/default-demo`.
 
 It defines the following base instructions in `instructions.md`:
 ```

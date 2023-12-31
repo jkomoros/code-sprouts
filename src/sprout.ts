@@ -66,17 +66,20 @@ const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
 const CONVERSATION_TURN_SCHEMA_SECOND_PART = `{
   type: 'default',
   //The message that will be shown to the user.
-  messageForUser: string
-  //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
-  patch : JSONPatchRFC6902
+  messageForUser: string{{PATCH_SUB_SCHEMA}}
 }`;
+const CONVERSATION_TURN_PATCH_SUB_SCHEMA = `
+  //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
+  patch : JSONPatchRFC6902`;
 
 const CONVERSATION_TURN_SCHEMA = CONVERSATION_TURN_SCHEMA_FIRST_PART + CONVERSATION_TURN_SCHEMA_SECOND_PART;
 
-const conversationTurnSchema = (subInstructions : SubInstructionsMap) : string => {
-	if (Object.keys(subInstructions).length == 0) return CONVERSATION_TURN_SCHEMA_SECOND_PART;
+const printableConversationTurnSchema = (includeState : boolean, subInstructions : SubInstructionsMap) : string => {
+	const secondPart = CONVERSATION_TURN_SCHEMA_SECOND_PART.replace('{{PATCH_SUB_SCHEMA}}', includeState ? CONVERSATION_TURN_PATCH_SUB_SCHEMA : '');
+	if (Object.keys(subInstructions).length == 0) return secondPart;
 	const subInstructionNames = Object.keys(subInstructions).map(name => `'${name}'`).join(' | ');
-	return CONVERSATION_TURN_SCHEMA.replace('{{SUB_INSTRUCTION_NAMES}}', subInstructionNames);
+	const firstPart = CONVERSATION_TURN_SCHEMA.replace('{{SUB_INSTRUCTION_NAMES}}', subInstructionNames);
+	return firstPart + secondPart;
 };
 
 //Set true while debugging
@@ -332,11 +335,13 @@ type Result = {
 
 		if (this._schemaText === undefined) {
 			const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
-			if (!await fetcher.fileExists(sproutSchemaPath)) {
-				throw new Error(`${this.name}: Schema file ${sproutSchemaPath} not found`);
+			if (await fetcher.fileExists(sproutSchemaPath)) {
+				//TODO: validate this is valid typescript
+				this._schemaText = await fetcher.fileFetch(sproutSchemaPath);
+			} else {
+				//An empty schema is valid
+				this._schemaText = '';
 			}
-			//TODO: validate this is valid typescript
-			this._schemaText = await fetcher.fileFetch(sproutSchemaPath);
 		}
 		if (this._schemaText === undefined) throw new Error(`${this.name}: No schema`);
 		return this._schemaText;
@@ -353,9 +358,10 @@ type Result = {
 	async starterState() : Promise<SproutState> {
 		const compiled = await this._compiled();
 		if(compiled) return compiled.starterState;
+		const schemaText = await this.schemaText();
+		if (!schemaText) return {};
 		//TODO: don't use an LLM for this / cache the result so we don't have to run it each time
 		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
-		const schemaText = await this.schemaText();
 		const prompt = `Return the JSON of a default/empty object conforming to this typescript schema (following comments on defaults):
 ${schemaText}
 `;
@@ -380,6 +386,8 @@ ${schemaText}
 		const baseInstructions = await this.baseInstructions();
 		const schemaText = await this.schemaText();
 
+		const includeState = schemaText != '';
+
 		const state = await this.lastState();
 
 		const config = await this.config();
@@ -393,19 +401,20 @@ ${schemaText}
 
 		const instructions = `${baseInstructions}
 
-You will manage your state in an object conforming to the following schema:
+${includeState ? `You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
 When relevant or requested, summarize the state in a way that a non-technical user would understand. If the user explicitly asks what is in the state object, reproduce it exactly.
+` : ''}
 
 ${subInstruction ? `Here is information on the sub-instruction ${subInstruction}:\n${subInstructions[subInstruction].instructions}` :
 		Object.keys(subInstructions).length ? `Here are sub-instructions you can request information on providing their name:
 		${Object.entries(subInstructions).map(([name, info]) => `* '${name}': ${info.summary}`).join('\n')}` :
 			''}
 
-Your current state is:
+${includeState ? `Your current state is:
 ${JSON.stringify(state, null, '\t')}
-
+` : ''}
 ${previousUserMessages.length ? 'The previous user messages (for context only):\n' + previousUserMessages.map(message => textForPrompt(message)).join('\n---\n') + '\n---\n' : ''}
 
 The last user message (VERY IMPORTANT that you respond to this):
@@ -413,11 +422,12 @@ The last user message (VERY IMPORTANT that you respond to this):
 ${lastUserMessage ? textForPrompt(lastUserMessage) + '\n---\n' : '<INITIAL>\n---\n'}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
-${conversationTurnSchema(subInstruction ? {} : subInstructions)}
+${printableConversationTurnSchema(includeState, subInstruction ? {} : subInstructions)}
 
 ${config.allowImages ? 'You can also accept images as input. If you are provided an image, give a more descriptive natural language description of the state change you make in response to the image.' : 'You are not configured to receive images from the user'}
 
-Provide a patch to update the state object based on the users's last message and your response.`;
+${includeState ? 'Provide a patch to update the state object based on the users\'s last message and your response.'
+		: ''}`;
 
 		if (!this._userMessages.length) return instructions;
 
@@ -453,6 +463,8 @@ Provide a patch to update the state object based on the users's last message and
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
 		const prompt = await this.prompt(subInstruction);
+		const schemaText = await this.schemaText();
+		const includeState = schemaText != '';
 		const promptHasImages = promptIncludesImage(prompt);
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
@@ -491,6 +503,13 @@ Provide a patch to update the state object based on the users's last message and
 			throw new Error(`Could not parse JSON: ${parser.input}: ${err}`);
 		}
 		if (!turnJSON) throw new Error('Empty json');
+
+		//Just thonk on an empty patch if we're in a mode where we're not supposed to have a patch.
+		//TODO: this feels kind of hacky, ideally we'd have a function that wraps the schema and does this.
+		if (!includeState) {
+			if (turnJSON && typeof turnJSON == 'object' && Object.keys(turnJSON).length) (turnJSON as {patch: []}).patch = [];
+		}
+
 		const turn = strictConversationTurnSchema.parse(turnJSON);
 		if (debugLogger) debugLogger(`Turn:\n${JSON.stringify(turn, null, '\t')}`);
 
