@@ -102,6 +102,17 @@ export type ConversationTurnOptions = {
 	subInstruction? : SubInstructionsName
 }
 
+const textConversation = (conversation : Conversation) : string => {
+	return conversation.map(turn => {
+		switch(turn.speaker){
+		case 'user':
+			return `#User\n${textForPrompt(turn.message, true)}`;
+		case 'sprout':
+			return `#Sprout\n${textForPrompt(turn.message, true)}`;
+		}
+	}).join('\n\n') + '\n#END';
+};
+
 let fetcher : Fetcher = fetcherImpl;
 
 export class Sprout {
@@ -386,13 +397,32 @@ ${schemaText}
 		return await this.starterState();
 	}
 
-	lastUserMessage() : Prompt | undefined {
+	//Returns the previous conversation, not including the most recent 
+	previousMessages() : [previousConversation : Conversation, lastUserMessage : Prompt] {
+		const conversation : Conversation = [];
+		let seenSproutMessage = false;
+		let lastUserMessage : Prompt | null = null;
+		//Iterate through the conversation in reverse order
 		for (let i = this._conversation.length - 1; i >= 0; i--) {
 			const turn = this._conversation[i];
-			if (turn.speaker != 'user') continue;
-			return turn.message;
+			const speaker = turn.speaker;
+			switch(speaker){
+			case 'sprout':
+				if (!seenSproutMessage) {
+					seenSproutMessage = true;
+					continue;
+				}
+				break;
+			case 'user':
+				if (!lastUserMessage) {
+					lastUserMessage = turn.message;
+					continue;
+				}
+				break;
+			}
+			conversation.unshift(turn);
 		}
-		return undefined;
+		return [conversation, lastUserMessage || ''];
 	}
 
 	//Returns the next prompt to return.
@@ -410,10 +440,7 @@ ${schemaText}
 
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
-		//TODO: also include sprout messages
-		const userMessages = this._conversation.filter(turn => turn.speaker == 'user').map(turn => textForPrompt(turn.message, true));
-		const previousUserMessages = userMessages.slice(0, userMessages.length - 1);
-		const lastUserMessage = userMessages[userMessages.length - 1];
+		const [previousConversation, lastUserMessage] = this.previousMessages();
 
 		const instructions = `${baseInstructions}
 
@@ -431,11 +458,11 @@ ${subInstruction ? `Here is information on the sub-instruction ${subInstruction}
 ${includeState ? `Your current state is:
 ${JSON.stringify(state, null, '\t')}
 ` : ''}
-${previousUserMessages.length ? 'The previous user messages (for context only):\n' + previousUserMessages.map(message => textForPrompt(message)).join('\n---\n') + '\n---\n' : ''}
+${previousConversation.length ? 'The previous conversation (for context only):\n\n' + textConversation(previousConversation) : ''}
 
 The last user message (VERY IMPORTANT that you respond to this):
 
-${lastUserMessage ? textForPrompt(lastUserMessage) + '\n---\n' : '<INITIAL>\n---\n'}
+${(lastUserMessage ? textForPrompt(lastUserMessage) : '<INITIAL>') + '\n#END\n\n'}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${printableConversationTurnSchema(includeState, subInstruction ? {} : subInstructions)}
