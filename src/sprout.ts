@@ -608,7 +608,6 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 
 		await this.validate();
 
-		//TODO: support images
 		while(!signaller.done(this)) {
 			//We don't have conversationTurn start the conversation, because we
 			//want a new, empty sprout message to exist by the time
