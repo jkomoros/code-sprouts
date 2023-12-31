@@ -142,6 +142,9 @@ class SproutView extends connect(store)(PageViewElement) {
 		_currentSproutAllowsImages = false;
 
 	@state()
+		_currentSproutManagesState = false;
+
+	@state()
 		_sproutStreaming = false;
 
 	@state()
@@ -404,7 +407,7 @@ class SproutView extends connect(store)(PageViewElement) {
 						<div class='inner'>
 							${this._conversation.map((turn, index) => this._renderConversation(turn, {
 		lastTurn: index == this._conversation.length - 1,
-		showState: true
+		showState: this._currentSproutManagesState
 	}))}
 						</div>
 					</div>
@@ -499,6 +502,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._currentSproutConfig = null;
 		this._currentSprout.config().then(config => {
 			this._currentSproutConfig = config;
+		});
+		this._currentSproutManagesState = false;
+		this._currentSprout.managesState().then(managesState => {
+			this._currentSproutManagesState = managesState;
 		});
 		if (lastSprout) signaller.finish(lastSprout);
 		this._currentSprout.run(signaller);
