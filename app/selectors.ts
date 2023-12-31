@@ -21,7 +21,7 @@ export const selectHash = (state : RootState) => state.app ? state.app.hash : ''
 export const selectCurrentSproutName = (state : RootState) => state.data ? state.data.currentSproutName : null;
 export const selectSproutData = (state : RootState) => state.data ? state.data.sprouts : {};
 export const selectSproutStreaming = (state : RootState) => state.data ? state.data.sproutStreaming : false;
-export const selectConversation = (state : RootState) => state.data ? state.data.conversation : [];
+export const selectStreamCounter = (state : RootState) => state.data ? state.data.streamCounter : 0;
 export const selectDraftMessage = (state : RootState) => state.data ? state.data.draftMessage : '';
 export const selectAttachedImage = (state : RootState) => state.data ? state.data.attachedImage : null;
 export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
@@ -47,4 +47,12 @@ export const selectCurrentSprout = createSelector(
 			disallowCompilation: true
 		});
 	}
+);
+
+export const selectCurrentSproutConversation = createSelector(
+	selectCurrentSprout,
+	//Stream counter will increment as a nonce whenever the converastion might have changed
+	selectStreamCounter,
+	//We have to return a copy of the conversation, otherwise the sproutView element won't notice anything changed.
+	(sprout, _streamCounter) => sprout ? [...sprout.conversation] : []
 );

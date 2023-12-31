@@ -8,7 +8,7 @@ import { store } from '../store.js';
 
 import {
 	selectAttachedImage,
-	selectConversation,
+	selectCurrentSproutConversation,
 	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectDraftMessage,
@@ -41,7 +41,6 @@ import {
 	addSprout,
 	attachImage,
 	provideUserResponse,
-	resetConversation,
 	selectSprout,
 	setOpenAIAPIKey,
 	updateDraftMessage,
@@ -464,7 +463,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._currentSproutName = selectCurrentSproutName(state);
 		this._sproutStreaming = selectSproutStreaming(state);
 		this._currentSprout = selectCurrentSprout(state);
-		this._conversation = selectConversation(state);
+		this._conversation = selectCurrentSproutConversation(state);
 		this._draftMessage = selectDraftMessage(state);
 		this._imageUpload = selectAttachedImage(state);
 	}
@@ -499,7 +498,6 @@ class SproutView extends connect(store)(PageViewElement) {
 			this._currentSproutConfig = config;
 		});
 		if (lastSprout) signaller.finish(lastSprout);
-		store.dispatch(resetConversation());
 		this._currentSprout.run(signaller);
 	}
 

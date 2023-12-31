@@ -1,6 +1,5 @@
 import {
-	ImageURL,
-	Conversation
+	ImageURL
 } from '../src/types.js';
 
 import {
@@ -20,7 +19,9 @@ export type DataState = {
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
 	sproutStreaming: boolean,
-	conversation: Conversation,
+	//The conversation is managed by the currentSprout, but we need to tell the
+	//selector machinery once we have reason to believe its state has changed.
+	streamCounter: number,
 	draftMessage: string
 	attachedImage: ImageURL | null
 }

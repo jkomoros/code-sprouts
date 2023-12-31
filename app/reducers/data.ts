@@ -1,7 +1,6 @@
 import {
 	ADD_SPROUTS,
 	ATTACH_IMAGE,
-	RESET_CONVERSATION,
 	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
@@ -21,7 +20,7 @@ const INITIAL_STATE : DataState = {
 	sprouts: {},
 	currentSproutName: null,
 	sproutStreaming: false,
-	conversation: [],
+	streamCounter: 0,
 	draftMessage: '',
 	attachedImage: null
 };
@@ -46,61 +45,29 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			currentSproutName: action.sprout,
-			conversation: []
 		};
 	case START_STREAMING_SPROUT:
 		return {
 			...state,
 			sproutStreaming: true,
-			conversation: [
-				...state.conversation,
-				{
-					speaker: 'sprout',
-					message: ''
-				}
-			]
+			streamCounter: state.streamCounter + 1
 		};
 	case STREAM_INCREMENTAL_MESSAGE:
 		return {
 			...state,
-			conversation: [
-				...state.conversation.slice(0, state.conversation.length - 1),
-				{
-					speaker: 'sprout',
-					message: state.conversation[state.conversation.length - 1].message + action.message
-				}
-			]
+			streamCounter: state.streamCounter + 1
 		};
 	case SPROUT_STOPPED_STREAMING:
 		return {
 			...state,
-			conversation: [
-				...state.conversation.slice(0, state.conversation.length - 1),
-				{
-					speaker: 'sprout',
-					message: state.conversation[state.conversation.length - 1].message,
-					state: {...action.state}
-				}
-			],
-			sproutStreaming: false
+			sproutStreaming: false,
+			streamCounter: state.streamCounter + 1
 		};
 	case SPROUT_PROVIDED_USER_RESPONSE:
 		return {
 			...state,
 			draftMessage: '',
-			attachedImage: null,
-			conversation: [
-				...state.conversation,
-				{
-					speaker: 'user',
-					message: action.response
-				}
-			]
-		};
-	case RESET_CONVERSATION:
-		return {
-			...state,
-			conversation: []
+			attachedImage: null
 		};
 	case UPDATE_DRAFT_MESSAGE:
 		return {

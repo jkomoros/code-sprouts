@@ -1,7 +1,6 @@
 import { ThunkSomeAction } from '../store.js';
 
 import {
-	RESET_CONVERSATION,
 	SET_OPENAI_API_KEY,
 	SPROUT_STOPPED_STREAMING,
 	START_STREAMING_SPROUT,
@@ -14,7 +13,6 @@ import {
 
 import {
 	selectAttachedImage,
-	selectConversation,
 	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectDraftMessage,
@@ -90,30 +88,16 @@ export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) =>
 	});
 };
 
-export const resetConversation = () : SomeAction => {
-	return {
-		type: RESET_CONVERSATION
-	};
-};
-
 export const startStreamingSprout = () : SomeAction => {
 	return {
 		type: START_STREAMING_SPROUT
 	};
 };
 
-export const streamIncrementalMessage = (message : string) : ThunkSomeAction => (dispatch, getState) => {
+export const streamIncrementalMessage = (message : string) : ThunkSomeAction => (dispatch) => {
 	if (message == '') return;
-	const conversation = selectConversation(getState());
-	if (conversation.length === 0) {
-		throw new Error('No conversation to add to');
-	}
-	if (conversation[conversation.length - 1].speaker !== 'sprout') {
-		throw new Error('Last message in conversation was not from sprout');
-	}
 	dispatch({
-		type: 'STREAM_INCREMENTAL_MESSAGE',
-		message
+		type: 'STREAM_INCREMENTAL_MESSAGE'
 	});
 };
 
