@@ -453,6 +453,8 @@ ${schemaText}
 
 		let instructions = `${baseInstructions}
 
+${config.allowImages ? 'You can also accept images as input. If you are provided an image, give a more descriptive natural language description of the state change you make in response to the image.' : ''}
+
 ${includeState ? `You will manage your state in an object conforming to the following schema:
 ${schemaText}
 
@@ -474,8 +476,6 @@ ${(textConversation([{speaker: 'user', message: lastUserMessage || '<INITIAL>'}]
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${printableConversationTurnSchema(includeState, subInstruction ? {} : subInstructions)}
-
-${config.allowImages ? 'You can also accept images as input. If you are provided an image, give a more descriptive natural language description of the state change you make in response to the image.' : 'You are not configured to receive images from the user'}
 
 ${includeState ? 'Provide a patch to update the state object based on the users\'s last message and your response.'
 		: ''}`;
