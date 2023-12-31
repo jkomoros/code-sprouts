@@ -481,7 +481,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		should display it to the user, pass any new response from a user via
 		provideUserResponse, and then call conversationTurn() again.
 	*/
-	async conversationTurn(opts : ConversationTurnOptions = {}) : Promise<string> {
+	private async conversationTurn(opts : ConversationTurnOptions = {}) : Promise<string> {
 		const {debugLogger, debugStreamLogger, streamLogger, subInstruction} = opts;
 		if (!this._aiProvider) throw new Error('No AI provider');
 		const config = await this.config();
