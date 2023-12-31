@@ -553,11 +553,20 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			}
 		});
 		const parser = new StreamingJSONParser();
-		for await (const chunk of stream) {
-			if (signaller.done(this)) {
-				stream.controller.abort();
-				return '';
-			}
+		const iterator = stream[Symbol.asyncIterator]();
+		//eslint-disable-next-line no-constant-condition
+		while (true) {
+			const iteratorResult = await Promise.race([
+				iterator.next(),
+				signaller.doneSignal(this)
+			]);
+
+			if (signaller.done(this)) return '';
+			
+			if (typeof iteratorResult == 'undefined') throw new Error('Undefined iterator result');
+			if (iteratorResult.done) break;
+			const chunk = iteratorResult.value;
+
 			if (chunk.choices.length == 0) throw new Error('No choices');
 			if (this._debugLogger && AGGRESSIVE_LOGGING) this._debugLogger('Chunk:\n' + JSON.stringify(chunk, null, '\t'));
 			const choice = chunk.choices[0];
