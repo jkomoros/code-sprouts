@@ -447,13 +447,15 @@ ${schemaText}
 
 		const subInstructions = await this.subInstructions();
 
+		const allowImages = await this.allowImages();
+
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
 		const [previousConversation, lastUserMessage] = this.previousMessages();
 
 		let instructions = `${baseInstructions}
 
-${config.allowImages ? 'You can also accept images as input. If you are provided an image, give a more descriptive natural language description of the state change you make in response to the image.' : ''}
+${allowImages ? 'You can also accept images as input. If you are provided an image, give a more descriptive natural language description of the state change you make in response to the image.' : ''}
 
 ${includeState ? `You will manage your state in an object conforming to the following schema:
 ${schemaText}
