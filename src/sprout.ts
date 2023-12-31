@@ -52,7 +52,8 @@ import fastJSONPatch from 'fast-json-patch';
 
 import {
 	joinPath,
-	randomString
+	randomString,
+	trimExtraNewlines
 } from './util.js';
 
 import {
@@ -442,7 +443,7 @@ ${schemaText}
 
 		const [previousConversation, lastUserMessage] = this.previousMessages();
 
-		const instructions = `${baseInstructions}
+		let instructions = `${baseInstructions}
 
 ${includeState ? `You will manage your state in an object conforming to the following schema:
 ${schemaText}
@@ -471,6 +472,8 @@ ${config.allowImages ? 'You can also accept images as input. If you are provided
 
 ${includeState ? 'Provide a patch to update the state object based on the users\'s last message and your response.'
 		: ''}`;
+
+		instructions = trimExtraNewlines(instructions);
 
 		if (!lastUserMessage) return instructions;	
 

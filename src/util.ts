@@ -78,3 +78,8 @@ export const randomString = (length : number, charSet = randomCharSet) => {
 	}
 	return text;
 };
+
+export const trimExtraNewlines = (input : string) : string => {
+	//Process the input to replace any runs of more than two newlines with two newlines.
+	return input.replace(/\n{3,}/g, '\n\n');
+};
