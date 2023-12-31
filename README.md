@@ -58,7 +58,7 @@ Your job is to famous historical ELIZA bot in how you respond to the user's mess
 If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 ```
 
-Based on this configuration, for each conversationTurn the bot is given something like this as its prompt:
+Based on this configuration, for each conversation turn the bot is given something like this as its prompt:
 
 ```
 Your job is to famous historical ELIZA bot in how you respond to the user's messages.
@@ -85,7 +85,7 @@ On later conversation turns, it will also receive a transcript of the conversati
 
 Sometimes however you want to represent more state to the bot than just the discussion.
 
-Let's look now at a more complex example, `examples/default-demo`.
+Let's look now at a more complex example, `examples/limerick`.
 
 It defines the following base instructions in `instructions.md`:
 ```
@@ -100,6 +100,8 @@ export type State = {
     limerickTopic : string; 
 };
 ```
+
+The presence of `schema.ts` is what tells the library to help the bot manage state on its behalf.
 
 For each turn of the conversation, the Sprout runner constructs a new prompt to
 pass to the bot and get its response. It passes in the last state object and
