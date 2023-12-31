@@ -269,8 +269,8 @@ export class StreamingJSONParser {
 		} catch {
 			newProperty = '';
 		}
-		if (newProperty.startsWith(previousProperty)) return newProperty.slice(previousProperty.length);
-		return newProperty;
+		if (!newProperty.startsWith(previousProperty)) throw new Error('New property does not start with previous property');
+		return newProperty.slice(previousProperty.length);
 	}
 
 }
