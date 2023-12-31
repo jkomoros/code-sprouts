@@ -54,8 +54,6 @@ import {
 } from '../util.js';
 
 import {
-	Conversation,
-	ConversationTurn,
 	SproutDataMap,
 	SproutLocation
 } from '../types.js';
@@ -87,7 +85,9 @@ import {
 
 import {
 	ImageURL,
-	SproutConfig
+	SproutConfig,
+	Conversation,
+	ConversationMessage,
 } from '../../src/types.js';
 
 import {
@@ -522,7 +522,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
-	private _renderConversation(turn : ConversationTurn, lastTurn : boolean) : TemplateResult {
+	private _renderConversation(turn : ConversationMessage, lastTurn : boolean) : TemplateResult {
 		let speaker = '';
 		//Typescript assertUnreachable doesn't work with a union type otherwise
 		const speakerType = turn.speaker;

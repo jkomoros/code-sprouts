@@ -183,6 +183,25 @@ export const partialConversationTurnSchema = defaultConversationTurnSchema.pick(
 
 export type ConversationTurn = z.infer<typeof converationTurnSchema>;
 
+const conversationMessageUserSchema = z.object({
+	speaker: z.literal('user'),
+	message: promptSchema
+});
+
+const conversationMessageSproutSchema = z.object({
+	speaker: z.literal('sprout'),
+	message: promptSchema,
+	state: sproutStateSchema.optional()
+});
+
+const conversationMessageSchema = z.discriminatedUnion('speaker', [conversationMessageUserSchema, conversationMessageSproutSchema]);
+
+export type ConversationMessage = z.infer<typeof conversationMessageSchema>;
+
+const conversationSchema = z.array(conversationMessageSchema);
+
+export type Conversation = z.infer<typeof conversationSchema>;
+
 export type Logger = (...messages : string[]) => void;
 
 //Logs each input with no newlines.

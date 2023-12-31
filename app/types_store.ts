@@ -1,11 +1,11 @@
 import {
-	ImageURL
+	ImageURL,
+	Conversation
 } from '../src/types.js';
 
 import {
 	SproutDataMap,
 	SproutLocation,
-	Conversation
 } from './types.js';
 
 export type AppState = {
