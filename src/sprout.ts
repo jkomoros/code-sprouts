@@ -559,9 +559,11 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 				return partialConversationTurnSchema.parse(input).messageForUser || '';
 			});
 			if (debugStreamLogger) debugStreamLogger(content);
-			//TODO: don't bother calling this if incrementalUserMessage is empty
-			if (streamLogger) streamLogger(incrementalUserMessage);
-			if (incrementalUserMessage) sproutResponse.message += incrementalUserMessage;
+			//Only call the user-stream loggers if there's some content to log.
+			if (incrementalUserMessage) {
+				if (streamLogger) streamLogger(incrementalUserMessage);
+				sproutResponse.message += incrementalUserMessage;
+			}
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
