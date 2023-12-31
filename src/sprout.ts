@@ -411,7 +411,7 @@ ${schemaText}
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
 		//TODO: also include sprout messages
-		const userMessages = this._conversation.filter(turn => turn.speaker == 'user').map(turn => textForPrompt(turn.message));
+		const userMessages = this._conversation.filter(turn => turn.speaker == 'user').map(turn => textForPrompt(turn.message, true));
 		const previousUserMessages = userMessages.slice(0, userMessages.length - 1);
 		const lastUserMessage = userMessages[userMessages.length - 1];
 

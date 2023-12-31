@@ -163,9 +163,23 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 	return true;
 };
 
-export const textForPrompt = (prompt : Prompt) : string => {
+const IMAGE_DATA_PLACEHOLDER = '<image-data>';
+
+export const textForPrompt = (prompt : Prompt, includeImageNote = false) : string => {
 	if (!Array.isArray(prompt)) prompt = [prompt];
-	return prompt.filter(item => typeof item == 'string').join('');
+	const result : string[] = [];
+	for (const part of prompt) {
+		if (typeof part == 'string') {
+			result.push(part);
+			continue;
+		}
+		if (part.image) {
+			if (includeImageNote) result.push(IMAGE_DATA_PLACEHOLDER);
+			continue;
+		}
+		throw new Error(`Unknown prompt part ${JSON.stringify(part)}`);
+	}
+	return result.join('\n');
 };
 
 export const promptIncludesImage = (prompt : Prompt) : boolean => {
@@ -188,7 +202,7 @@ export const debugTextForPrompt = (prompt : Prompt) : string => {
 		let actualPart : unknown = part;
 		if (part.image) {
 			actualPart = {
-				image: '<image-data>'
+				image: IMAGE_DATA_PLACEHOLDER
 			};
 		}
 		result.push(JSON.stringify(actualPart, null, '\t'));
