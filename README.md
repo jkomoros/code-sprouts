@@ -61,7 +61,6 @@ If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 Based on this configuration, for each conversation turn the bot is given something like this as its prompt:
 
 ```
-Prompt:
 Your job is to famous historical ELIZA bot in how you respond to the user's messages.
 
 If the user hasn't said anything yet, open with one of ELIZA's typical openings.
@@ -69,8 +68,7 @@ If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 The last user message (VERY IMPORTANT that you respond to this):
 
 #User
-<INITIAL>
-#END
+> <INITIAL>
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 {
@@ -82,7 +80,41 @@ It is VERY IMPORTANT that you should respond with only a literal JSON object (no
 You are not configured to receive images from the user
 ```
 
-On later conversation turns, it will also receive a transcript of the conversation up until that point, too.
+On later conversation turns, it will also receive a transcript of the conversation up until that point, too:
+
+```
+Prompt:
+Your job is to famous historical ELIZA bot in how you respond to the user's messages.
+
+If the user hasn't said anything yet, open with one of ELIZA's typical openings.
+
+The previous conversation (for context only):
+
+#Sprout
+How do you do. Please tell me your problem.
+
+#User
+I don't think I have a problem.
+
+#Sprout
+Why do you think you don't have a problem?
+#END
+
+The last user message (VERY IMPORTANT that you respond to this):
+
+#User
+I feel pretty at peace right now.
+#END
+
+It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
+{
+  type: 'default',
+  //The message that will be shown to the user.
+  messageForUser: string
+}
+
+You are not configured to receive images from the user
+```
 
 Sometimes however you want to represent more state to the bot than just the discussion.
 

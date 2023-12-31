@@ -103,15 +103,19 @@ export type ConversationTurnOptions = {
 	subInstruction? : SubInstructionsName
 }
 
+const markDownQuoteText = (input : string) : string => {
+	return input.split('\n').map(line => `> ${line}`).join('\n');
+};
+
 const textConversation = (conversation : Conversation) : string => {
 	return conversation.map(turn => {
 		switch(turn.speaker){
 		case 'user':
-			return `#User\n${textForPrompt(turn.message, true)}`;
+			return `# User:\n${markDownQuoteText(textForPrompt(turn.message, true))}`;
 		case 'sprout':
-			return `#Sprout\n${textForPrompt(turn.message, true)}`;
+			return `# Sprout:\n${markDownQuoteText(textForPrompt(turn.message, true))}`;
 		}
-	}).join('\n\n') + '\n#END';
+	}).join('\n');
 };
 
 let fetcher : Fetcher = fetcherImpl;
@@ -459,10 +463,9 @@ ${subInstruction ? `Here is information on the sub-instruction ${subInstruction}
 ${includeState ? `Your current state is:
 ${JSON.stringify(state, null, '\t')}
 ` : ''}
-${previousConversation.length ? 'The previous conversation (for context only):\n\n' + textConversation(previousConversation) : ''}
+${previousConversation.length ? 'The previous conversation (for context only):\n' + textConversation(previousConversation) : ''}
 
 The last user message (VERY IMPORTANT that you respond to this):
-
 ${(textConversation([{speaker: 'user', message: lastUserMessage || '<INITIAL>'}]))}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
