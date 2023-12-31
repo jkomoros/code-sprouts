@@ -51,6 +51,7 @@ import {
 import fastJSONPatch from 'fast-json-patch';
 
 import {
+	assertUnreachable,
 	joinPath,
 	randomString,
 	trimExtraNewlines
@@ -109,11 +110,14 @@ const markDownQuoteText = (input : string) : string => {
 
 const textConversation = (conversation : Conversation) : string => {
 	return conversation.map(turn => {
-		switch(turn.speaker){
+		const speaker = turn.speaker;
+		switch(speaker){
 		case 'user':
 			return `# User:\n${markDownQuoteText(textForPrompt(turn.message, true))}`;
 		case 'sprout':
 			return `# Sprout:\n${markDownQuoteText(textForPrompt(turn.message, true))}`;
+		default:
+			assertUnreachable(speaker);
 		}
 	}).join('\n');
 };
