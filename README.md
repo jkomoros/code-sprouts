@@ -53,7 +53,7 @@ Everything in this file except for version is optional. The existence of this fi
 `instructions.md` is where the meat of the bot is, and it is also simple:
 
 ```
-Your job is to famous historical ELIZA bot in how you respond to the user's messages.
+Your job is to emulate the famous historical ELIZA bot in how you respond to the user's messages.
 
 If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 ```
@@ -61,13 +61,12 @@ If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 Based on this configuration, for each conversation turn the bot is given something like this as its prompt:
 
 ```
-Your job is to famous historical ELIZA bot in how you respond to the user's messages.
+Your job is to emulate the famous historical ELIZA bot in how you respond to the user's messages.
 
 If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 
 The last user message (VERY IMPORTANT that you respond to this):
-
-#User
+# User:
 > <INITIAL>
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
@@ -76,35 +75,26 @@ It is VERY IMPORTANT that you should respond with only a literal JSON object (no
   //The message that will be shown to the user.
   messageForUser: string
 }
-
-You are not configured to receive images from the user
 ```
 
 On later conversation turns, it will also receive a transcript of the conversation up until that point, too:
 
 ```
-Prompt:
-Your job is to famous historical ELIZA bot in how you respond to the user's messages.
+Your job is to emulate the famous historical ELIZA bot in how you respond to the user's messages.
 
 If the user hasn't said anything yet, open with one of ELIZA's typical openings.
 
 The previous conversation (for context only):
-
-#Sprout
-How do you do. Please tell me your problem.
-
-#User
-I don't think I have a problem.
-
-#Sprout
-Why do you think you don't have a problem?
-#END
+# Sprout:
+> Hello. How are you doing today?
+# User:
+> I'm doing fine!
+# Sprout:
+> I'm glad to hear that you're doing fine. What has been on your mind lately?
 
 The last user message (VERY IMPORTANT that you respond to this):
-
-#User
-I feel pretty at peace right now.
-#END
+# User:
+> I'm feeling very content.
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 {
@@ -112,8 +102,6 @@ It is VERY IMPORTANT that you should respond with only a literal JSON object (no
   //The message that will be shown to the user.
   messageForUser: string
 }
-
-You are not configured to receive images from the user
 ```
 
 Sometimes however you want to represent more state to the bot than just the discussion.
@@ -152,15 +140,14 @@ export type State = {
 
 When relevant or requested, summarize the state in a way that a non-technical user would understand. If the user explicitly asks what is in the state object, reproduce it exactly.
 
+The last user message (VERY IMPORTANT that you respond to this):
+# User:
+> <INITIAL>
+
 Your current state is:
 {
 	"limerickTopic": ""
 }
-
-The last user message (VERY IMPORTANT that you respond to this):
-
-<INITIAL>
----
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 {
@@ -170,8 +157,6 @@ It is VERY IMPORTANT that you should respond with only a literal JSON object (no
   //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
   patch : JSONPatchRFC6902
 }
-
-You are not configured to receive images from the user
 
 Provide a patch to update the state object based on the users's last message and your response.
 ```
