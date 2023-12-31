@@ -1,4 +1,8 @@
 import {
+	z
+} from 'zod';
+
+import {
 	StreamingJSONParser
 } from './streaming-json';
 
@@ -181,6 +185,19 @@ describe('test parseStreamingJSON', () => {
 			const str = input.slice(0,i);
 			expect(() => parseStreamingJSON(str)).not.toThrow();
 		}
+	});
+
+	it('test previous input with split up newline', () => {
+		const parser = new StreamingJSONParser();
+		parser.ingest('{"message": "a\\');
+		const schema = z.object({
+			message: z.string()
+		});
+		const getter = (a : unknown) => {
+			const obj = schema.parse(a);
+			return obj.message;
+		};
+		expect(() => parser.incrementalProperty('n', getter)).not.toThrow();
 	});
 
 	//TODO: test MULTIPLE JSONs.

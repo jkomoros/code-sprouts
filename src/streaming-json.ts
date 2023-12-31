@@ -218,8 +218,8 @@ export class StreamingJSONParser {
 					assertUnreachable(next);
 				}
 			} else if (char == '"') {
-				//We need to do an extra ending quote otherwise it won't terminate the string
-				if (item.lastCharIsEscape) finalString += '"';
+				//If the last char is a backslash, we don't yet know what it will end up being, so remove it before processing
+				if (item.lastCharIsEscape) finalString = finalString.slice(0, -1);
 			} else if (char == ']') {
 				const next = item.expectsNext;
 				switch(next) {
