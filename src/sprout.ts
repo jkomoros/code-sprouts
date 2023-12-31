@@ -466,13 +466,14 @@ ${subInstruction ? `Here is information on the sub-instruction ${subInstruction}
 		${Object.entries(subInstructions).map(([name, info]) => `* '${name}': ${info.summary}`).join('\n')}` :
 			''}
 
-${includeState ? `Your current state is:
-${JSON.stringify(state, null, '\t')}
-` : ''}
 ${previousConversation.length ? 'The previous conversation (for context only):\n' + textConversation(previousConversation) : ''}
 
 The last user message (VERY IMPORTANT that you respond to this):
 ${(textConversation([{speaker: 'user', message: lastUserMessage || '<INITIAL>'}]))}
+
+${includeState ? `Your current state is:
+${JSON.stringify(state, null, '\t')}
+` : ''}
 
 It is VERY IMPORTANT that you should respond with only a literal JSON object (not wrapped in markdown formatting or other formatting) matching this schema:
 ${printableConversationTurnSchema(includeState, subInstruction ? {} : subInstructions)}
