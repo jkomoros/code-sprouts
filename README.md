@@ -165,6 +165,24 @@ On subsequent turns, a fresh history is passed to the bot, including the last me
 
 More complex sprouts might have sub-instructions, which are summarized for the bot and it can ask for more detail on before responding. You can look at `examples/codenames` for a complex example.
 
+### sprout.json fields
+
+#### version : number
+
+Required. The version of the format, currently only accepts `0`.
+
+#### title (optional) : string
+
+The title of the bot to show to the user
+
+#### description (optional) : string
+
+The description of the bot to show to the user
+
+#### allowImages (optional) : boolean
+
+If true, then the bot will alow image input.
+
 ## Deploying
 
 `npx firebase use <your-project-id>`
