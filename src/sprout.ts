@@ -58,7 +58,8 @@ import {
 } from './util.js';
 
 import {
-	ConversationSignaller
+	ConversationSignaller,
+	StreamCancelledError
 } from './signaller.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
@@ -624,10 +625,11 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 				}
 			);
 			await signaller.streamStopped(this, await this.lastState());
-			const response = await signaller.getUserMessage(this);
-			if (!response) {
-				signaller.finish(this);
-				break;
+			let response : Prompt = '';
+			try {
+				response = await signaller.getUserMessage(this);
+			} catch(err) {
+				if (err instanceof StreamCancelledError) return;
 			}
 			this.provideUserResponse(response || '');
 		}
