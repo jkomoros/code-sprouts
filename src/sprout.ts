@@ -10,6 +10,8 @@ import {
 
 import {
 	CompiledSprout,
+	Conversation,
+	ConversationMessage,
 	Fetcher,
 	Logger,
 	Path,
@@ -115,9 +117,8 @@ export class Sprout {
 	private _aiProvider? : AIProvider;
 	private _disallowCompilation : boolean;
 	private _debugLogger? : Logger;
-	private _userMessages : Prompt[];
-	private _states: SproutState[];
 	private _id : string;
+	private _conversation : Conversation;
 
 	static setFetcher(input : Fetcher) : void {
 		fetcher = input;
@@ -133,9 +134,8 @@ export class Sprout {
 		this._aiProvider = ai;
 		this._debugLogger = debugLogger;
 		this._disallowCompilation = Boolean(disallowCompilation);
-		this._userMessages = [];
-		this._states = [];
 		this._id = randomString(8);
+		this._conversation = [];
 	}
 
 	//A random ID for this sprout. Convenient to debug sprout identity issues.
@@ -146,6 +146,10 @@ export class Sprout {
 	get name() : SproutName {
 		//TODO: return the last path component
 		return this._path;
+	}
+
+	get conversation() : Conversation {
+		return this._conversation;
 	}
 
 	async allowImages() : Promise<boolean> {
@@ -375,10 +379,22 @@ ${schemaText}
 	}
 
 	async lastState() : Promise<SproutState> {
-		if (this._states.length == 0) {
-			this._states.push(await this.starterState());
+		//Iterate backwards through the conversation until we find a state.
+		for (let i = this._conversation.length - 1; i >= 0; i--) {
+			const turn = this._conversation[i];
+			if (turn.speaker != 'sprout') continue;
+			if (turn.state) return turn.state;
 		}
-		return this._states[this._states.length -1];
+		return await this.starterState();
+	}
+
+	lastUserMessage() : Prompt | undefined {
+		for (let i = this._conversation.length - 1; i >= 0; i--) {
+			const turn = this._conversation[i];
+			if (turn.speaker != 'user') continue;
+			return turn.message;
+		}
+		return undefined;
 	}
 
 	//Returns the next prompt to return.
@@ -396,8 +412,10 @@ ${schemaText}
 
 		if (subInstruction && !subInstructions[subInstruction]) throw new Error(`No sub-instruction ${subInstruction}`);
 
-		const previousUserMessages = this._userMessages.slice(0, this._userMessages.length - 1);
-		const lastUserMessage = this._userMessages[this._userMessages.length - 1];
+		//TODO: also include sprout messages
+		const userMessages = this._conversation.filter(turn => turn.speaker == 'user').map(turn => textForPrompt(turn.message));
+		const previousUserMessages = userMessages.slice(0, userMessages.length - 1);
+		const lastUserMessage = userMessages[userMessages.length - 1];
 
 		const instructions = `${baseInstructions}
 
@@ -429,13 +447,12 @@ ${config.allowImages ? 'You can also accept images as input. If you are provided
 ${includeState ? 'Provide a patch to update the state object based on the users\'s last message and your response.'
 		: ''}`;
 
-		if (!this._userMessages.length) return instructions;
+		if (!lastUserMessage) return instructions;	
 
-		const lastMessage = this._userMessages[this._userMessages.length - 1];
-		if (promptIncludesImage(lastMessage)) {
+		if (promptIncludesImage(lastUserMessage)) {
 			return [
 				instructions,
-				...promptImages(lastMessage)
+				...promptImages(lastUserMessage)
 			];
 		}
 
@@ -444,7 +461,13 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 	}
 
 	provideUserResponse(response : Prompt) : void {
-		this._userMessages.push(response);
+		this._conversation = [
+			...this._conversation,
+			{
+				speaker: 'user',
+				message: response
+			}
+		];
 	}
 
 	/*
@@ -466,6 +489,14 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const schemaText = await this.schemaText();
 		const includeState = schemaText != '';
 		const promptHasImages = promptIncludesImage(prompt);
+		const sproutResponse : ConversationMessage = {
+			speaker: 'sprout',
+			message: ''
+		};
+		this._conversation = [
+			...this._conversation,
+			sproutResponse
+		];
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (debugLogger) debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		const stream = await this._aiProvider.promptStream(prompt, {
@@ -488,7 +519,9 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 				return partialConversationTurnSchema.parse(input).messageForUser || '';
 			});
 			if (debugStreamLogger) debugStreamLogger(content);
+			//TODO: don't bother calling this if incrementalUserMessage is empty
 			if (streamLogger) streamLogger(incrementalUserMessage);
+			if (incrementalUserMessage) sproutResponse.message += incrementalUserMessage;
 		}
 		//Add a newline at the end for the next line
 		if (streamLogger) streamLogger('\n');
@@ -520,7 +553,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const oldState = await this.lastState();
 		//fastJSONPatch applies the patch in place by default. The second true is for mutateDocumen: false
 		const newState = fastJSONPatch.applyPatch(oldState, fastJSONPatch.deepClone(turn.patch), false, false).newDocument;
-		this._states.push(newState);
+		sproutResponse.state = newState;
 		if (debugLogger) debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
 		return turn.messageForUser;
 	}
