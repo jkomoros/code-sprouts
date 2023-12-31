@@ -554,6 +554,10 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		});
 		const parser = new StreamingJSONParser();
 		for await (const chunk of stream) {
+			if (signaller.done(this)) {
+				stream.controller.abort();
+				return '';
+			}
 			if (chunk.choices.length == 0) throw new Error('No choices');
 			if (this._debugLogger && AGGRESSIVE_LOGGING) this._debugLogger('Chunk:\n' + JSON.stringify(chunk, null, '\t'));
 			const choice = chunk.choices[0];

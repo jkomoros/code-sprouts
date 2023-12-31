@@ -5,7 +5,10 @@ import {
 import {
 	jsonPatchRFC6902Schema
 } from './types_json_patch.js';
+
 import OpenAI from 'openai';
+
+import { Stream } from 'openai/streaming.js';
 
 export const pathSchema = z.string();
 
@@ -144,7 +147,7 @@ export type PromptOptions = {
 };
 
 //TODO: make this a generic type, not relying on OpenAI's structure
-export type PromptStream = AsyncIterable<OpenAI.ChatCompletionChunk>;
+export type PromptStream = Stream<OpenAI.ChatCompletionChunk>;
 
 export type CompletionInfo = {
 	maxTokens: number;	
