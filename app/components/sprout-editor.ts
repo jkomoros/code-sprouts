@@ -1,4 +1,4 @@
-import { css, html, TemplateResult } from 'lit';
+import { css, html, PropertyValues, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -45,6 +45,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	@state()
 		_currentSprout : Sprout | null = null;
 
+	@state()
+		_sproutBaseInstructions : string = '';
+
 	static override get styles() {
 		return [
 			...DialogElement.styles,
@@ -68,6 +71,21 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this._currentSprout = selectCurrentSprout(state);
 	}
 
+	private sproutChanged() {
+		if (!this._currentSprout) return;
+		this._sproutBaseInstructions = '';
+		this._currentSprout.baseInstructions().then(baseInstructions => {
+			this._sproutBaseInstructions = baseInstructions;
+		});
+	}
+
+	override updated(changedProps : PropertyValues<this>) {
+		if (changedProps.has('_currentSprout') && this._currentSprout) {
+			//Don't call store.dispatch things in the update.
+			setTimeout(() => this.sproutChanged(), 0);
+		}
+	}
+
 	closeDialog() {
 		store.dispatch(setEditorOpen(false));
 	}
@@ -80,6 +98,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 		return html`
 			<h2>${sprout.name}</h2>
+			<label>Instructions</label>
+			<textarea disabled>${this._sproutBaseInstructions}</textarea>
 		`;
 	}
 
