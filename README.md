@@ -202,6 +202,8 @@ Second, for brevity we want state object updates to be a patch, not having to re
 
 Finally, ChatGPT is a proto-aggregator. That's convenient, but the more you invest in building experiences for it, the more you're ensuring that it's the only source of user demand in the future--and the more beholden you will be to it as a creator. Having your own GPT-like experiences outside of an aggregator allows you to experiment without worrying about empowering a proto-aggregator.
 
+Another benefit of this approach: by running locally on the user's browser, it requires the bot configuration to be fully public: view-source-able. This view-source-ability is one of the things that helps tinkerers learn from others and create cool new things, and is perfect for the "community gardening" phase.
+
 ## What is the logic of doing it this way?
 
 This approach is in someways exactly the opposite of how most LLM-powered things are done.
