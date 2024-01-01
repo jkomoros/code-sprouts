@@ -41,6 +41,10 @@ class NodeFetcher {
 		writeFileSync(path, data);
 	}
 
+	mayWriteFile(_path : Path) : boolean {
+		return true;
+	}
+
 	async fileLastUpdated(path : Path) : Promise<Date> {
 		const stats = statSync(path);
 		return stats.mtime;

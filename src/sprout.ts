@@ -206,7 +206,8 @@ export class Sprout {
 			if (this._debugLogger) this._debugLogger(`${this.name}: Already compiled`);
 			return;
 		}
-		if (!fetcher.writable) {
+		const compiledPath = joinPath(this._path, SPROUT_COMPILED_PATH);
+		if (!fetcher.mayWriteFile(compiledPath)) {
 			if (this._debugLogger) this._debugLogger(`${this.name}: Not writable, not compiling`);
 			return;
 		}
@@ -221,7 +222,7 @@ export class Sprout {
 			starterState: await this.starterState()
 		};
 		if (this._debugLogger) this._debugLogger(`${this.name}: Compiling`);
-		fetcher.writeFile(joinPath(this._path, SPROUT_COMPILED_PATH), JSON.stringify(result, null, '\t'));
+		fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
 		this._compiledData = result;
 	}
 
@@ -249,17 +250,16 @@ export class Sprout {
 					const data = parseResult.data;
 					const compiledLastUpdated = new Date(data.lastUpdated);
 					//TODO: we use fetcher.writable as a proxy for "can do quick last-updated checks".
-					if (fetcher.writable) {
-						for (const file of await this._filesToCheckForCompilation()) {
-							const path = joinPath(this._path, file);
-							if (!await fetcher.fileExists(path)) continue;
-							const lastUpdated = await fetcher.fileLastUpdated(path);
-							if (lastUpdated > compiledLastUpdated) {
-								//If any of the base files are newer than the compiled file, we need to recompile.
-								this._compiledData = null;
-								if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
-								return null;
-							}
+					for (const file of await this._filesToCheckForCompilation()) {
+						const path = joinPath(this._path, file);
+						if (!await fetcher.fileExists(path)) continue;
+						const lastUpdated = await fetcher.fileLastUpdated(path);
+						if (lastUpdated === null) break;
+						if (lastUpdated > compiledLastUpdated) {
+							//If any of the base files are newer than the compiled file, we need to recompile.
+							this._compiledData = null;
+							if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
+							return null;
 						}
 					}
 					this._compiledData = data;

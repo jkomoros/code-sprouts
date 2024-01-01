@@ -15,8 +15,6 @@ import {
 
 class BrowserFetcher {
 
-	writable: false = false as const;
-
 	async fileFetch(path: Path): Promise<string> {
 		path = makeFinalPath(path);
 		const response = await fetch(path);
@@ -39,7 +37,7 @@ class BrowserFetcher {
 	async listDirectory(path: Path): Promise<Path[]> {
 		path = makeFinalPath(path);
 		const response = await fetch(joinPath(path, DIRECTORY_LISTING_FILE));
-		if (!response.ok) throw new Error(`Could not list directory ${path}`);
+		if (!response.ok) return [];
 		const json = await response.json();
 		const data = directoryListingFileSchema.parse(json);
 		return data.directories;
@@ -65,6 +63,18 @@ class BrowserFetcher {
 			}
 		}
 		return result;
+	}
+
+	mayWriteFile(_path: Path): boolean {
+		return false;
+	}
+
+	writeFile(_path: Path, _data: string): Promise<void> {
+		throw new Error('Cannot write file in browser');
+	}
+
+	async fileLastUpdated(_path : Path): Promise<Date | null> {
+		return null;
 	}
 }
 

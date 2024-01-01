@@ -90,26 +90,17 @@ export const compiledSproutSchema = z.object({
 
 export type CompiledSprout = z.infer<typeof compiledSproutSchema>;
 
-type BaseFetcher = {
+export type Fetcher = {
 	fileFetch(path : Path) : Promise<string>;
 	fileExists(path : Path) : Promise<boolean>;
 	//Returns items in the given directory, not including the directory itself.
 	listDirectory(path : Path) : Promise<Path[]>;
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
-};
-
-type ReadOnlyFetcher = BaseFetcher & {
-	writable: false
-};
-
-type WritableFetcher = BaseFetcher & {
-	writable: true,
+	mayWriteFile(path : Path) : boolean;
 	writeFile(path : Path, data : string) : Promise<void>;
 	//TODO: isn't it kind of weird that this is on writeable? Should I just have a Local or Remote fetcher?
-	fileLastUpdated(path : Path) : Promise<Date>;
+	fileLastUpdated(path : Path) : Promise<Date | null>;
 };
-
-export type Fetcher = ReadOnlyFetcher | WritableFetcher;
 
 export const directoryListingFileSchema = z.object({
 	directories: z.array(sproutName),
