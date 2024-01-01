@@ -108,6 +108,8 @@ import {
 	shortcutDisplayString
 } from '../keyboard.js';
 
+import './sprout-editor.js';
+
 const sendShortcut : KeyboardAction = {
 	shortcut: {
 		key: 'Enter',
@@ -390,6 +392,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		const remoteDomain = pathIsRemote(this._currentSproutName || '');
 
 		return html`
+			<sprout-editor></sprout-editor>
 			<div class='container'>
 				<div class='column'>
 					<div class='toolbar'>
