@@ -6,7 +6,8 @@ import {
 
 import {
 	writeFileSync,
-	readdirSync
+	readdirSync,
+	readFileSync
 } from 'fs';
 
 import {
@@ -31,6 +32,11 @@ const generateDirectoryListing = (path: string): void => {
 		directories,
 		files
 	};
+	const json = JSON.stringify(data, null, '\t');
+	const existing = readFileSync(outputPath).toString();
+	if (existing == json) {
+		return;
+	}
 	writeFileSync(outputPath, JSON.stringify(data, null, '\t'));
 	
 };
