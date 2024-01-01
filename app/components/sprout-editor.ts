@@ -38,7 +38,14 @@ import {
 import {
 	Sprout
 } from '../../src/sprout.js';
-import { SproutConfig } from '../../src/types.js';
+
+import {
+	SproutConfig
+} from '../../src/types.js';
+
+import {
+	TypedObject
+} from '../../src/typed-object.js';
 
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
@@ -108,7 +115,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		store.dispatch(setEditorOpen(false));
 	}
 
-	private rowForConfig(key : string, value : unknown) : TemplateResult {
+	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
 		return html`<li><label>${key}</label> <em>${value}</em></li>`;
 	}
 
@@ -128,7 +135,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				<summary><label>Config</label></summary>
 				<div>
 					${this._sproutConfig
-		? html`<ul>${Object.entries(this._sproutConfig).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
+		? html`<ul>${TypedObject.entries(this._sproutConfig).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
 		: html`<em>No config</em>`}
 				</div>
 			</details>
