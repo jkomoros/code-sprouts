@@ -134,18 +134,16 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 		return html`
 			<h2>${sprout.name}</h2>
+			<label>Config</label>
+			<div>
+				${this._sproutConfig
+		? html`<ul>${TypedObject.entries(this._sproutConfig).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
+		: html`<em>No config</em>`}
+			</div>
 			<label>Instructions</label>
 			<textarea ?disabled=${!this._editable}>${this._sproutBaseInstructions}</textarea>
 			<label>Schema</label>
 			<textarea ?disabled=${!this._editable}>${this._sproutSchemaText || 'No schema'}</textarea>
-			<details open>
-				<summary><label>Config</label></summary>
-				<div>
-					${this._sproutConfig
-		? html`<ul>${TypedObject.entries(this._sproutConfig).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
-		: html`<em>No config</em>`}
-				</div>
-			</details>
 			<label>Sub-instructions</label>
 			${Object.keys(this._sproutSubInstructions).length > 0 ? 
 		Object.entries(this._sproutSubInstructions).map(([key, value]) => html`
