@@ -16,6 +16,7 @@ import {
 	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectDraftMessage,
+	selectEditorOpen,
 	selectSproutData,
 	selectSproutStreaming
 } from '../selectors.js';
@@ -184,5 +185,15 @@ export const attachImage = (file : File | null) : ThunkSomeAction => async (disp
 	dispatch({
 		type: 'ATTACH_IMAGE',
 		image
+	});
+};
+
+export const setEditorOpen = (open : boolean) : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const alreadyOpen = selectEditorOpen(state);
+	if (alreadyOpen === open) return;
+	dispatch({
+		type: 'SET_EDITOR_OPEN',
+		open
 	});
 };

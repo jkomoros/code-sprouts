@@ -26,6 +26,7 @@ export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
 export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
 export const UPDATE_DRAFT_MESSAGE = 'UPDATE_DRAFT_MESSAGE';
 export const ATTACH_IMAGE = 'ATTACH_IMAGE';
+export const SET_EDITOR_OPEN = 'SET_EDITOR_OPEN';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -88,6 +89,11 @@ const actionAttachImage = z.object({
 	image: z.union([imageURLSchema, z.literal(null)])
 }).strict();
 
+const actionSetEditorOpen = z.object({
+	type: z.literal(SET_EDITOR_OPEN),
+	open: z.boolean()
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -100,7 +106,8 @@ const someAction = z.discriminatedUnion('type', [
 	actionSproutStoppedStreaming,
 	actionSproutProvidedUserResponse,
 	actionUpdateDraftMessage,
-	actionAttachImage
+	actionAttachImage,
+	actionSetEditorOpen
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

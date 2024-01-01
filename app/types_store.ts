@@ -24,6 +24,7 @@ export type DataState = {
 	streamCounter: number,
 	draftMessage: string
 	attachedImage: ImageURL | null
+	editorOpen: boolean
 }
 
 export type RootState = {

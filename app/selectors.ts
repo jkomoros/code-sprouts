@@ -25,6 +25,7 @@ export const selectStreamCounter = (state : RootState) => state.data ? state.dat
 export const selectDraftMessage = (state : RootState) => state.data ? state.data.draftMessage : '';
 export const selectAttachedImage = (state : RootState) => state.data ? state.data.attachedImage : null;
 export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
+export const selectEditorOpen = (state : RootState) => state.data ? state.data.editorOpen : false;
 
 export const selectHashForCurrentState = (_state : RootState) => '';
 

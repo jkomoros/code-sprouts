@@ -2,6 +2,7 @@ import {
 	ADD_SPROUTS,
 	ATTACH_IMAGE,
 	SELECT_SPROUT,
+	SET_EDITOR_OPEN,
 	SET_OPENAI_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
@@ -22,7 +23,8 @@ const INITIAL_STATE : DataState = {
 	sproutStreaming: false,
 	streamCounter: 0,
 	draftMessage: '',
-	attachedImage: null
+	attachedImage: null,
+	editorOpen: false
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -78,6 +80,11 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			attachedImage: action.image
+		};
+	case SET_EDITOR_OPEN:
+		return {
+			...state,
+			editorOpen: action.open
 		};
 	default:
 		return state;
