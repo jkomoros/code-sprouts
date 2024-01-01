@@ -45,6 +45,10 @@ class NodeFetcher {
 		return true;
 	}
 
+	supportsLastUpdated() : boolean {
+		return true;
+	}
+
 	async fileLastUpdated(path : Path) : Promise<Date> {
 		const stats = statSync(path);
 		return stats.mtime;

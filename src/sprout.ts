@@ -249,17 +249,18 @@ export class Sprout {
 				if (parseResult.success) {
 					const data = parseResult.data;
 					const compiledLastUpdated = new Date(data.lastUpdated);
-					//TODO: we use fetcher.writable as a proxy for "can do quick last-updated checks".
-					for (const file of await this._filesToCheckForCompilation()) {
-						const path = joinPath(this._path, file);
-						if (!await fetcher.fileExists(path)) continue;
-						const lastUpdated = await fetcher.fileLastUpdated(path);
-						if (lastUpdated === null) break;
-						if (lastUpdated > compiledLastUpdated) {
-							//If any of the base files are newer than the compiled file, we need to recompile.
-							this._compiledData = null;
-							if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
-							return null;
+					if (fetcher.supportsLastUpdated()) {
+						for (const file of await this._filesToCheckForCompilation()) {
+							const path = joinPath(this._path, file);
+							if (!await fetcher.fileExists(path)) continue;
+							const lastUpdated = await fetcher.fileLastUpdated(path);
+							if (lastUpdated === null) break;
+							if (lastUpdated > compiledLastUpdated) {
+								//If any of the base files are newer than the compiled file, we need to recompile.
+								this._compiledData = null;
+								if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
+								return null;
+							}
 						}
 					}
 					this._compiledData = data;

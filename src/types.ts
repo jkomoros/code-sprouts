@@ -98,7 +98,7 @@ export type Fetcher = {
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
 	mayWriteFile(path : Path) : boolean;
 	writeFile(path : Path, data : string) : Promise<void>;
-	//TODO: isn't it kind of weird that this is on writeable? Should I just have a Local or Remote fetcher?
+	supportsLastUpdated() : boolean;
 	fileLastUpdated(path : Path) : Promise<Date | null>;
 };
 

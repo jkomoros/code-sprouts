@@ -73,6 +73,10 @@ class BrowserFetcher {
 		throw new Error('Cannot write file in browser');
 	}
 
+	supportsLastUpdated() : boolean {
+		return false;
+	}
+
 	async fileLastUpdated(_path : Path): Promise<Date | null> {
 		return null;
 	}
