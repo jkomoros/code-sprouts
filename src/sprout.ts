@@ -68,13 +68,13 @@ const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
 	subInstructionToDescribe: {{SUB_INSTRUCTION_NAMES}};
 } | `;
 const CONVERSATION_TURN_SCHEMA_SECOND_PART = `{
-  type: 'default',
+  type: 'default',{{PATCH_SUB_SCHEMA}}
   //The message that will be shown to the user.
-  messageForUser: string{{PATCH_SUB_SCHEMA}}
+  messageForUser: string
 }`;
 const CONVERSATION_TURN_PATCH_SUB_SCHEMA = `
   //The change to make to the current state object based on this turn. If no modification needs to be made, can just be [].
-  patch : JSONPatchRFC6902`;
+  patch : JSONPatchRFC6902,`;
 
 const CONVERSATION_TURN_SCHEMA = CONVERSATION_TURN_SCHEMA_FIRST_PART + CONVERSATION_TURN_SCHEMA_SECOND_PART;
 
