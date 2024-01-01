@@ -65,49 +65,58 @@ const CONFIG : WatchConfig = {
 	}
 };
 
-const pathChanged = (path : string, config :WatchConfig) => {
-	//TODO: batch up path changes
-	console.log(`Path ${path} changed`);
-	for (const [command, rules] of Object.entries(config.rules)) {
+const pathsChanged = (paths : string[], config :WatchConfig) => {
+	//comand -> path -> true
+	const commandsToExecute : Record<string, Record<string, true>> = {};
+	for (const path of paths) {
+		//TODO: batch up path changes
+		console.log(`Path ${path} changed`);
+		for (const [command, rules] of Object.entries(config.rules)) {
 
-		for (const rule of rules.include) {
-			//If rule does not match path (using globbing match), continue
-			if (!minimatch(path, rule)) continue;
+			for (const rule of rules.include) {
+				//If rule does not match path (using globbing match), continue
+				if (!minimatch(path, rule)) continue;
 
-			let skip = false;
+				let skip = false;
 
-			if (rules.exclude) {
-				for (const exclude of rules.exclude) {
-					if (minimatch(path, exclude)) {
-						console.log(`Path ${path} matches exclude rule ${exclude} for \`${command}\`, skipping`);
-						skip = true;
-						break;
+				if (rules.exclude) {
+					for (const exclude of rules.exclude) {
+						if (minimatch(path, exclude)) {
+							console.log(`Path ${path} matches exclude rule ${exclude} for \`${command}\`, skipping`);
+							skip = true;
+							break;
+						}
 					}
 				}
+				
+				if (skip) break;
+
+				commandsToExecute[command] = {
+					...(commandsToExecute[command] || {}),
+					[path]: true
+				};
+				//We only need to find a single match to run the command
+				break;
 			}
-			
-			if (skip) break;
-
-			console.log(`Running \`${command}\` because ${path} changed`);
-
-			exec(command, (error, stdout, stderr) => {
-				if (error) {
-					console.error(`Execution error: ${command}: ${error.message}`);
-					return;
-				}
-				if (stderr) {
-					console.error(`Error: ${command}: ${stderr}`);
-					return;
-				}
-				console.log(`Output: ${command}: ${stdout}`);
-			});
-
-			//We only need to find a single match to run the command
-			break;
 		}
+	}
+	if (!Object.keys(commandsToExecute).length) return;
+	console.log('\nRunning commands...\n');
+	for (const [command, pathsMap] of Object.entries(commandsToExecute)) {
+		const paths = Object.keys(pathsMap);
+		console.log(`Running command \`${command}\` for paths ${paths.join(', ')}`);
+		exec(command, (err, stdout, stderr) => {
+			if (err) {
+				console.error(err);
+				return;
+			}
+			if (stdout) console.log(stdout);
+			if (stderr) console.error(stderr);
+		});
 	}
 };
 
+const BATCH_TIMEOUT = 100;
 
 const main = () => {
 	const config = CONFIG;
@@ -121,10 +130,21 @@ const main = () => {
 
 	watcher.on('ready', () => ready = true);
 
+	let batchPaths : string[] = [];
+
+	let batchTimeout : NodeJS.Timeout | null = null;
+
 	watcher.on('all', (event, path) => {
 		//Only look at changes
 		if (!ready) return;
-		pathChanged(path, config);
+		batchPaths.push(path);
+		if (batchTimeout) return;
+		batchTimeout = setTimeout(() => {
+			batchTimeout = null;
+			const paths = batchPaths;
+			batchPaths = [];
+			pathsChanged(paths, config);
+		}, BATCH_TIMEOUT);
 	});
 };
 
