@@ -98,6 +98,7 @@ export type Fetcher = {
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
 	mayWriteFile(path : Path) : boolean;
 	writeFile(path : Path, data : string) : Promise<void>;
+	//Whether fileLastUpdated might work for ANY path.
 	supportsLastUpdated() : boolean;
 	fileLastUpdated(path : Path) : Promise<Date | null>;
 };
@@ -203,3 +204,33 @@ export type Logger = (...messages : string[]) => void;
 
 //Logs each input with no newlines.
 export type StreamLogger = (input : string) => void;
+
+type FileInfo = {
+    content: string,
+    lastModified: string,
+}
+
+export type DirectoryInfo = {
+    directories: Record<string, DirectoryInfo>,
+    files: Record<string, FileInfo>
+}
+
+//This type is allowed to be used anywhere a DirectoryInfo is.
+export type PackagedSprout = {
+    directories: {
+        'sub_instructions'?: {
+            directories: Record<string, never>,
+            files: {
+                'directory.json': FileInfo,
+                [mdFile : string]: FileInfo
+            }
+        }
+    }
+    files: {
+        'directory.json': FileInfo,
+        'sprout.json' : FileInfo,
+        'sprout.compiled.json' : FileInfo,
+        'instructions.md': FileInfo,
+        'schema.ts'? : FileInfo,
+    }
+}
