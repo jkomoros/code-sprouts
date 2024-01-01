@@ -668,7 +668,8 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 				signaller.doneSignal(this)
 			]);
 			if (signaller.done(this)) break;
-			if (typeof response !== 'string') break;
+			//Checking for void
+			if (!response) break;
 			this.provideUserResponse(response || '');
 		}
 	}
