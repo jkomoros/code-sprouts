@@ -123,7 +123,16 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
-		return html`<li><label>${key}</label> <em>${value}</em></li>`;
+		let control = html`<input ?disabled=${!this._editable} .value=${String(value)}></input>`;
+		switch (typeof value) {
+		case 'boolean':
+			control = html`<input type='checkbox' ?disabled=${!this._editable} .checked=${value}></input>`;
+			break;
+		case 'number':
+			control = html`<input type='number' ?disabled=${!this._editable} .value=${String(value)}></input>`;
+			break;
+		}
+		return html`<li><label>${key}</label>${control}</li>`;
 	}
 
 	override innerRender() : TemplateResult {
