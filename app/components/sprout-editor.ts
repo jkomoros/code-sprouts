@@ -40,7 +40,7 @@ import {
 } from '../../src/sprout.js';
 
 import {
-	SproutConfig
+	SproutConfig, SubInstructionsMap
 } from '../../src/types.js';
 
 import {
@@ -61,6 +61,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	@state()
 		_sproutConfig : SproutConfig | null = null;
+
+	@state()
+		_sproutSubInstructions : SubInstructionsMap = {};
 
 	@state()
 		_editable = false;
@@ -102,6 +105,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this._currentSprout.config().then(config => {
 			this._sproutConfig = config;
 		});
+		this._sproutSubInstructions = {};
+		this._currentSprout.subInstructions().then(subInstructions => {
+			this._sproutSubInstructions = subInstructions;
+		});
 	}
 
 	override updated(changedProps : PropertyValues<this>) {
@@ -139,6 +146,15 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		: html`<em>No config</em>`}
 				</div>
 			</details>
+			<label>Sub-instructions</label>
+			${Object.keys(this._sproutSubInstructions).length > 0 ? 
+		Object.entries(this._sproutSubInstructions).map(([key, value]) => html`
+			<details>
+				<summary><label>${key}</label></summary>
+				<textarea ?disabled=${!this._editable}>${value.summary}</textarea>
+			</details>
+		`) :
+		html`<em>No sub-instructions</em>`}
 		`;
 	}
 
