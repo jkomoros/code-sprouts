@@ -1,6 +1,10 @@
 import {
 	Path,
-	FinalPath
+	FinalPath,
+	PackagedSprout,
+	CompiledSprout,
+	DirectoryInfo,
+	DirectoryListingFile
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -82,4 +86,62 @@ export const randomString = (length : number, charSet = randomCharSet) => {
 export const trimExtraNewlines = (input : string) : string => {
 	//Process the input to replace any runs of more than two newlines with two newlines.
 	return input.replace(/\n{3,}/g, '\n\n');
+};
+
+type PackagedSproutWithoutDirectories = {
+	'sub_instructions'?: {
+		[mdFile : string]: string
+	},
+	'sprout.json' : string,
+	'sprout.compiled.json' : string,
+	'instructions.md': string,
+	'schema.ts'? : string
+}
+
+type NakedDirectoryInfo = {
+	[name : string]: NakedDirectoryInfo | string
+};
+
+const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : DirectoryInfo => {
+	const result : DirectoryInfo = {
+		directories: {},
+		files: {}
+	};
+	for (const [name, value] of Object.entries(naked)) {
+		if (typeof value === 'object') {
+			result.directories[name] = makeDirectoryInfo(value, timestamp);
+			continue;
+		}
+		result.files[name] = {
+			content: value,
+			lastModified: timestamp
+		};
+	}
+	const directoryListing : DirectoryListingFile = {
+		directories: Object.keys(result.directories),
+		files: Object.keys(result.files)
+	};
+	result.files['directory.json'] = {
+		content: JSON.stringify(directoryListing, null, '\t'),
+		lastModified: timestamp
+	};
+	return result;
+};
+
+export const packagedSproutFromCompiled = (compiled : CompiledSprout) : PackagedSprout => {
+	const sprout : PackagedSproutWithoutDirectories = {
+		'sprout.json': JSON.stringify(compiled.config, null, '\t'),
+		'instructions.md': compiled.baseInstructions,
+		'sprout.compiled.json': JSON.stringify(compiled, null, '\t'),
+	};
+	if (compiled.schemaText) {
+		sprout['schema.ts'] = compiled.schemaText;
+	}
+	if (Object.keys(compiled.subInstructions).length > 0) {
+		sprout.sub_instructions = {};
+		for (const [key, value] of Object.entries(compiled.subInstructions)) {
+			sprout.sub_instructions[key] = value.instructions;
+		}
+	}
+	return makeDirectoryInfo(sprout, compiled.lastUpdated) as PackagedSprout;
 };
