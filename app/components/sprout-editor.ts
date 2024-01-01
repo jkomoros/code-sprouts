@@ -48,6 +48,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	@state()
 		_sproutBaseInstructions : string = '';
 
+	@state()
+		_editable = false;
+
 	static override get styles() {
 		return [
 			...DialogElement.styles,
@@ -99,7 +102,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		return html`
 			<h2>${sprout.name}</h2>
 			<label>Instructions</label>
-			<textarea disabled>${this._sproutBaseInstructions}</textarea>
+			<textarea ?disabled=${!this._editable}>${this._sproutBaseInstructions}</textarea>
 		`;
 	}
 
