@@ -49,6 +49,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		_sproutBaseInstructions : string = '';
 
 	@state()
+		_sproutSchemaText : string = '';
+
+	@state()
 		_editable = false;
 
 	static override get styles() {
@@ -80,6 +83,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this._currentSprout.baseInstructions().then(baseInstructions => {
 			this._sproutBaseInstructions = baseInstructions;
 		});
+		this._sproutSchemaText = '';
+		this._currentSprout.schemaText().then(schemaText => {
+			this._sproutSchemaText = schemaText;
+		});
 	}
 
 	override updated(changedProps : PropertyValues<this>) {
@@ -103,6 +110,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<h2>${sprout.name}</h2>
 			<label>Instructions</label>
 			<textarea ?disabled=${!this._editable}>${this._sproutBaseInstructions}</textarea>
+			<label>Schema</label>
+			<textarea ?disabled=${!this._editable}>${this._sproutSchemaText || 'No schema'}</textarea>
 		`;
 	}
 
