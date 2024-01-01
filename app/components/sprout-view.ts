@@ -50,6 +50,7 @@ import {
 	attachImage,
 	provideUserResponse,
 	selectSprout,
+	setEditorOpen,
 	setOpenAIAPIKey,
 	updateDraftMessage,
 	updateWithMainPageExtra
@@ -76,7 +77,8 @@ import {
 	SEND_ICON,
 	SYNC_ICON,
 	WARNING_ICON,
-	LOCK_ICON
+	LOCK_ICON,
+	EDIT_ICON
 } from './my-icons.js';
 
 import {
@@ -421,6 +423,13 @@ class SproutView extends connect(store)(PageViewElement) {
 								>
 									${PLUS_ICON}
 								</button>
+								<button
+									class='small'
+									@click=${this._handleEditSprout}
+									title='Edit the current sprout'
+								>
+									${EDIT_ICON}
+								</button>
 							</div>
 						</div>
 						<div class='title'>
@@ -655,6 +664,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		if (!files.length) return;
 		const file = files[0];
 		this._attachFile(file);
+	}
+
+	private _handleEditSprout() {
+		store.dispatch(setEditorOpen(true));
 	}
 
 	private _handleConversationInputSubmit() {
