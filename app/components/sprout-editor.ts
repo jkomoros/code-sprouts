@@ -1,5 +1,5 @@
 import { css, html, TemplateResult } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 
 import { connect } from 'pwa-helpers/connect-mixin.js';
 
@@ -31,12 +31,20 @@ import {
 } from '../actions/data.js';
 
 import {
+	selectCurrentSprout,
 	selectEditorOpen
 } from '../selectors.js';
+
+import {
+	Sprout
+} from '../../src/sprout.js';
 
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
 	
+	@state()
+		_currentSprout : Sprout | null = null;
+
 	static override get styles() {
 		return [
 			...DialogElement.styles,
@@ -57,6 +65,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override stateChanged(state : RootState) {
 		this.open = selectEditorOpen(state);
+		this._currentSprout = selectCurrentSprout(state);
 	}
 
 	closeDialog() {
@@ -65,7 +74,13 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override innerRender() : TemplateResult {
 
-		return html`TODO: implement`;
+		const sprout = this._currentSprout;
+
+		if (!sprout) return html`No sprout.`;
+
+		return html`
+			<h2>${sprout.name}</h2>
+		`;
 	}
 
 	override _shouldClose(_cancelled : boolean) {
