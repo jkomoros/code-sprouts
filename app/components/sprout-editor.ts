@@ -38,6 +38,7 @@ import {
 import {
 	Sprout
 } from '../../src/sprout.js';
+import { SproutConfig } from '../../src/types.js';
 
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
@@ -50,6 +51,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	@state()
 		_sproutSchemaText : string = '';
+
+	@state()
+		_sproutConfig : SproutConfig | null = null;
 
 	@state()
 		_editable = false;
@@ -87,6 +91,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this._currentSprout.schemaText().then(schemaText => {
 			this._sproutSchemaText = schemaText;
 		});
+		this._sproutConfig = null;
+		this._currentSprout.config().then(config => {
+			this._sproutConfig = config;
+		});
 	}
 
 	override updated(changedProps : PropertyValues<this>) {
@@ -98,6 +106,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	closeDialog() {
 		store.dispatch(setEditorOpen(false));
+	}
+
+	private rowForConfig(key : string, value : unknown) : TemplateResult {
+		return html`<li><label>${key}</label> <em>${value}</em></li>`;
 	}
 
 	override innerRender() : TemplateResult {
@@ -112,6 +124,14 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<textarea ?disabled=${!this._editable}>${this._sproutBaseInstructions}</textarea>
 			<label>Schema</label>
 			<textarea ?disabled=${!this._editable}>${this._sproutSchemaText || 'No schema'}</textarea>
+			<details open>
+				<summary><label>Config</label></summary>
+				<div>
+					${this._sproutConfig
+		? html`<ul>${Object.entries(this._sproutConfig).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
+		: html`<em>No config</em>`}
+				</div>
+			</details>
 		`;
 	}
 
