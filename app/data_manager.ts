@@ -26,6 +26,7 @@ import {
 	TODO: add a createSprout button to sprout-viewer if mayCreateSprout() is true
 	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
 	TODO: add a deleteSprout ability.
+	TODO: compilation of sprout should keep track of what values require whic hother values and which ones require AI, and then automate construction of e.g. NakedUncompiledPackagedSproutNotNeedingAI
 */
 
 export class DataManager {

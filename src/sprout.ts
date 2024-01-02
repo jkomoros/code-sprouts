@@ -16,6 +16,7 @@ import {
 	FetcherWithoutListSprouts,
 	Logger,
 	NakedUncompiledPackagedSprout,
+	NakedUncompiledPackagedSproutNotNeedingAI,
 	PackagedSprout,
 	Path,
 	Prompt,
@@ -721,8 +722,17 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 	}
 }
 
+export const packagedSproutFromUncompiled = async (uncompiled: NakedUncompiledPackagedSprout, ai : AIProvider) : Promise<PackagedSprout> =>  {
+	return packagedSproutFromUncompiledImpl(uncompiled, ai);
+};
+
+const packagedSproutFromUncompiledNotNeedingAI = async (uncompiled : NakedUncompiledPackagedSproutNotNeedingAI) : Promise<PackagedSprout> => {
+	//We know we don't need AI to compile any of these provided fields so can skip adding AI.
+	return packagedSproutFromUncompiledImpl(uncompiled);
+};
+
 //In this file because we need Sprout to be defined. and don't want a cycle from util.ts back t here
-export const packagedSproutFromUncompiled = async (uncompiled : NakedUncompiledPackagedSprout, ai : AIProvider) : Promise<PackagedSprout> => {
+const packagedSproutFromUncompiledImpl = async (uncompiled : NakedUncompiledPackagedSprout, ai? : AIProvider) : Promise<PackagedSprout> => {
 	const uncompiledPackedSprout = makeDirectoryInfo({
 		...uncompiled,
 		[SPROUT_COMPILED_PATH]: ''
@@ -731,4 +741,14 @@ export const packagedSproutFromUncompiled = async (uncompiled : NakedUncompiledP
 	const compiled = await sprout.compiledData();
 	writeFileToDirectoryInfo(uncompiledPackedSprout, SPROUT_COMPILED_PATH, JSON.stringify(compiled, null, '\t'));
 	return uncompiledPackedSprout;
+};
+
+export const emptySprout = async () : Promise<PackagedSprout> => {
+	const config : SproutConfig = {
+		version: 0
+	};
+	return packagedSproutFromUncompiledNotNeedingAI({
+		'sprout.json': JSON.stringify(config, null, '\t'),
+		'instructions.md': ''
+	});
 };
