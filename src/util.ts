@@ -100,7 +100,7 @@ export const trimExtraNewlines = (input : string) : string => {
 	return input.replace(/\n{3,}/g, '\n\n');
 };
 
-const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : DirectoryInfo => {
+export const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : DirectoryInfo => {
 	const result : DirectoryInfo = {
 		directories: {},
 		files: {}
@@ -126,6 +126,7 @@ const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : Dir
 	return result;
 };
 
+//TODO: this is currently unused.
 export const packagedSproutFromCompiled = (compiled : CompiledSprout) : PackagedSprout => {
 	const sprout : NakedPackagedSprout = {
 		'sprout.json': JSON.stringify(compiled.config, null, '\t'),

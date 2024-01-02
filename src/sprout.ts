@@ -15,6 +15,7 @@ import {
 	Fetcher,
 	FetcherWithoutListSprouts,
 	Logger,
+	NakedUncompiledPackagedSprout,
 	PackagedSprout,
 	Path,
 	Prompt,
@@ -55,14 +56,19 @@ import fastJSONPatch from 'fast-json-patch';
 import {
 	assertUnreachable,
 	joinPath,
+	makeDirectoryInfo,
 	randomString,
-	trimExtraNewlines
+	trimExtraNewlines,
+	writeFileToDirectoryInfo
 } from './util.js';
 
 import {
 	ConversationSignaller
 } from './signaller.js';
-import { overlayFetcher } from './fetcher-overlay.js';
+
+import {
+	overlayFetcher
+} from './fetcher-overlay.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
@@ -714,3 +720,15 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		}
 	}
 }
+
+//In this file because we need Sprout to be defined. and don't want a cycle from util.ts back t here
+export const packagedSproutFromUncompiled = async (uncompiled : NakedUncompiledPackagedSprout, ai : AIProvider) : Promise<PackagedSprout> => {
+	const uncompiledPackedSprout = makeDirectoryInfo({
+		...uncompiled,
+		[SPROUT_COMPILED_PATH]: ''
+	}, new Date().toISOString()) as PackagedSprout;
+	const sprout = new Sprout('', {ai, packagedSprout: uncompiledPackedSprout});
+	const compiled = await sprout.compiledData();
+	writeFileToDirectoryInfo(uncompiledPackedSprout, SPROUT_COMPILED_PATH, JSON.stringify(compiled, null, '\t'));
+	return uncompiledPackedSprout;
+};
