@@ -22,10 +22,6 @@ import {
 	SomeAction
 } from './actions.js';
 
-import {
-	Sprout
-} from '../src/sprout.js';
-
 import app from './reducers/app.js';
 import data from './reducers/data.js';
 
@@ -54,8 +50,3 @@ export const store = createStore(
 );
 
 export type ThunkSomeAction = ThunkAction<void, RootState, undefined, SomeAction>;
-
-export const fetcher = Sprout.getFetcher();
-if (!fetcher) throw new Error('No fetcher available');
-const LOCAL_SPROUTS_PATH = 'private';
-fetcher.localWriteablePath = LOCAL_SPROUTS_PATH;

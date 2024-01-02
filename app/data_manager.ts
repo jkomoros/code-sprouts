@@ -10,7 +10,7 @@ import {
 
 import {
 	fetcher
-} from './store.js';
+} from './fetcher.js';
 
 export class DataManager {
 	
