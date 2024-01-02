@@ -35,10 +35,18 @@ export const selectAIProvider = createSelector(
 	(apiKey) => apiKey ? new AIProvider({openai_api_key: apiKey}) : null
 );
 
+const selectWrittenSproutDataForCurrentSprout = createSelector(
+	selectCurrentSproutName,
+	selectWrittenSprouts,
+	(sproutName, writtenSprouts) => sproutName ? writtenSprouts[sproutName] : null
+);
+
 export const selectCurrentSprout = createSelector(
 	selectCurrentSproutName,
 	selectAIProvider,
-	(sproutName, aiProvider) => {
+	selectWrittenSproutDataForCurrentSprout,
+	//We only select _writtenData so that if there was a write to our files, we will reload it.
+	(sproutName, aiProvider, _writtenData) => {
 		if (!sproutName) return null;
 		if (!aiProvider) return null;
 		//TODO: only include if user wants it.
