@@ -20,6 +20,18 @@ import {
 	writeSprout
 } from './actions/data.js';
 
+/*
+	TODO: move the packedNakedSprout type into the src/types.ts and note that is also must be updated  whenever the schema changes.
+	TODO: add a NakedUncompiledPackagedSprout that is the same as NakedPackedSprout but without the compiled sprout path.
+	TODO: sprout can take in a PackedSprout (?) and use its values for reading, but any writes blow it away.
+	TODO: expose a sprout.compiledData() method that returns a CompiledSprout, calculating it if necessary.
+	TODO: make a src/util.ts function that takes a NakedUncompiledPackagedSprout and returns a PackagedSprout.
+	TODO: make a createSprout action creator that just creates a naked sprout with the given name
+	TODO: DataManager gets a mayCreateSprout() : boolean
+	TODO: add a createSprout button to sprout-viewer if mayCreateSprout() is true
+	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
+*/
+
 export class DataManager {
 	
 	private localStorageKeyForAPIKey(provider : ModelProvider) : string {
