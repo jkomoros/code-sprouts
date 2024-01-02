@@ -214,6 +214,13 @@ export const fileInfoSchema = z.object({
 
 export type FileInfo = z.infer<typeof fileInfoSchema>;
 
+//NOTE: has to be kept in sync manually with DirectoryInfo.
+export const directoryInfoSchema: z.Schema<DirectoryInfo> = z.object({
+	directories: z.record(z.string(), z.lazy(() => directoryInfoSchema)),
+	files: z.record(z.string(), fileInfoSchema)
+});
+
+//NOTE: has to be kept in sync manually with directoryInfoSchema.
 export type DirectoryInfo = {
     directories: Record<string, DirectoryInfo>,
     files: Record<string, FileInfo>
