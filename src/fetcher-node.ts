@@ -25,7 +25,7 @@ import {
 
 class NodeFetcher {
 
-	writable : true = true as const;
+	localWriteablePath : Path = '';
 
 	async fileFetch(path : Path) : Promise<string> {
 		//TODO: have a node and fetch-based version.

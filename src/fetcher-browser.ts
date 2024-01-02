@@ -13,9 +13,22 @@ import {
 	makeFinalPath
 } from './util.js';
 
+import {
+	LocalStorageFilesystem
+} from './local_storage_filesystem.js';
+
 class BrowserFetcher {
 
+	localWriteablePath: Path = '';
+
+	private pathIsLocalWriteable(path: Path): boolean {
+		return path.startsWith(this.localWriteablePath);
+	}
+
 	async fileFetch(path: Path): Promise<string> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.readFile(path);
+		}
 		path = makeFinalPath(path);
 		const response = await fetch(path);
 		if (!response.ok) {
@@ -25,6 +38,9 @@ class BrowserFetcher {
 	}
 
 	async fileExists(path: Path): Promise<boolean> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.fileExists(path);
+		}
 		path = makeFinalPath(path);
 		try {
 			const response = await fetch(path, { method: 'HEAD' });
@@ -35,6 +51,9 @@ class BrowserFetcher {
 	}
 
 	async listDirectory(path: Path): Promise<Path[]> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.listDirectory(path);
+		}
 		path = makeFinalPath(path);
 		const response = await fetch(joinPath(path, DIRECTORY_LISTING_FILE));
 		if (!response.ok) return [];
@@ -65,19 +84,29 @@ class BrowserFetcher {
 		return result;
 	}
 
-	mayWriteFile(_path: Path): boolean {
+	mayWriteFile(path: Path): boolean {
+		if (this.pathIsLocalWriteable(path)) {
+			return true;
+		}
 		return false;
 	}
 
-	writeFile(_path: Path, _data: string): Promise<void> {
-		throw new Error('Cannot write file in browser');
+	async writeFile(path: Path, data: string): Promise<void> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.writeFile(path, data);
+		}
+		throw new Error('Cannot write file in browser outside of local writeable path');
 	}
 
 	supportsLastUpdated() : boolean {
+		if (this.localWriteablePath) return true;
 		return false;
 	}
 
-	async fileLastUpdated(_path : Path): Promise<Date | null> {
+	async fileLastUpdated(path : Path): Promise<Date | null> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.lastUpdated(path);
+		}
 		return null;
 	}
 }
