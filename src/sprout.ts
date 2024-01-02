@@ -123,7 +123,7 @@ const textConversation = (conversation : Conversation) : string => {
 	}).join('\n');
 };
 
-let fetcher : Fetcher = fetcherImpl;
+let _fetcher : Fetcher = fetcherImpl;
 
 export class Sprout {
 	private _path : Path;
@@ -142,14 +142,15 @@ export class Sprout {
 	//If compilation notes that it's out of date, it will store in here which
 	//ones are not to be trusted.
 	private _outOfDateFiles : Record<Path, boolean> = {};
+	private _fetcher : Fetcher;
 
 	static setFetcher(input : Fetcher) : void {
-		fetcher = input;
+		_fetcher = input;
 	}
 
 	static getFetcher() : Fetcher {
 		//TODO: it's kind of weird that everyone rendeveous here, shouldn't there be another way of retrieving it?
-		return fetcher;
+		return _fetcher;
 	}
 
 	constructor(path : Path, opts : SproutOptions = {}) {
@@ -166,6 +167,7 @@ export class Sprout {
 		this._disallowFormatting = Boolean(disallowFormatting);
 		this._id = randomString(8);
 		this._conversation = [];
+		this._fetcher = _fetcher;
 	}
 
 	//A random ID for this sprout. Convenient to debug sprout identity issues.
@@ -215,7 +217,7 @@ export class Sprout {
 			return;
 		}
 		const compiledPath = joinPath(this._path, SPROUT_COMPILED_PATH);
-		if (!fetcher.mayWriteFile(compiledPath)) {
+		if (!this._fetcher.mayWriteFile(compiledPath)) {
 			if (this._debugLogger) this._debugLogger(`${this.name}: Not writable, not compiling`);
 			return;
 		}
@@ -230,14 +232,14 @@ export class Sprout {
 			starterState: await this.starterState()
 		};
 		if (this._debugLogger) this._debugLogger(`${this.name}: Compiling`);
-		fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
+		this._fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
 		this._compiledData = result;
 	}
 
 	private async _filesToCheckForCompilation() : Promise<Path[]> {
 		const result = [...BASE_SPROUT_PATHS];
 		for (const directory of BASE_SPROUT_DIRECTORIES) {
-			const items = await fetcher.listDirectory(joinPath(this._path, directory));
+			const items = await this._fetcher.listDirectory(joinPath(this._path, directory));
 			for (const item of items) {
 				if (!FILE_EXTENSIONS_IN_SPROUT.some(ext => item.endsWith(ext))) continue;
 				if (item == DIRECTORY_LISTING_FILE) continue;
@@ -250,19 +252,19 @@ export class Sprout {
 	private async _compiled() : Promise<CompiledSprout | null> {
 		if (this._compiledData === undefined) {
 			const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
-			if (await fetcher.fileExists(compiledSproutPath)) {
-				const compiledData = await fetcher.fileFetch(compiledSproutPath);
+			if (await this._fetcher.fileExists(compiledSproutPath)) {
+				const compiledData = await this._fetcher.fileFetch(compiledSproutPath);
 				//Tnis will throw if invalid shape.
 				const parseResult = compiledSproutSchema.safeParse(JSON.parse(compiledData));
 				if (parseResult.success) {
 					const data = parseResult.data;
 					const compiledLastUpdated = new Date(data.lastUpdated);
-					if (fetcher.supportsLastUpdated()) {
+					if (this._fetcher.supportsLastUpdated()) {
 						this._outOfDateFiles = {};
 						for (const file of await this._filesToCheckForCompilation()) {
 							const path = joinPath(this._path, file);
-							if (!await fetcher.fileExists(path)) continue;
-							const lastUpdated = await fetcher.fileLastUpdated(path);
+							if (!await this._fetcher.fileExists(path)) continue;
+							const lastUpdated = await this._fetcher.fileLastUpdated(path);
 							if (lastUpdated === null) break;
 							if (lastUpdated > compiledLastUpdated) {
 								//If any of the base files are newer than the compiled file, we need to recompile.
@@ -292,10 +294,10 @@ export class Sprout {
 		if(compiled && !this._outOfDateFiles[sproutConfigPath]) return compiled.config;
 
 		if (!this._config) {
-			if (!await fetcher.fileExists(sproutConfigPath)) {
+			if (!await this._fetcher.fileExists(sproutConfigPath)) {
 				throw new Error(`${this.name}: Config file ${sproutConfigPath} not found`);
 			}
-			const configData = await fetcher.fileFetch(sproutConfigPath);
+			const configData = await this._fetcher.fileFetch(sproutConfigPath);
 			//Tnis will throw if invalid shape.
 			const config = sproutConfigSchema.parse(JSON.parse(configData));
 			if (!config) throw new Error(`${this.name}: No config`);
@@ -313,10 +315,10 @@ export class Sprout {
 
 		if (this._baseInstructions === undefined) {
 			
-			if (!await fetcher.fileExists(sproutInstructionsPath)) {
+			if (!await this._fetcher.fileExists(sproutInstructionsPath)) {
 				throw new Error(`${this.name}: Instruction file ${sproutInstructionsPath} not found`);
 			}
-			this._baseInstructions = await fetcher.fileFetch(sproutInstructionsPath);
+			this._baseInstructions = await this._fetcher.fileFetch(sproutInstructionsPath);
 		}
 		if (this._baseInstructions === undefined) throw new Error(`${this.name}: No instructions`);
 		return this._baseInstructions;
@@ -330,7 +332,7 @@ export class Sprout {
 		if (this._subInstructions === undefined) {
 			this._subInstructions = {};
 			//TODO: make sure this will return [] if the directory doesn't exist.
-			const items = await fetcher.listDirectory(joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR));
+			const items = await this._fetcher.listDirectory(joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR));
 			for (const item of items) {
 				const path = joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
 				if (!path.endsWith('.md')) continue;
@@ -339,7 +341,7 @@ export class Sprout {
 					this._subInstructions[name] = compiled.subInstructions[name];
 					continue;
 				}
-				const instructions = await fetcher.fileFetch(path);
+				const instructions = await this._fetcher.fileFetch(path);
 				const summary = await this.summaryForSubInstruction(instructions);
 				this._subInstructions[name] = {
 					summary,
@@ -385,9 +387,9 @@ type Result = {
 		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.schemaText;
 
 		if (this._schemaText === undefined) {
-			if (await fetcher.fileExists(sproutSchemaPath)) {
+			if (await this._fetcher.fileExists(sproutSchemaPath)) {
 				//TODO: validate this is valid typescript
-				this._schemaText = await fetcher.fileFetch(sproutSchemaPath);
+				this._schemaText = await this._fetcher.fileFetch(sproutSchemaPath);
 			} else {
 				//An empty schema is valid
 				this._schemaText = '';
