@@ -21,7 +21,7 @@ import {
 } from './actions/data.js';
 
 /*
-	TODO: validate a sprout name is legal
+	TODO: get creating a sprout to actually work.
 	TODO: a button that doesn't look like the existing plus icon for 'create a sprout'
 	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
 	TODO: add a deleteSprout ability.
