@@ -16,6 +16,7 @@ class OverlayFetcher {
 	private _fetcher : Fetcher;
 	private _pathPrefix : string;
 	private _directory : DirectoryInfo;
+	private _hasWrites : boolean = false;
 
 	constructor(fetcher : Fetcher, pathPrefix : string, directory : DirectoryInfo) {
 		this._fetcher = fetcher;
@@ -29,6 +30,10 @@ class OverlayFetcher {
 	
 	set localWriteablePath(path : Path) {
 		throw new Error('OverlayFetcher doesn\'t support localWriteablePath');
+	}
+
+	get overlayHasWrites() : boolean {
+		return this._hasWrites;
 	}
 
 	private internalPath(path : Path) : Path {
@@ -70,6 +75,7 @@ class OverlayFetcher {
 	writeFile(path : Path, data : string) : Promise<void> {
 		if (!this.pathIsLocalWriteable(path)) return this._fetcher.writeFile(path, data);
 		writeFileToDirectoryInfo(this._directory, this.internalPath(path), data);
+		this._hasWrites;
 		return Promise.resolve();
 	}
 
