@@ -737,7 +737,8 @@ const packagedSproutFromUncompiledImpl = async (uncompiled : NakedUncompiledPack
 		...uncompiled,
 		[SPROUT_COMPILED_PATH]: ''
 	}, new Date().toISOString()) as PackagedSprout;
-	const sprout = new Sprout('', {ai, packagedSprout: uncompiledPackedSprout});
+	const dummySproutName = 'example';
+	const sprout = new Sprout(dummySproutName, {ai, packagedSprout: uncompiledPackedSprout});
 	const compiled = await sprout.compiledData();
 	//TODO: can't I just verify the fetcher did something and now the file exists within it?
 	writeFileToDirectoryInfo(uncompiledPackedSprout, SPROUT_COMPILED_PATH, JSON.stringify(compiled, null, '\t'));
