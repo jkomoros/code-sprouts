@@ -12,6 +12,7 @@ import {
 	CompiledSprout,
 	Conversation,
 	ConversationMessageSprout,
+	DirectoryInfo,
 	Fetcher,
 	FetcherWithoutListSprouts,
 	Logger,
@@ -106,7 +107,7 @@ type SproutOptions = {
 	disallowCompilation? : boolean,
 	disallowFormatting? : boolean,
 	//if provided, then reads and writes into the sprout's files will be done into this packaged sprout instead.
-	packagedSprout? : PackagedSprout
+	packagedSprout? : DirectoryInfo
 };
 
 export type ConversationTurnOptions = {
@@ -733,16 +734,14 @@ const packagedSproutFromUncompiledNotNeedingAI = async (uncompiled : NakedUncomp
 
 //In this file because we need Sprout to be defined. and don't want a cycle from util.ts back t here
 const packagedSproutFromUncompiledImpl = async (uncompiled : NakedUncompiledPackagedSprout, ai? : AIProvider) : Promise<PackagedSprout> => {
-	const uncompiledPackedSprout = makeDirectoryInfo({
-		...uncompiled,
-		[SPROUT_COMPILED_PATH]: ''
-	}, new Date().toISOString()) as PackagedSprout;
+	const uncompiledPackedSprout = makeDirectoryInfo(uncompiled, new Date().toISOString());
 	const dummySproutName = 'example';
 	const sprout = new Sprout(dummySproutName, {ai, packagedSprout: uncompiledPackedSprout});
 	const compiled = await sprout.compiledData();
 	//TODO: can't I just verify the fetcher did something and now the file exists within it?
 	writeFileToDirectoryInfo(uncompiledPackedSprout, SPROUT_COMPILED_PATH, JSON.stringify(compiled, null, '\t'));
-	return uncompiledPackedSprout;
+	//This should be a reasonably safe assertion because we just wrote in the last file that needed to be there.
+	return uncompiledPackedSprout as PackagedSprout;
 };
 
 export const emptySprout = async () : Promise<PackagedSprout> => {
