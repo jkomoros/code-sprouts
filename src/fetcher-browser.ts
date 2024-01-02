@@ -5,6 +5,7 @@ import {
 } from './types.js';
 
 import {
+	DEFAULT_SPROUT_DIRECTORIES,
 	DIRECTORY_LISTING_FILE
 } from './constants.js';
 
@@ -67,7 +68,7 @@ class BrowserFetcher {
 		return data.directories;
 	}
 
-	async listSprouts(basePaths: string[] = ['examples', 'sprouts']): Promise<Path[]> {
+	async listSprouts(basePaths: string[] = DEFAULT_SPROUT_DIRECTORIES): Promise<Path[]> {
 		//This requires a directory.json file in each folder.
 		const result: Path[] = [];
 		for (let basePath of basePaths) {
