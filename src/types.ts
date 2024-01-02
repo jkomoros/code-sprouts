@@ -253,10 +253,12 @@ export type NakedPackagedSprout = {
 		[mdFile : string]: string
 	},
 	'sprout.json' : string,
+	//If changing this location, also change NakedUncompiledPackagedSprout
 	'sprout.compiled.json' : string,
 	'instructions.md': string,
 	'schema.ts'? : string
 }
+export type NakedUncompiledPackagedSprout = Omit<NakedPackagedSprout, 'sprout.compiled.json'>;
 
 //This type is allowed to be used anywhere a DirectoryInfo is.
 export type PackagedSprout = z.infer<typeof packagedSproutSchema>;
