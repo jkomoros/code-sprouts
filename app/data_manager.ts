@@ -16,10 +16,6 @@ import {
 	store
 } from './store.js';
 
-import {
-	writeSprout
-} from './actions/data.js';
-
 /*
 	TODO: get creating a sprout to actually work.
 	TODO: a button that doesn't look like the existing plus icon for 'create a sprout'
@@ -51,7 +47,11 @@ export class DataManager {
 		if (!fetcher.mayWriteFile(sproutName)) throw new Error('Cannot write sprout');
 		//We can write every part because fetcher.writeFile will not update the file if the data is the same.
 		await writeDirectoryInfo(fetcher, pkg, sproutName);
-		store.dispatch(writeSprout(sproutName, pkg));
+		store.dispatch({
+			type: 'WRITE_SPROUT',
+			name: sproutName,
+			sprout: pkg
+		});
 	}
 }
 

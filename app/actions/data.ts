@@ -34,7 +34,6 @@ import {
 
 import {
 	ImageURL,
-	PackagedSprout,
 	Path,
 	Prompt,
 	SproutName,
@@ -207,14 +206,6 @@ export const setEditorOpen = (open : boolean) : ThunkSomeAction => (dispatch, ge
 		type: 'SET_EDITOR_OPEN',
 		open
 	});
-};
-
-export const writeSprout = (name : SproutName, pkg : PackagedSprout) : SomeAction => {
-	return {
-		type: 'WRITE_SPROUT',
-		name,
-		sprout: pkg
-	};
 };
 
 export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async (dispatch) => {
