@@ -69,6 +69,11 @@ class BrowserFetcher {
 	}
 
 	async listSprouts(basePaths: string[] = DEFAULT_SPROUT_DIRECTORIES): Promise<Path[]> {
+		if (basePaths === DEFAULT_SPROUT_DIRECTORIES) {
+			if (this._localWriteablePath) {
+				basePaths = [this._localWriteablePath, ...DEFAULT_SPROUT_DIRECTORIES];
+			}
+		}
 		//This requires a directory.json file in each folder.
 		const result: Path[] = [];
 		for (let basePath of basePaths) {
