@@ -22,8 +22,12 @@ class BrowserFetcher {
 
 	private _localWriteablePath: Path | null = null;
 
-	setLocalWriteablePath(path: Path): void {
+	set localWriteablePath(path: Path) {
 		this._localWriteablePath = path;
+	}
+
+	get localWriteablePath(): Path {
+		return this._localWriteablePath || '';
 	}
 
 	private pathIsLocalWriteable(path: Path): boolean {

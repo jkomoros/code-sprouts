@@ -25,8 +25,12 @@ import {
 
 class NodeFetcher {
 
-	setLocalWriteablePath(_path : Path) : void {
-		throw new Error('NodeFetcher doesn\'t support setLocalWriteablePath');
+	set localWriteablePath(_path : Path) {
+		throw new Error('NodeFetcher doesn\'t support localWriteablePath');
+	}
+
+	get localWriteablePath() : Path {
+		throw new Error('NodeFetcher doesn\'t support localWriteablePath');
 	}
 
 	async fileFetch(path : Path) : Promise<string> {

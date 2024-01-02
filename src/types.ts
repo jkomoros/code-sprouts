@@ -91,7 +91,7 @@ export const compiledSproutSchema = z.object({
 export type CompiledSprout = z.infer<typeof compiledSproutSchema>;
 
 export type Fetcher = {
-	setLocalWriteablePath(path : Path) : void;
+	localWriteablePath : Path;
 	fileFetch(path : Path) : Promise<string>;
 	fileExists(path : Path) : Promise<boolean>;
 	//Returns items in the given directory, not including the directory itself.
