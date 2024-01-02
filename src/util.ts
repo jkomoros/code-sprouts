@@ -177,6 +177,21 @@ export const fileLastUpdatedFromDirectoryInfo = (info : DirectoryInfo, path : Pa
 	return new Date(fileInfo.lastModified);
 };
 
+export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path) : Path[] => {
+	const parts = path.split('/');
+	if (parts.length === 0) throw new Error('Invalid path');
+	const firstPart = parts[0];
+	if (parts.length === 1) {
+		//We're at the end of the path.
+		if (!(firstPart in info.directories)) return [];
+		return Object.keys(info.directories[firstPart].directories);
+	}
+	if (firstPart in info.directories) {
+		return listDirectoryFromDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'));
+	}
+	throw new Error(`File not found: ${path}`);
+};
+
 //Note: modifies directory in place.
 export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data : string) : void => {
 	const parts = path.split('/');
