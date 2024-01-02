@@ -56,10 +56,7 @@ import {
 	updateWithMainPageExtra
 } from '../actions/data.js';
 
-import {
-	fetchOpenAIAPIKeyFromStorage,
-	storeOpenAIAPIKeyToStorage
-} from '../util.js';
+import dataManager from '../data_manager.js';
 
 import {
 	SproutDataMap,
@@ -525,10 +522,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._handleHashChange();
 	}
 
-	private firstRunDispatch() {
+	private async firstRunDispatch() {
 		store.dispatch(addDefaultSprouts());
 		store.dispatch(canonicalizePath());
-		let key = fetchOpenAIAPIKeyFromStorage();
+		let key : string | null = await dataManager.retrieveAPIKey('openai.com');
 		if (!key) key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.\nNo sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.') || '';
 		if (key) {
 			store.dispatch(setOpenAIAPIKey(key));
@@ -570,7 +567,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		if (changedProps.has('_openAIAPIKey')) {
 			if (this._openAIAPIKey) {
-				storeOpenAIAPIKeyToStorage(this._openAIAPIKey);
+				dataManager.storeAPIKey('openai.com', this._openAIAPIKey);
 			}
 		}
 	}
