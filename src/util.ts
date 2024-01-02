@@ -1,4 +1,8 @@
 import {
+	DIRECTORY_LISTING_FILE
+} from './constants.js';
+
+import {
 	TypedObject
 } from './typed-object.js';
 
@@ -192,7 +196,14 @@ export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path
 	throw new Error(`File not found: ${path}`);
 };
 
-//Note: modifies directory in place. It also does not update the directory.json file.
+const directoryListingForDirectoryInfo = (info : DirectoryInfo) : DirectoryListingFile => {
+	return {
+		directories: Object.keys(info.directories),
+		files: Object.keys(info.files)
+	};
+};
+
+//Note: modifies directory in place. It keeps directory.json up to date.
 export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data : string) : void => {
 	const parts = path.split('/');
 	if (parts.length === 0) throw new Error('Invalid path');
@@ -202,6 +213,10 @@ export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data
 		info.files[firstPart] = {
 			content: data,
 			lastModified: new Date().toISOString() 
+		};
+		info.files[DIRECTORY_LISTING_FILE] = {
+			content: JSON.stringify(directoryListingForDirectoryInfo(info), null, '\t'),
+			lastModified: new Date().toISOString()
 		};
 		return;
 	}

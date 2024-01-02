@@ -21,7 +21,6 @@ import {
 } from './actions/data.js';
 
 /*
-	TODO: writeFileToDirectoryInfo should update directory.json if necessary.
 	TODO: make a src/util.ts function that takes a NakedUncompiledPackagedSprout and returns a PackagedSprout.
 	TODO: make a createSprout action creator that just creates a naked sprout with the given name
 	TODO: DataManager gets a mayCreateSprout() : boolean
