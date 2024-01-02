@@ -158,7 +158,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		Object.entries(this._sproutSubInstructions).map(([key, value]) => html`
 			<details>
 				<summary><label>${key}</label></summary>
-				<textarea ?disabled=${!this._editable}>${value.summary}</textarea>
+				<textarea ?disabled=${!this._editable}>${value.instructions}</textarea>
 			</details>
 		`) :
 		html`<em>No sub-instructions</em>`}
