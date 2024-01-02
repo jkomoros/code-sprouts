@@ -1,10 +1,12 @@
+import { TypedObject } from './typed-object.js';
 import {
 	Path,
 	FinalPath,
 	PackagedSprout,
 	CompiledSprout,
 	DirectoryInfo,
-	DirectoryListingFile
+	DirectoryListingFile,
+	Fetcher
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -144,4 +146,14 @@ export const packagedSproutFromCompiled = (compiled : CompiledSprout) : Packaged
 		}
 	}
 	return makeDirectoryInfo(sprout, compiled.lastUpdated) as PackagedSprout;
+};
+
+export const writeDirectoryInfo = async (fetcher : Fetcher, info : DirectoryInfo, path : Path = '') : Promise<void> => {
+	for (const [directory, directoryInfo] of TypedObject.entries(info.directories)) {
+		await writeDirectoryInfo(fetcher, directoryInfo, joinPath(path, directory));
+	}
+	for (const [filename, fileInfo] of TypedObject.entries(info.files)) {
+		const filePath = joinPath(path, filename);
+		await fetcher.writeFile(filePath, fileInfo.content);
+	}
 };
