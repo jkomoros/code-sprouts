@@ -150,15 +150,24 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		: html`<em>No config</em>`}
 			</div>
 			<label>Instructions</label>
-			<textarea ?disabled=${!this._editable}>${this._sproutBaseInstructions}</textarea>
+			<textarea
+				?disabled=${!this._editable}
+				.value=${this._sproutBaseInstructions}
+			></textarea>
 			<label>Schema</label>
-			<textarea ?disabled=${!this._editable}>${this._sproutSchemaText || 'No schema'}</textarea>
+			<textarea
+				?disabled=${!this._editable}
+				.value=${this._sproutSchemaText || 'No schema'}
+			></textarea>
 			<label>Sub-instructions</label>
 			${Object.keys(this._sproutSubInstructions).length > 0 ? 
 		Object.entries(this._sproutSubInstructions).map(([key, value]) => html`
 			<details>
 				<summary><label>${key}</label></summary>
-				<textarea ?disabled=${!this._editable}>${value.instructions}</textarea>
+				<textarea
+					?disabled=${!this._editable}
+					.value=${value.instructions}
+				></textarea>
 			</details>
 		`) :
 		html`<em>No sub-instructions</em>`}
