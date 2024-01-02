@@ -42,7 +42,8 @@ import {
 } from '../../src/types.js';
 
 import {
-	normalizeSproutPath
+	normalizeSproutPath,
+	sproutBaseNameLegal
 } from '../../src/util.js';
 
 import {
@@ -214,6 +215,9 @@ export const writeSprout = (name : SproutName, pkg : PackagedSprout) : SomeActio
 };
 
 export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async (dispatch) => {
+	if (!sproutBaseNameLegal(name)) {
+		throw new Error(`${name} is not a legal sprout base name`);
+	}
 	//TODO: validate name is legal.
 	const sprout = await emptySprout();
 	dispatch(writeSprout(name, sprout));
