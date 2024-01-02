@@ -6,6 +6,11 @@ import {
 	jsonPatchRFC6902Schema
 } from './types_json_patch.js';
 
+
+import {
+	absoluteRegExp
+} from './util.js';
+
 import OpenAI from 'openai';
 
 import { Stream } from 'openai/streaming.js';
@@ -15,6 +20,12 @@ export const pathSchema = z.string();
 export type Path = z.infer<typeof pathSchema>;
 
 export type FinalPath = string;
+
+export const SPROUT_BASE_NAME_REG_EX = absoluteRegExp(new RegExp('[a-zA-Z_-][a-zA-Z0-9_-]*'));
+
+export const sproutBaseNameSchema = z.string().regex(SPROUT_BASE_NAME_REG_EX);
+
+export type SproutBaseName = z.infer<typeof sproutBaseNameSchema>;
 
 export const sproutNameSchema = z.string();
 

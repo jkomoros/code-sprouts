@@ -16,7 +16,8 @@ import {
 	Fetcher,
 	NakedDirectoryInfo,
 	NakedPackagedSprout,
-	FileInfo
+	FileInfo,
+	sproutBaseNameSchema
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -228,4 +229,13 @@ export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data
 		};
 	}
 	return writeFileToDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'), data);
+};
+
+export const absoluteRegExp = (r : RegExp) : RegExp => {
+	return new RegExp('^' + r.source + '$');
+};
+
+export const sproutBaseNameLegal = (proposedName : string) : boolean => {
+	const parseResult = sproutBaseNameSchema.safeParse(proposedName);
+	return parseResult.success;
 };
