@@ -62,12 +62,12 @@ export class LocalStorageFilesystem {
 	}
 
 	listDirectory(path : Path) : Path[] {
-		if (!path.endsWith('/')) path += '/';
+		if (path && !path.endsWith('/')) path += '/';
 		const result : Path[] = [];
 		for (let i = 0; i < window.localStorage.length; i++) {
 			const key = window.localStorage.key(i);
 			if (!key) continue;
-			if (!key.startsWith(`${LOCAL_STORAGE_FILESYSTEM_PREFIX}${path}/`)) continue;
+			if (!key.startsWith(`${LOCAL_STORAGE_FILESYSTEM_PREFIX}${path}`)) continue;
 			const filename = key.substr(LOCAL_STORAGE_FILESYSTEM_PREFIX.length);
 			const rest = filename.substr(path.length);
 			const parts = rest.split('/');
