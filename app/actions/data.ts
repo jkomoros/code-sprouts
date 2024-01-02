@@ -51,6 +51,8 @@ import {
 	emptySprout
 } from '../../src/sprout.js';
 
+import dataManager from '../data_manager.js';
+
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
 		type: 'ADD_SPROUTS',
@@ -221,6 +223,6 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 	}
 	const sprout = await emptySprout();
 	const fullName = joinPath(fetcher.localWriteablePath, name);
-	dispatch(writeSprout(fullName, sprout));
+	await dataManager.writeSprout(fullName, sprout);
 	dispatch(addOrSelectSprout(fullName));
 };
