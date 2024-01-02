@@ -230,6 +230,7 @@ export type NakedDirectoryInfo = {
 	[file : string]: string | NakedDirectoryInfo
 }
 
+//NOTE: needs to be kept up to date with file structure in constants.ts
 export const packagedSproutSchema = z.object({
 	directories: z.object({
 		sub_instructions: z.object({
@@ -245,6 +246,17 @@ export const packagedSproutSchema = z.object({
 		'schema.ts': fileInfoSchema.optional()
 	})
 });
+
+//NOTE: needs to be kept up to date with file structure in constants.ts
+export type NakedPackagedSprout = {
+	'sub_instructions'?: {
+		[mdFile : string]: string
+	},
+	'sprout.json' : string,
+	'sprout.compiled.json' : string,
+	'instructions.md': string,
+	'schema.ts'? : string
+}
 
 //This type is allowed to be used anywhere a DirectoryInfo is.
 export type PackagedSprout = z.infer<typeof packagedSproutSchema>;

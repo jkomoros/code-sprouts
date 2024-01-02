@@ -1,4 +1,7 @@
-import { TypedObject } from './typed-object.js';
+import {
+	TypedObject
+} from './typed-object.js';
+
 import {
 	Path,
 	FinalPath,
@@ -7,7 +10,8 @@ import {
 	DirectoryInfo,
 	DirectoryListingFile,
 	Fetcher,
-	NakedDirectoryInfo
+	NakedDirectoryInfo,
+	NakedPackagedSprout
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -91,16 +95,6 @@ export const trimExtraNewlines = (input : string) : string => {
 	return input.replace(/\n{3,}/g, '\n\n');
 };
 
-type PackagedSproutWithoutDirectories = {
-	'sub_instructions'?: {
-		[mdFile : string]: string
-	},
-	'sprout.json' : string,
-	'sprout.compiled.json' : string,
-	'instructions.md': string,
-	'schema.ts'? : string
-}
-
 const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : DirectoryInfo => {
 	const result : DirectoryInfo = {
 		directories: {},
@@ -128,7 +122,7 @@ const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : Dir
 };
 
 export const packagedSproutFromCompiled = (compiled : CompiledSprout) : PackagedSprout => {
-	const sprout : PackagedSproutWithoutDirectories = {
+	const sprout : NakedPackagedSprout = {
 		'sprout.json': JSON.stringify(compiled.config, null, '\t'),
 		'instructions.md': compiled.baseInstructions,
 		'sprout.compiled.json': JSON.stringify(compiled, null, '\t'),

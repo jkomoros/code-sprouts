@@ -7,7 +7,7 @@ export const DEFAULT_SPROUT_DIRECTORIES = [SPROUT_SPROUT_DIR, SPROUT_EXAMPLE_DIR
 export const DIRECTORY_LISTING_FILE = 'directory.json';
 
 //Relative to the sprout root
-//Note: when any of these are changed, also change types.ts:PackagedSprout
+//Note: when any of these are changed, also change types.ts:packagedSproutSchema and NakedPackagedSprout
 export const SPROUT_INSTRUCTIONS_PATH = 'instructions.md';
 export const SPROUT_SCHEMA_PATH = 'schema.ts';
 export const SPROUT_SUBINSTUCTIONS_DIR = 'sub_instructions';

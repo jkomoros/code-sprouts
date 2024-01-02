@@ -21,7 +21,6 @@ import {
 } from './actions/data.js';
 
 /*
-	TODO: move the packedNakedSprout type into the src/types.ts and note that is also must be updated  whenever the schema changes.
 	TODO: add a NakedUncompiledPackagedSprout that is the same as NakedPackedSprout but without the compiled sprout path.
 	TODO: sprout can take in a PackedSprout (?) and use its values for reading, but any writes blow it away.
 	TODO: expose a sprout.compiledData() method that returns a CompiledSprout, calculating it if necessary.
