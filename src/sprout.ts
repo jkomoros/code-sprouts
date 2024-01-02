@@ -217,6 +217,16 @@ export class Sprout {
 		return Boolean(compiled) && Object.keys(this._outOfDateFiles).length == 0;
 	}
 
+	//Returns the compiled data, compiling if necessary.
+	async compiledData() : Promise<CompiledSprout> {
+		const compiled = await this.compiled();
+		if (compiled) return this._compiledData as CompiledSprout;
+		await this.compile();
+		const nowCompiled = await this.compiled();
+		if (!nowCompiled) throw new Error('Could not compile');
+		return this._compiledData as CompiledSprout;
+	}
+
 	async compile() : Promise<void> {
 		if (await this.compiled()) {
 			if (this._debugLogger) this._debugLogger(`${this.name}: Already compiled`);

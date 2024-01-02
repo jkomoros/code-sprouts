@@ -21,7 +21,7 @@ import {
 } from './actions/data.js';
 
 /*
-	TODO: expose a sprout.compiledData() method that returns a CompiledSprout, calculating it if necessary.
+	TODO: writeFileToDirectoryInfo should update directory.json if necessary.
 	TODO: make a src/util.ts function that takes a NakedUncompiledPackagedSprout and returns a PackagedSprout.
 	TODO: make a createSprout action creator that just creates a naked sprout with the given name
 	TODO: DataManager gets a mayCreateSprout() : boolean
