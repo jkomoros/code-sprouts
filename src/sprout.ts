@@ -15,6 +15,7 @@ import {
 	Fetcher,
 	FetcherWithoutListSprouts,
 	Logger,
+	PackagedSprout,
 	Path,
 	Prompt,
 	SproutConfig,
@@ -61,6 +62,7 @@ import {
 import {
 	ConversationSignaller
 } from './signaller.js';
+import { overlayFetcher } from './fetcher-overlay.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
@@ -95,7 +97,9 @@ type SproutOptions = {
 	debugLogger? : Logger,
 	//If true, and a file is not compiled, it will fail.
 	disallowCompilation? : boolean,
-	disallowFormatting? : boolean
+	disallowFormatting? : boolean,
+	//if provided, then reads and writes into the sprout's files will be done into this packaged sprout instead.
+	packagedSprout? : PackagedSprout
 };
 
 export type ConversationTurnOptions = {
@@ -159,7 +163,8 @@ export class Sprout {
 			ai,
 			debugLogger,
 			disallowCompilation,
-			disallowFormatting
+			disallowFormatting,
+			packagedSprout
 		} = opts;
 		this._path = path;
 		this._aiProvider = ai;
@@ -168,7 +173,7 @@ export class Sprout {
 		this._disallowFormatting = Boolean(disallowFormatting);
 		this._id = randomString(8);
 		this._conversation = [];
-		this._fetcher = _fetcher;
+		this._fetcher = packagedSprout ? overlayFetcher(_fetcher, path, packagedSprout)  : _fetcher;
 	}
 
 	//A random ID for this sprout. Convenient to debug sprout identity issues.

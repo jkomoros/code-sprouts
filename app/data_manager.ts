@@ -21,7 +21,6 @@ import {
 } from './actions/data.js';
 
 /*
-	TODO: sprout can take in a PackedSprout (?) and use its values for reading, but any writes blow it away.
 	TODO: expose a sprout.compiledData() method that returns a CompiledSprout, calculating it if necessary.
 	TODO: make a src/util.ts function that takes a NakedUncompiledPackagedSprout and returns a PackagedSprout.
 	TODO: make a createSprout action creator that just creates a naked sprout with the given name
