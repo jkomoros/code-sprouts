@@ -11,7 +11,8 @@ import {
 	DirectoryListingFile,
 	Fetcher,
 	NakedDirectoryInfo,
-	NakedPackagedSprout
+	NakedPackagedSprout,
+	FileInfo
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -147,4 +148,53 @@ export const writeDirectoryInfo = async (fetcher : Fetcher, info : DirectoryInfo
 		const filePath = joinPath(path, filename);
 		await fetcher.writeFile(filePath, fileInfo.content);
 	}
+};
+
+const readFileInfoFromDirectoryInfo = (info : DirectoryInfo, path : Path) : FileInfo => {
+	const parts = path.split('/');
+	if (parts.length === 0) throw new Error('Invalid path');
+	const firstPart = parts[0];
+	if (parts.length === 1) {
+		//We're at the end of the path.
+		if (firstPart in info.files) {
+			return info.files[firstPart];
+		}
+		throw new Error(`File not found: ${path}`);
+	}
+	if (firstPart in info.directories) {
+		return readFileInfoFromDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'));
+	}
+	throw new Error(`File not found: ${path}`);
+};
+
+export const readFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : string => {
+	const fileInfo =  readFileInfoFromDirectoryInfo(info, path);
+	return fileInfo.content;
+};
+
+export const fileLastUpdatedFromDirectoryInfo = (info : DirectoryInfo, path : Path) : Date => {
+	const fileInfo = readFileInfoFromDirectoryInfo(info, path);
+	return new Date(fileInfo.lastModified);
+};
+
+//Note: modifies directory in place.
+export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data : string) : void => {
+	const parts = path.split('/');
+	if (parts.length === 0) throw new Error('Invalid path');
+	const firstPart = parts[0];
+	if (parts.length === 1) {
+		//We're at the end of the path.
+		info.files[firstPart] = {
+			content: data,
+			lastModified: new Date().toISOString() 
+		};
+		return;
+	}
+	if (!(firstPart in info.directories)) {
+		info.directories[firstPart] = {
+			directories: {},
+			files: {}
+		};
+	}
+	return writeFileToDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'), data);
 };
