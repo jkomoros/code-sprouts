@@ -139,6 +139,9 @@ export class Sprout {
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
+	//If compilation notes that it's out of date, it will store in here which
+	//ones are not to be trusted.
+	private _outOfDateFiles : Record<Path, boolean> = {};
 
 	static setFetcher(input : Fetcher) : void {
 		fetcher = input;
@@ -198,7 +201,7 @@ export class Sprout {
 
 	async compiled() : Promise<boolean> {
 		const compiled = await this._compiled();
-		return Boolean(compiled);
+		return Boolean(compiled) && Object.keys(this._outOfDateFiles).length == 0;
 	}
 
 	async compile() : Promise<void> {
@@ -250,6 +253,7 @@ export class Sprout {
 					const data = parseResult.data;
 					const compiledLastUpdated = new Date(data.lastUpdated);
 					if (fetcher.supportsLastUpdated()) {
+						this._outOfDateFiles = {};
 						for (const file of await this._filesToCheckForCompilation()) {
 							const path = joinPath(this._path, file);
 							if (!await fetcher.fileExists(path)) continue;
@@ -257,9 +261,8 @@ export class Sprout {
 							if (lastUpdated === null) break;
 							if (lastUpdated > compiledLastUpdated) {
 								//If any of the base files are newer than the compiled file, we need to recompile.
-								this._compiledData = null;
 								if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
-								return null;
+								this._outOfDateFiles[path] = true;
 							}
 						}
 					}
@@ -278,11 +281,12 @@ export class Sprout {
 	}
 
 	async config() : Promise<SproutConfig> {
+		const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
+
 		const compiled = await this._compiled();
-		if(compiled) return compiled.config;
+		if(compiled && !this._outOfDateFiles[sproutConfigPath]) return compiled.config;
 
 		if (!this._config) {
-			const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
 			if (!await fetcher.fileExists(sproutConfigPath)) {
 				throw new Error(`${this.name}: Config file ${sproutConfigPath} not found`);
 			}
@@ -297,11 +301,13 @@ export class Sprout {
 	}
 
 	async baseInstructions() : Promise<string> {
+		const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
+
 		const compiled = await this._compiled();
-		if(compiled) return compiled.baseInstructions;
+		if(compiled && !this._outOfDateFiles[sproutInstructionsPath]) return compiled.baseInstructions;
 
 		if (this._baseInstructions === undefined) {
-			const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
+			
 			if (!await fetcher.fileExists(sproutInstructionsPath)) {
 				throw new Error(`${this.name}: Instruction file ${sproutInstructionsPath} not found`);
 			}
@@ -313,7 +319,8 @@ export class Sprout {
 
 	async subInstructions() : Promise<SubInstructionsMap> {
 		const compiled = await this._compiled();
-		if(compiled) return compiled.subInstructions;
+		const subInstructionNeedsCompilation = Object.keys(this._outOfDateFiles).some(file => file.includes('/' + SPROUT_SUBINSTUCTIONS_DIR + '/'));
+		if(compiled && !subInstructionNeedsCompilation) return compiled.subInstructions;
 
 		if (this._subInstructions === undefined) {
 			this._subInstructions = {};
@@ -322,8 +329,12 @@ export class Sprout {
 			for (const item of items) {
 				const path = joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
 				if (!path.endsWith('.md')) continue;
-				const instructions = await fetcher.fileFetch(path);
 				const name = item.replace(/\.md$/, '');
+				if (!this._outOfDateFiles[path] && compiled && compiled.subInstructions[name]) {
+					this._subInstructions[name] = compiled.subInstructions[name];
+					continue;
+				}
+				const instructions = await fetcher.fileFetch(path);
 				const summary = await this.summaryForSubInstruction(instructions);
 				this._subInstructions[name] = {
 					summary,
@@ -363,11 +374,12 @@ type Result = {
 	}
 
 	async schemaText() : Promise<string> {
+		const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
+
 		const compiled = await this._compiled();
-		if(compiled) return compiled.schemaText;
+		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.schemaText;
 
 		if (this._schemaText === undefined) {
-			const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
 			if (await fetcher.fileExists(sproutSchemaPath)) {
 				//TODO: validate this is valid typescript
 				this._schemaText = await fetcher.fileFetch(sproutSchemaPath);
@@ -389,8 +401,12 @@ type Result = {
 	}
 
 	async starterState() : Promise<SproutState> {
+
+		const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
+
 		const compiled = await this._compiled();
-		if(compiled) return compiled.starterState;
+		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.starterState;
+
 		const schemaText = await this.schemaText();
 		if (!schemaText) return {};
 		//TODO: don't use an LLM for this / cache the result so we don't have to run it each time
