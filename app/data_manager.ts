@@ -21,7 +21,6 @@ import {
 } from './actions/data.js';
 
 /*
-	TODO: make a createSprout action creator that just creates a naked sprout with the given name
 	TODO: DataManager gets a mayCreateSprout() : boolean
 	TODO: add a createSprout button to sprout-viewer if mayCreateSprout() is true
 	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.

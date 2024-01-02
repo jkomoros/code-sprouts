@@ -8,7 +8,8 @@ import {
 } from '../actions.js';
 
 import {
-	SproutDataMap, SproutLocation
+	SproutDataMap,
+	SproutLocation
 } from '../types.js';
 
 import {
@@ -43,6 +44,10 @@ import {
 import {
 	normalizeSproutPath
 } from '../../src/util.js';
+
+import {
+	emptySprout
+} from '../../src/sprout.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
@@ -206,4 +211,9 @@ export const writeSprout = (name : SproutName, pkg : PackagedSprout) : SomeActio
 		name,
 		sprout: pkg
 	};
+};
+
+export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async (dispatch) => {
+	const sprout = await emptySprout();
+	dispatch(writeSprout(name, sprout));
 };
