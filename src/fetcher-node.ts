@@ -33,6 +33,10 @@ class NodeFetcher {
 		throw new Error('NodeFetcher doesn\'t support localWriteablePath');
 	}
 
+	pathIsLocalWriteable(_path : Path) : boolean {
+		return false;
+	}
+
 	async fileFetch(path : Path) : Promise<string> {
 		//TODO: have a node and fetch-based version.
 		const f = readFileSync(path);

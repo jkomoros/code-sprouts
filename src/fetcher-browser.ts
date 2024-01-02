@@ -30,7 +30,7 @@ class BrowserFetcher {
 		return this._localWriteablePath || '';
 	}
 
-	private pathIsLocalWriteable(path: Path): boolean {
+	pathIsLocalWriteable(path: Path): boolean {
 		if (this._localWriteablePath === null) return false;
 		return path.startsWith(this._localWriteablePath);
 	}

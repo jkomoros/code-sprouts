@@ -92,6 +92,7 @@ export type CompiledSprout = z.infer<typeof compiledSproutSchema>;
 
 export type Fetcher = {
 	localWriteablePath : Path;
+	pathIsLocalWriteable(path : Path) : boolean;
 	fileFetch(path : Path) : Promise<string>;
 	fileExists(path : Path) : Promise<boolean>;
 	//Returns items in the given directory, not including the directory itself.
