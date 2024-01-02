@@ -6,7 +6,8 @@ import {
 	CompiledSprout,
 	DirectoryInfo,
 	DirectoryListingFile,
-	Fetcher
+	Fetcher,
+	NakedDirectoryInfo
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -99,10 +100,6 @@ type PackagedSproutWithoutDirectories = {
 	'instructions.md': string,
 	'schema.ts'? : string
 }
-
-type NakedDirectoryInfo = {
-	[name : string]: NakedDirectoryInfo | string
-};
 
 const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string) : DirectoryInfo => {
 	const result : DirectoryInfo = {

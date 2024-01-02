@@ -226,6 +226,10 @@ export type DirectoryInfo = {
     files: Record<string, FileInfo>
 }
 
+export type NakedDirectoryInfo = {
+	[file : string]: string | NakedDirectoryInfo
+}
+
 export const packagedSproutSchema = z.object({
 	directories: z.object({
 		sub_instructions: z.object({
