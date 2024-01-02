@@ -147,6 +147,11 @@ export class Sprout {
 		fetcher = input;
 	}
 
+	static getFetcher() : Fetcher {
+		//TODO: it's kind of weird that everyone rendeveous here, shouldn't there be another way of retrieving it?
+		return fetcher;
+	}
+
 	constructor(path : Path, opts : SproutOptions = {}) {
 		const {
 			ai,
