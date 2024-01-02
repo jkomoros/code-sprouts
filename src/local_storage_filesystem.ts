@@ -8,22 +8,22 @@ const LOCAL_STORAGE_FILESYSTEM_PREFIX = 'file:';
 
 export class LocalStorageFilesystem {
 
-	private localStorageKeyForFile(filename : Path) : string {
+	private static localStorageKeyForFile(filename : Path) : string {
 		return `${LOCAL_STORAGE_FILESYSTEM_PREFIX}${filename}`;
 	}
 
-	fileExists(filename : Path) : boolean {
+	static fileExists(filename : Path) : boolean {
 		const str = window.localStorage.getItem(this.localStorageKeyForFile(filename));
 		return str !== null;
 	}
 
-	lastUpdated(filename : Path) : Date {
+	static lastUpdated(filename : Path) : Date {
 		const info = this.fileInfo(filename);
 		if (!info) throw new Error(`File not found: ${filename}`);
 		return new Date(info.lastModified);
 	}
 
-	private fileInfo(filename : Path) : FileInfo | null {
+	private static fileInfo(filename : Path) : FileInfo | null {
 		const str = window.localStorage.getItem(this.localStorageKeyForFile(filename));
 		if (str === null) {
 			return null;
@@ -36,13 +36,13 @@ export class LocalStorageFilesystem {
 		return fileInfoParseResult.data;
 	}
 
-	readFile(filename : Path) : string {
+	static readFile(filename : Path) : string {
 		const info = this.fileInfo(filename);
 		if (!info) throw new Error(`File not found: ${filename}`);
 		return info.content;
 	}
 
-	writeFile(filename : Path, data : string) : void {
+	static writeFile(filename : Path, data : string) : void {
 
 		if (this.fileExists(filename)) {
 			const info = this.fileInfo(filename);
@@ -61,7 +61,7 @@ export class LocalStorageFilesystem {
 		window.localStorage.setItem(this.localStorageKeyForFile(filename), JSON.stringify(info, null, '\t'));
 	}
 
-	listDirectory(path : Path) : Path[] {
+	static listDirectory(path : Path) : Path[] {
 		if (path && !path.endsWith('/')) path += '/';
 		const result : Path[] = [];
 		for (let i = 0; i < window.localStorage.length; i++) {
