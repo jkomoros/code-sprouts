@@ -25,6 +25,7 @@ import {
 	selectPageExtra,
 	selectSproutData,
 	selectSproutStreaming,
+	selectMayCreateSprout,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -48,6 +49,7 @@ import {
 	addDefaultSprouts,
 	addSprout,
 	attachImage,
+	createNamedSprout,
 	provideUserResponse,
 	selectSprout,
 	setEditorOpen,
@@ -172,6 +174,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_sproutStreaming = false;
+
+	@state()
+		_mayCreateSprout = false;
 
 	@state()
 		_conversation : Conversation = [];
@@ -427,6 +432,17 @@ class SproutView extends connect(store)(PageViewElement) {
 								>
 									${EDIT_ICON}
 								</button>
+								${this._mayCreateSprout ? 
+		html`
+								<button
+									class='small'
+									@click=${this._handleCreateSprout}
+									title='Create a sprout'
+								>
+									${PLUS_ICON}
+								</button>
+								` :
+		html``}
 							</div>
 						</div>
 						<div class='title'>
@@ -511,6 +527,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._conversation = selectCurrentSproutConversation(state);
 		this._draftMessage = selectDraftMessage(state);
 		this._imageUpload = selectAttachedImage(state);
+		this._mayCreateSprout = selectMayCreateSprout(state);
 	}
 
 	override firstUpdated() {
@@ -661,6 +678,12 @@ class SproutView extends connect(store)(PageViewElement) {
 		if (!files.length) return;
 		const file = files[0];
 		this._attachFile(file);
+	}
+
+	private _handleCreateSprout() {
+		const name = prompt('What should the sprout be called?');
+		if (!name) return;
+		store.dispatch(createNamedSprout(name));
 	}
 
 	private _handleEditSprout() {

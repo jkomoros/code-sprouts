@@ -66,3 +66,6 @@ export const selectCurrentSproutConversation = createSelector(
 	//We have to return a copy of the conversation, otherwise the sproutView element won't notice anything changed.
 	(sprout, _streamCounter) => sprout ? [...sprout.conversation] : []
 );
+
+//In the future there will be much more complex logic.
+export const selectMayCreateSprout = (_state : RootState) => true;

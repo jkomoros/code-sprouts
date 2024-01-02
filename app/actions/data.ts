@@ -214,6 +214,7 @@ export const writeSprout = (name : SproutName, pkg : PackagedSprout) : SomeActio
 };
 
 export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async (dispatch) => {
+	//TODO: validate name is legal.
 	const sprout = await emptySprout();
 	dispatch(writeSprout(name, sprout));
 };
