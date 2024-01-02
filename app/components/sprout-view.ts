@@ -683,7 +683,11 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _handleCreateSprout() {
 		const name = prompt('What should the sprout be called?');
 		if (!name) return;
-		store.dispatch(createNamedSprout(name));
+		try {
+			store.dispatch(createNamedSprout(name));
+		} catch(err) {
+			alert(`Could not create sprout: ${err}`);
+		}
 	}
 
 	private _handleEditSprout() {
