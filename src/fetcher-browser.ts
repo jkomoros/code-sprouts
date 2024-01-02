@@ -19,10 +19,14 @@ import {
 
 class BrowserFetcher {
 
-	localWriteablePath: Path = '';
+	private _localWriteablePath: Path = '';
+
+	setLocalWriteablePath(path: Path): void {
+		this._localWriteablePath = path;
+	}
 
 	private pathIsLocalWriteable(path: Path): boolean {
-		return path.startsWith(this.localWriteablePath);
+		return path.startsWith(this._localWriteablePath);
 	}
 
 	async fileFetch(path: Path): Promise<string> {
@@ -99,7 +103,7 @@ class BrowserFetcher {
 	}
 
 	supportsLastUpdated() : boolean {
-		if (this.localWriteablePath) return true;
+		if (this._localWriteablePath) return true;
 		return false;
 	}
 
