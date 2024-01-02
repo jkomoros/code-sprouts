@@ -226,22 +226,21 @@ export type DirectoryInfo = {
     files: Record<string, FileInfo>
 }
 
+export const packagedSproutSchema = z.object({
+	directories: z.object({
+		sub_instructions: z.object({
+			directories: z.record(z.string(), z.never()),
+			files: z.record(z.string(), fileInfoSchema)
+		}).optional()
+	}),
+	files: z.object({
+		'directory.json': fileInfoSchema,
+		'sprout.json': fileInfoSchema,
+		'sprout.compiled.json': fileInfoSchema,
+		'instructions.md': fileInfoSchema,
+		'schema.ts': fileInfoSchema.optional()
+	})
+});
+
 //This type is allowed to be used anywhere a DirectoryInfo is.
-export type PackagedSprout = {
-    directories: {
-        'sub_instructions'?: {
-            directories: Record<string, never>,
-            files: {
-                'directory.json': FileInfo,
-                [mdFile : string]: FileInfo
-            }
-        }
-    }
-    files: {
-        'directory.json': FileInfo,
-        'sprout.json' : FileInfo,
-        'sprout.compiled.json' : FileInfo,
-        'instructions.md': FileInfo,
-        'schema.ts'? : FileInfo,
-    }
-}
+export type PackagedSprout = z.infer<typeof packagedSproutSchema>;
