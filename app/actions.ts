@@ -9,7 +9,9 @@ import {
 
 import {
 	imageURLSchema,
+	packagedSproutSchema,
 	promptSchema,
+	sproutNameSchema,
 	sproutStateSchema
 } from '../src/types.js';
 
@@ -27,6 +29,7 @@ export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
 export const UPDATE_DRAFT_MESSAGE = 'UPDATE_DRAFT_MESSAGE';
 export const ATTACH_IMAGE = 'ATTACH_IMAGE';
 export const SET_EDITOR_OPEN = 'SET_EDITOR_OPEN';
+export const WRITE_SPROUT = 'WRITE_SPROUT';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -94,6 +97,12 @@ const actionSetEditorOpen = z.object({
 	open: z.boolean()
 }).strict();
 
+const actionWriteSprout = z.object({
+	type: z.literal(WRITE_SPROUT),
+	name: sproutNameSchema,
+	sprout: packagedSproutSchema
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -107,7 +116,8 @@ const someAction = z.discriminatedUnion('type', [
 	actionSproutProvidedUserResponse,
 	actionUpdateDraftMessage,
 	actionAttachImage,
-	actionSetEditorOpen
+	actionSetEditorOpen,
+	actionWriteSprout
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

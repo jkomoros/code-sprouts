@@ -1,5 +1,7 @@
 import {
-	ImageURL
+	ImageURL,
+	PackagedSprout,
+	SproutName
 } from '../src/types.js';
 
 import {
@@ -25,6 +27,8 @@ export type DataState = {
 	draftMessage: string,
 	attachedImage: ImageURL | null,
 	editorOpen: boolean
+	//These are not all sprouts in the writeable dir, just the ones that we have changed since we loaded.
+	writtenSprouts: Record<SproutName, PackagedSprout>
 }
 
 export type RootState = {

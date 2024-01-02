@@ -9,7 +9,8 @@ import {
 	START_STREAMING_SPROUT,
 	STREAM_INCREMENTAL_MESSAGE,
 	SomeAction,
-	UPDATE_DRAFT_MESSAGE
+	UPDATE_DRAFT_MESSAGE,
+	WRITE_SPROUT
 } from '../actions.js';
 
 import {
@@ -24,7 +25,8 @@ const INITIAL_STATE : DataState = {
 	streamCounter: 0,
 	draftMessage: '',
 	attachedImage: null,
-	editorOpen: false
+	editorOpen: false,
+	writtenSprouts: {}
 };
 
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
@@ -85,6 +87,14 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			editorOpen: action.open
+		};
+	case WRITE_SPROUT:
+		return {
+			...state,
+			writtenSprouts: {
+				...state.writtenSprouts,
+				[action.name]: action.sprout
+			}
 		};
 	default:
 		return state;
