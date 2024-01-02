@@ -13,6 +13,7 @@ import {
 	Conversation,
 	ConversationMessageSprout,
 	Fetcher,
+	FetcherWithoutListSprouts,
 	Logger,
 	Path,
 	Prompt,
@@ -142,7 +143,7 @@ export class Sprout {
 	//If compilation notes that it's out of date, it will store in here which
 	//ones are not to be trusted.
 	private _outOfDateFiles : Record<Path, boolean> = {};
-	private _fetcher : Fetcher;
+	private _fetcher : FetcherWithoutListSprouts;
 
 	static setFetcher(input : Fetcher) : void {
 		_fetcher = input;

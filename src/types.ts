@@ -105,6 +105,8 @@ export type Fetcher = {
 	fileLastUpdated(path : Path) : Promise<Date | null>;
 };
 
+export type FetcherWithoutListSprouts = Omit<Fetcher, 'listSprouts'>;
+
 export const directoryListingFileSchema = z.object({
 	directories: z.array(sproutNameSchema),
 	files: z.array(z.string())
