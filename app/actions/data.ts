@@ -42,6 +42,7 @@ import {
 } from '../../src/types.js';
 
 import {
+	joinPath,
 	normalizeSproutPath,
 	sproutBaseNameLegal
 } from '../../src/util.js';
@@ -218,7 +219,8 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 	if (!sproutBaseNameLegal(name)) {
 		throw new Error(`${name} is not a legal sprout base name`);
 	}
-	//TODO: validate name is legal.
 	const sprout = await emptySprout();
-	dispatch(writeSprout(name, sprout));
+	const fullName = joinPath(fetcher.localWriteablePath, name);
+	dispatch(writeSprout(fullName, sprout));
+	dispatch(addOrSelectSprout(fullName));
 };
