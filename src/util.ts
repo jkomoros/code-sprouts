@@ -192,7 +192,7 @@ export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path
 	throw new Error(`File not found: ${path}`);
 };
 
-//Note: modifies directory in place.
+//Note: modifies directory in place. It also does not update the directory.json file.
 export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data : string) : void => {
 	const parts = path.split('/');
 	if (parts.length === 0) throw new Error('Invalid path');
