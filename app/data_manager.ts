@@ -30,6 +30,7 @@ import {
 	TODO: DataManager gets a mayCreateSprout() : boolean
 	TODO: add a createSprout button to sprout-viewer if mayCreateSprout() is true
 	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
+	TODO: add a deleteSprout ability.
 */
 
 export class DataManager {
