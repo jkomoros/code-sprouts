@@ -19,13 +19,14 @@ import {
 
 class BrowserFetcher {
 
-	private _localWriteablePath: Path = '';
+	private _localWriteablePath: Path | null = null;
 
 	setLocalWriteablePath(path: Path): void {
 		this._localWriteablePath = path;
 	}
 
 	private pathIsLocalWriteable(path: Path): boolean {
+		if (this._localWriteablePath === null) return false;
 		return path.startsWith(this._localWriteablePath);
 	}
 
