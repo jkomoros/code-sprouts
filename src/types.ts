@@ -205,10 +205,12 @@ export type Logger = (...messages : string[]) => void;
 //Logs each input with no newlines.
 export type StreamLogger = (input : string) => void;
 
-type FileInfo = {
-    content: string,
-    lastModified: string,
-}
+export const fileInfoSchema = z.object({
+	content: z.string(),
+	lastModified: z.string().datetime()
+});
+
+export type FileInfo = z.infer<typeof fileInfoSchema>;
 
 export type DirectoryInfo = {
     directories: Record<string, DirectoryInfo>,
