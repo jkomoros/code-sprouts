@@ -16,9 +16,9 @@ export type Path = z.infer<typeof pathSchema>;
 
 export type FinalPath = string;
 
-const sproutName = z.string();
+export const sproutNameSchema = z.string();
 
-export type SproutName = z.infer<typeof sproutName>;
+export type SproutName = z.infer<typeof sproutNameSchema>;
 
 export const sproutStateSchema = z.record(z.string(), z.unknown());
 //The state a given sprout defines. This library doesn't really care too much as long as it's JSONable.
@@ -80,7 +80,7 @@ export const compiledSproutSchema = z.object({
 	//TODO: should this be a more specific object name, to make it easier to verify it's indeded a sprout when loaded from a random place?
 	version: z.literal(0),
 	lastUpdated: z.string().datetime(),
-	name: sproutName,
+	name: sproutNameSchema,
 	config: sproutConfigSchema,
 	baseInstructions: z.string(),
 	subInstructions: subInstructionsMapSchema,
@@ -106,7 +106,7 @@ export type Fetcher = {
 };
 
 export const directoryListingFileSchema = z.object({
-	directories: z.array(sproutName),
+	directories: z.array(sproutNameSchema),
 	files: z.array(z.string())
 });
 
