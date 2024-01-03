@@ -66,7 +66,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		_sproutSubInstructions : SubInstructionsMap = {};
 
 	@state()
-		_editable = false;
+		_editing = false;
 
 	static override get styles() {
 		return [
@@ -123,13 +123,13 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
-		let control = html`<input ?disabled=${!this._editable} .value=${String(value)}></input>`;
+		let control = html`<input ?disabled=${!this._editing} .value=${String(value)}></input>`;
 		switch (typeof value) {
 		case 'boolean':
-			control = html`<input type='checkbox' ?disabled=${!this._editable} .checked=${value}></input>`;
+			control = html`<input type='checkbox' ?disabled=${!this._editing} .checked=${value}></input>`;
 			break;
 		case 'number':
-			control = html`<input type='number' ?disabled=${!this._editable} .value=${String(value)}></input>`;
+			control = html`<input type='number' ?disabled=${!this._editing} .value=${String(value)}></input>`;
 			break;
 		}
 		return html`<li><label>${key}</label>${control}</li>`;
@@ -151,12 +151,12 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			</div>
 			<label>Instructions</label>
 			<textarea
-				?disabled=${!this._editable}
+				?disabled=${!this._editing}
 				.value=${this._sproutBaseInstructions}
 			></textarea>
 			<label>Schema</label>
 			<textarea
-				?disabled=${!this._editable}
+				?disabled=${!this._editing}
 				.value=${this._sproutSchemaText || 'No schema'}
 			></textarea>
 			<label>Sub-instructions</label>
@@ -165,7 +165,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<details>
 				<summary><label>${key}</label></summary>
 				<textarea
-					?disabled=${!this._editable}
+					?disabled=${!this._editing}
 					.value=${value.instructions}
 				></textarea>
 			</details>
