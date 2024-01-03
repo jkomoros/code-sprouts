@@ -20,6 +20,7 @@ import {
 	TODO: When opening sprout for editing, snapshot a copy of the compiled Sprout and change it
 	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
 	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
+	TODO: when loading, all local private sprouts should show in the drop down.
 	TODO: a button that doesn't look like the existing plus icon for 'create a sprout'
 	TODO: allow adding a missing config property
 	TODO: allow removing a config property that's not required
