@@ -2,7 +2,7 @@ import {
 	z
 } from 'zod';
 
-export const SPROUT_VIEW_PATH = 'sprout';
+export const SPROUT_VIEW_PATH = 'view';
 
 export const urlHashArgs = z.object({
 	//No properties
