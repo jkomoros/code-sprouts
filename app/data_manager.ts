@@ -1,10 +1,15 @@
 import {
+	SPROUT_CONFIG_PATH
+} from '../src/constants.js';
+
+import {
 	ModelProvider,
 	PackagedSprout,
 	SproutName
 } from '../src/types.js';
 
 import {
+	joinPath,
 	writeDirectoryInfo
 } from '../src/util.js';
 
@@ -18,7 +23,6 @@ import {
 
 /*
 	TODO: Do the same _inProgessCompilation process for all calcualted properties of Sprout that might do a network request.
-	TODO: fetch-browser should keep track of in-progress fetches and vend the same promise.
 	TODO: When opening sprout for editing, snapshot a copy of the compiled Sprout and change it
 	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
 	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
@@ -45,6 +49,10 @@ export class DataManager {
 	async retrieveAPIKey(provider : ModelProvider) : Promise<string> {
 		const str = window.localStorage.getItem(this.localStorageKeyForAPIKey(provider));
 		return str ? str : '';
+	}
+
+	async sproutExists(sproutName : SproutName) : Promise<boolean> {
+		return fetcher.fileExists(joinPath(sproutName, SPROUT_CONFIG_PATH));
 	}
 
 	async mayWriteSprout(sproutName : SproutName) : Promise<boolean> {
