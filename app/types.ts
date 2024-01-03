@@ -2,6 +2,8 @@ import {
 	z
 } from 'zod';
 
+export const SPROUT_VIEW_PATH = 'sprout';
+
 export const urlHashArgs = z.object({
 	//No properties
 	//TODO: verify there aren't multiple unncessary UPDATE_HASH events.

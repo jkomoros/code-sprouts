@@ -17,6 +17,7 @@ import {
 } from '../store.js';
 
 import {
+	SPROUT_VIEW_PATH,
 	URLHashArgs,
 	urlHashArgs
 } from '../types.js';
@@ -45,7 +46,7 @@ export const canonicalizePath = () : ThunkSomeAction => (dispatch ,getState) => 
 
 	const path = [page];
 	
-	if (page != 'sprout') {
+	if (page != SPROUT_VIEW_PATH) {
 		path.push(pageExtra);
 	} else {
 		const sprout = selectCurrentSproutName(state);
@@ -58,7 +59,7 @@ export const canonicalizePath = () : ThunkSomeAction => (dispatch ,getState) => 
 
 export const navigate = (path : string) : ThunkSomeAction => (dispatch) => {
 	// Extract the page name from path.
-	const page = path === '/' ? 'sprout' : path.slice(1);
+	const page = path === '/' ? SPROUT_VIEW_PATH : path.slice(1);
 
 	// Any other info you might want to extract from the path (like page type),
 	// you can do here
@@ -73,7 +74,7 @@ const loadPage  = (location : string) : ThunkSomeAction => (dispatch) => {
 	const pageExtra = pieces.length < 2 ? '' : pieces.slice(1).join('/');
 
 	switch(page) {
-	case 'sprout':
+	case SPROUT_VIEW_PATH:
 		import('../components/sprout-view.js');
 		break;
 	default:
