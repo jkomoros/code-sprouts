@@ -180,7 +180,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<label>Schema</label>
 			<textarea
 				?disabled=${!this._editing}
-				.value=${this._sproutSchemaText || 'No schema'}
+				.value=${this._sproutSchemaText || ''}
 			></textarea>
 			<label>Sub-instructions</label>
 			${Object.keys(this._sproutSubInstructions).length > 0 ? 
