@@ -1,5 +1,6 @@
 import {
 	Fetcher,
+	FileListingType,
 	Path
 } from './types.js';
 
@@ -20,6 +21,7 @@ import {
 } from './constants.js';
 
 import {
+	assertUnreachable,
 	joinPath
 } from './util.js';
 
@@ -64,14 +66,26 @@ class NodeFetcher {
 		return stats.mtime;
 	}
 
-	async listDirectory(path : Path) : Promise<Path[]> {
+	async listDirectory(path : Path, type : FileListingType) : Promise<Path[]> {
 		const result : Path[] = [];
 		//Check if directory exists
 		if (!existsSync(path)) {
 			return [];
 		}
-		for (const entry of readdirSync(path)) {
-			result.push(entry);
+		for (const entry of readdirSync(path, {withFileTypes: true})) {
+			switch(type) {
+			case 'both':
+				result.push(entry.name);
+				break;
+			case 'directory':
+				if (entry.isDirectory()) result.push(entry.name);
+				break;
+			case 'file':
+				if(entry.isFile()) result.push(entry.name);
+				break;
+			default:
+				assertUnreachable(type);
+			}
 		}
 		return result;
 	}

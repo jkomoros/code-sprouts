@@ -265,7 +265,8 @@ export class Sprout {
 	private async _filesToCheckForCompilation() : Promise<Path[]> {
 		const result = [...BASE_SPROUT_PATHS];
 		for (const directory of BASE_SPROUT_DIRECTORIES) {
-			const items = await this._fetcher.listDirectory(joinPath(this._path, directory));
+			//TODO: should this be both or 'files'?
+			const items = await this._fetcher.listDirectory(joinPath(this._path, directory), 'both');
 			for (const item of items) {
 				if (!FILE_EXTENSIONS_IN_SPROUT.some(ext => item.endsWith(ext))) continue;
 				if (item == DIRECTORY_LISTING_FILE) continue;
@@ -375,7 +376,7 @@ export class Sprout {
 		if (this._subInstructions === undefined) {
 			this._subInstructions = {};
 			//TODO: make sure this will return [] if the directory doesn't exist.
-			const items = await this._fetcher.listDirectory(joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR));
+			const items = await this._fetcher.listDirectory(joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR), 'file');
 			for (const item of items) {
 				const path = joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
 				if (!path.endsWith('.md')) continue;

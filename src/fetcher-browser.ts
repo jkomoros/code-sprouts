@@ -1,5 +1,6 @@
 import {
 	Fetcher,
+	FileListingType,
 	Path,
 	directoryListingFileSchema
 } from './types.js';
@@ -10,6 +11,7 @@ import {
 } from './constants.js';
 
 import {
+	assertUnreachable,
 	joinPath,
 	makeFinalPath
 } from './util.js';
@@ -130,16 +132,25 @@ class BrowserFetcher {
 		}
 	}
 
-	async listDirectory(path: Path): Promise<Path[]> {
+	async listDirectory(path: Path, type: FileListingType): Promise<Path[]> {
 		if (this.pathIsLocalWriteable(path)) {
-			return LocalStorageFilesystem.listDirectory(path);
+			return LocalStorageFilesystem.listDirectory(path, type);
 		}
 		path = makeFinalPath(path);
 		const response = await this.fetch(joinPath(path, DIRECTORY_LISTING_FILE));
 		if (!response.ok) return [];
 		const json = await response.json();
 		const data = directoryListingFileSchema.parse(json);
-		return data.directories;
+		switch (type) {
+		case 'both':
+			return [...data.directories, ...data.files];
+		case 'directory':
+			return data.directories;
+		case 'file':
+			return data.files;
+		default:
+			return assertUnreachable(type);
+		}
 	}
 
 	async listSprouts(basePaths: string[] = DEFAULT_SPROUT_DIRECTORIES): Promise<Path[]> {
@@ -152,8 +163,7 @@ class BrowserFetcher {
 		const result: Path[] = [];
 		for (let basePath of basePaths) {
 			if (this.pathIsLocalWriteable(basePath)) {
-				//TODO: this currently assumes that every item in the local writeable path is a sprout.
-				const items = LocalStorageFilesystem.listDirectory(basePath);
+				const items = LocalStorageFilesystem.listDirectory(basePath, 'directory');
 				for (const item of items) {
 					result.push(joinPath(basePath, item));
 				}

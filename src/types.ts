@@ -21,6 +21,8 @@ export type Path = z.infer<typeof pathSchema>;
 
 export type FinalPath = string;
 
+export type FileListingType = 'file' | 'directory' | 'both';
+
 const DEFAULT_NAME_REGEXP = new RegExp('[a-zA-Z0-9_-]+');
 
 export const SPROUT_BASE_NAME_REG_EX = absoluteRegExp(new RegExp('[a-zA-Z_-][a-zA-Z0-9_-]*'));
@@ -113,7 +115,7 @@ export type Fetcher = {
 	fileFetch(path : Path) : Promise<string>;
 	fileExists(path : Path) : Promise<boolean>;
 	//Returns items in the given directory, not including the directory itself.
-	listDirectory(path : Path) : Promise<Path[]>;
+	listDirectory(path : Path, type: FileListingType) : Promise<Path[]>;
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
 	mayWriteFile(path : Path) : boolean;
 	writeFile(path : Path, data : string) : Promise<void>;

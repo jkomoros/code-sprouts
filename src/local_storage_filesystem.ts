@@ -1,8 +1,13 @@
 import {
 	FileInfo,
+	FileListingType,
 	Path,
 	fileInfoSchema
 } from './types.js';
+
+import {
+	assertUnreachable
+} from './util.js';
 
 const LOCAL_STORAGE_FILESYSTEM_PREFIX = 'file:';
 
@@ -61,7 +66,7 @@ export class LocalStorageFilesystem {
 		window.localStorage.setItem(this.localStorageKeyForFile(filename), JSON.stringify(info, null, '\t'));
 	}
 
-	static listDirectory(path : Path) : Path[] {
+	static listDirectory(path : Path, type: FileListingType) : Path[] {
 		if (path && !path.endsWith('/')) path += '/';
 		const result : Path[] = [];
 		for (let i = 0; i < window.localStorage.length; i++) {
@@ -72,7 +77,19 @@ export class LocalStorageFilesystem {
 			const rest = filename.substr(path.length);
 			const parts = rest.split('/');
 			if (parts.length == 0) throw new Error(`Invalid filename: ${filename}`);
-			result.push(parts[0]);
+			switch(type) {
+			case 'both':
+				result.push(parts[0]);
+				break;
+			case 'directory':
+				if (parts.length > 1) result.push(parts[0]);
+				break;
+			case 'file':
+				if (parts.length === 1) result.push(parts[0]);
+				break;
+			default:
+				assertUnreachable(type);
+			}
 		}
 		return result;
 	}

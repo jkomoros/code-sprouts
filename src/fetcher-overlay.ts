@@ -2,6 +2,7 @@ import {
 	DirectoryInfo,
 	Fetcher,
 	FetcherWithoutListSprouts,
+	FileListingType,
 	Path
 } from './types.js';
 
@@ -62,9 +63,9 @@ class OverlayFetcher {
 		}
 	}
 
-	listDirectory(path : Path) : Promise<Path[]> {
-		if (!this.pathIsLocalWriteable(path)) return this._fetcher.listDirectory(path);
-		const paths = listDirectoryFromDirectoryInfo(this._directory, this.internalPath(path));
+	listDirectory(path : Path, type: FileListingType = 'both') : Promise<Path[]> {
+		if (!this.pathIsLocalWriteable(path)) return this._fetcher.listDirectory(path, type);
+		const paths = listDirectoryFromDirectoryInfo(this._directory, this.internalPath(path), type);
 		return Promise.resolve(paths);
 	}
 

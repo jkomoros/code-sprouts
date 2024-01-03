@@ -17,7 +17,8 @@ import {
 	NakedDirectoryInfo,
 	NakedPackagedSprout,
 	FileInfo,
-	sproutBaseNameSchema
+	sproutBaseNameSchema,
+	FileListingType
 } from './types.js';
 
 export const assertUnreachable = (x : never) : never => {
@@ -183,17 +184,27 @@ export const fileLastUpdatedFromDirectoryInfo = (info : DirectoryInfo, path : Pa
 	return new Date(fileInfo.lastModified);
 };
 
-export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path) : Path[] => {
+export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path, type: FileListingType) : Path[] => {
 	const parts = path.split('/');
 	if (parts.length === 0) throw new Error('Invalid path');
 	const firstPart = parts[0];
 	if (parts.length === 1) {
 		//We're at the end of the path.
 		if (!(firstPart in info.directories)) return [];
-		return Object.keys(info.directories[firstPart].directories);
+		const directory = info.directories[firstPart];
+		switch (type) {
+		case 'both':
+			return Object.keys(directory.directories).concat(Object.keys(directory.files));
+		case 'directory':
+			return Object.keys(directory.directories);
+		case 'file':
+			return Object.keys(directory.files);
+		default:
+			assertUnreachable(type);
+		}
 	}
 	if (firstPart in info.directories) {
-		return listDirectoryFromDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'));
+		return listDirectoryFromDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'), type);
 	}
 	throw new Error(`File not found: ${path}`);
 };
