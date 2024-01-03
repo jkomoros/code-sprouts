@@ -17,7 +17,7 @@ import {
 } from './store.js';
 
 /*
-	TODO: diagnose why sprout files are being fetched a bunch of times at looad
+	TODO: fix the problem where sproutChanged() is kicking off many duplicate requests for the same network resource because they all don't realize that one is already in flight.	
 	TODO: When opening sprout for editing, snapshot a copy of the compiled Sprout and change it
 	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
 	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
