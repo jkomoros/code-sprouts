@@ -21,6 +21,9 @@ import {
 	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
 	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
 	TODO: a button that doesn't look like the existing plus icon for 'create a sprout'
+	TODO: allow adding a missing config property
+	TODO: allow removing a config property that's not required
+	TODO: allow adding a missing sub-instruction
 	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
 	TODO: add a deleteSprout ability.
 	TODO: compilation of sprout should keep track of what values require whic hother values and which ones require AI, and then automate construction of e.g. NakedUncompiledPackagedSproutNotNeedingAI
