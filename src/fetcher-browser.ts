@@ -24,10 +24,11 @@ class BrowserFetcher {
 
 	private _localWriteablePath: Path | null = null;
 
-	private _activeFetches: Map<FetchCacheKey, Promise<Response>>;
+	//These are previously kicked off fetches that are still in progress, or are already done.
+	private _existingFetches: Map<FetchCacheKey, Promise<Response>>;
 
 	constructor() {
-		this._activeFetches = new Map();
+		this._existingFetches = new Map();
 	}
 
 	private _fetchCacheKey(path: Path, init? : RequestInit): FetchCacheKey {
@@ -38,10 +39,11 @@ class BrowserFetcher {
 
 	private fetch(path : Path, init? : RequestInit) : Promise<Response> {
 		const key = this._fetchCacheKey(path, init);
-		if (this._activeFetches.has(key)) {
-			const basePromise = this._activeFetches.get(key);
+		if (this._existingFetches.has(key)) {
+			const basePromise = this._existingFetches.get(key);
 			if (!basePromise) throw new Error('Unexpected null basePromise');
 			return new Promise(resolve => {
+				//Every vended promise with the exception of the first is responsible for cloning the response.
 				basePromise.then((response) => {
 					resolve(response.clone());
 				});
@@ -49,14 +51,19 @@ class BrowserFetcher {
 		}
 		const promise = new Promise<Response>((resolve, reject) => {
 			fetch(path, init).then((response) => {
-				this._activeFetches.delete(key);
+				//We don't delete the _expectedResponse. In the future if
+				//someone fetches it again, they'll get a promise that will
+				//resolve immediately.
+
+				//Only the initiator of the actual fetch is allowed to return
+				//the response immediately; everyone else must clone it.
 				resolve(response);
 			}).catch((error) => {
 				reject(error);
 			});
 		});
 
-		this._activeFetches.set(key, promise);
+		this._existingFetches.set(key, promise);
 		return promise;
 	}
 
