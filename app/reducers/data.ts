@@ -88,7 +88,8 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 	case SET_EDITOR_OPEN:
 		return {
 			...state,
-			editorOpen: action.open
+			editorOpen: action.open,
+			editing: !action.open ? false : state.editing
 		};
 	case START_EDITING:
 		return {
