@@ -15,7 +15,8 @@ import {
 } from '../types_store.js';
 
 import {
-	CHECK_CIRCLE_OUTLINE_ICON
+	CHECK_CIRCLE_OUTLINE_ICON,
+	EDIT_ICON
 } from './my-icons.js';
 
 import {
@@ -27,13 +28,15 @@ import {
 } from './button-shared-styles.js';
 
 import {
-	setEditorOpen
+	setEditorOpen,
+	startEditing
 } from '../actions/data.js';
 
 import {
 	selectCurrentSprout,
 	selectEditorOpen,
-	selectIsEditing
+	selectIsEditing,
+	selectMayEditCurrentSprout
 } from '../selectors.js';
 
 import {
@@ -69,6 +72,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	@state()
 		_editing = false;
 
+	@state()
+		_userMayEdit = false;
+
 	static override get styles() {
 		return [
 			...DialogElement.styles,
@@ -91,6 +97,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this.open = selectEditorOpen(state);
 		this._currentSprout = selectCurrentSprout(state);
 		this._editing = selectIsEditing(state);
+		this._userMayEdit = selectMayEditCurrentSprout(state);
 	}
 
 	private sproutChanged() {
@@ -144,7 +151,21 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		if (!sprout) return html`No sprout.`;
 
 		return html`
-			<h2>${sprout.name}</h2>
+			<h2>${sprout.name}
+				${this._userMayEdit ? 
+		html`
+					<button
+						class='small'
+						@click=${this._handleEditingClicked}
+						?disabled=${this._editing}
+						title=${this._editing ? 'Stop editing' : 'Edit sprout'}
+					>
+						${EDIT_ICON}
+					</button>
+					`:
+		html``
+}
+			</h2>
 			<label>Config</label>
 			<div>
 				${this._sproutConfig
@@ -174,6 +195,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		`) :
 		html`<em>No sub-instructions</em>`}
 		`;
+	}
+
+	private _handleEditingClicked() {
+		if (!this._editing) store.dispatch(startEditing());
 	}
 
 	override _shouldClose(_cancelled : boolean) {
