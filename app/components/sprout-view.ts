@@ -77,7 +77,7 @@ import {
 	SYNC_ICON,
 	WARNING_ICON,
 	LOCK_ICON,
-	VISIBILITY_ICON
+	PREVIEW_ICON
 } from './my-icons.js';
 
 import {
@@ -430,7 +430,7 @@ class SproutView extends connect(store)(PageViewElement) {
 									@click=${this._handleViewSprout}
 									title='View the current sprout'
 								>
-									${VISIBILITY_ICON}
+									${PREVIEW_ICON}
 								</button>
 								${this._mayCreateSprout ? 
 		html`
