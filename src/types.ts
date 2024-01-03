@@ -21,6 +21,8 @@ export type Path = z.infer<typeof pathSchema>;
 
 export type FinalPath = string;
 
+const DEFAULT_NAME_REGEXP = new RegExp('[a-zA-Z0-9_-]+');
+
 export const SPROUT_BASE_NAME_REG_EX = absoluteRegExp(new RegExp('[a-zA-Z_-][a-zA-Z0-9_-]*'));
 
 export const sproutBaseNameSchema = z.string().regex(SPROUT_BASE_NAME_REG_EX);
@@ -52,9 +54,13 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
-const subInstructionNameSchema = z.string();
+const subInstructionNameSchema = z.string().regex(absoluteRegExp(DEFAULT_NAME_REGEXP));
 
 export type SubInstructionsName = z.infer<typeof subInstructionNameSchema>;
+
+const subInstructionsFilenameSchema = z.string().regex(absoluteRegExp(new RegExp(DEFAULT_NAME_REGEXP.source + '\\.md')));
+
+export type SubInstructionsFilename = z.infer<typeof subInstructionsFilenameSchema>;
 
 const subInstructionRecordSchema = z.object({
 	summary: z.string(),
@@ -248,7 +254,7 @@ export const packagedSproutSchema = z.object({
 	directories: z.object({
 		sub_instructions: z.object({
 			directories: z.record(z.string(), z.never()),
-			files: z.record(z.string(), fileInfoSchema)
+			files: z.record(subInstructionsFilenameSchema, fileInfoSchema)
 		}).optional()
 	}),
 	files: z.object({
@@ -269,7 +275,7 @@ export type NakedPackagedSprout = {
 	//If changing the remaining keys, update NakedUncompiledPackagedSproutNotNeedingAI
 	'schema.ts'? : string
 	'sub_instructions'?: {
-		[mdFile : string]: string
+		[mdFile : SubInstructionsFilename]: string
 	},
 }
 export type NakedUncompiledPackagedSprout = Omit<NakedPackagedSprout, 'sprout.compiled.json'>;
