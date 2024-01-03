@@ -23,6 +23,8 @@ import {
 
 /*
 	TODO: Do the same _inProgessCompilation process for all calcualted properties of Sprout that might do a network request.
+	TODO: create a sprout .package(compiled : boolean) method that returns a NakedPackagedSprout or NakedUncompiledPackagedSprout:
+		package<T extends boolean>(compiled: T): T extends true ? NakedPackagedSprout : NakedUncompiledPackagedSprout; 
 	TODO: When opening sprout for editing, snapshot a copy of the compiled Sprout and change it
 	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
 	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
