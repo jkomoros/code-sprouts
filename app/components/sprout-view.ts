@@ -77,7 +77,7 @@ import {
 	SYNC_ICON,
 	WARNING_ICON,
 	LOCK_ICON,
-	EDIT_ICON
+	VISIBILITY_ICON
 } from './my-icons.js';
 
 import {
@@ -427,10 +427,10 @@ class SproutView extends connect(store)(PageViewElement) {
 								</button>
 								<button
 									class='small'
-									@click=${this._handleEditSprout}
-									title='Edit the current sprout'
+									@click=${this._handleViewSprout}
+									title='View the current sprout'
 								>
-									${EDIT_ICON}
+									${VISIBILITY_ICON}
 								</button>
 								${this._mayCreateSprout ? 
 		html`
@@ -690,7 +690,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
-	private _handleEditSprout() {
+	private _handleViewSprout() {
 		store.dispatch(setEditorOpen(true));
 	}
 
