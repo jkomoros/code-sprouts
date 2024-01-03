@@ -17,6 +17,9 @@ import {
 } from './store.js';
 
 /*
+	TODO: When opening sprout for editing, snapshot a copy of the compiled Sprout and change it
+	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
+	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
 	TODO: a button that doesn't look like the existing plus icon for 'create a sprout'
 	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
 	TODO: add a deleteSprout ability.
