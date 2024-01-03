@@ -29,6 +29,7 @@ export const SPROUT_STOPPED_STREAMING = 'SPROUT_STOPPED_STREAMING';
 export const UPDATE_DRAFT_MESSAGE = 'UPDATE_DRAFT_MESSAGE';
 export const ATTACH_IMAGE = 'ATTACH_IMAGE';
 export const SET_EDITOR_OPEN = 'SET_EDITOR_OPEN';
+export const START_EDITING = 'START_EDITING';
 export const WRITE_SPROUT = 'WRITE_SPROUT';
 
 const actionUpdatePage = z.object({
@@ -97,6 +98,10 @@ const actionSetEditorOpen = z.object({
 	open: z.boolean()
 }).strict();
 
+const actionStartEditing = z.object({
+	type: z.literal(START_EDITING),
+}).strict();
+
 const actionWriteSprout = z.object({
 	type: z.literal(WRITE_SPROUT),
 	name: sproutNameSchema,
@@ -117,6 +122,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionUpdateDraftMessage,
 	actionAttachImage,
 	actionSetEditorOpen,
+	actionStartEditing,
 	actionWriteSprout
 ]);
 

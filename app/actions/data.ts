@@ -3,6 +3,7 @@ import { ThunkSomeAction } from '../store.js';
 import {
 	SET_OPENAI_API_KEY,
 	SPROUT_STOPPED_STREAMING,
+	START_EDITING,
 	START_STREAMING_SPROUT,
 	SomeAction
 } from '../actions.js';
@@ -18,6 +19,7 @@ import {
 	selectCurrentSproutName,
 	selectDraftMessage,
 	selectEditorOpen,
+	selectIsEditing,
 	selectSproutData,
 	selectSproutStreaming
 } from '../selectors.js';
@@ -208,6 +210,17 @@ export const setEditorOpen = (open : boolean) : ThunkSomeAction => (dispatch, ge
 	});
 };
 
+export const startEditing = () : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const currentSprout = selectCurrentSprout(state);
+	if (!currentSprout) throw new Error('No sprout');
+	const isEditing = selectIsEditing(state);
+	if (isEditing) throw new Error('Already editing');
+	dispatch({
+		type: START_EDITING
+	});
+};
+
 export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async (dispatch) => {
 	if (!sproutBaseNameLegal(name)) {
 		throw new Error(`${name} is not a legal sprout base name`);
@@ -216,4 +229,5 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 	const fullName = joinPath(fetcher.localWriteablePath, name);
 	await dataManager.writeSprout(fullName, sprout);
 	dispatch(addOrSelectSprout(fullName));
+	dispatch(startEditing());
 };

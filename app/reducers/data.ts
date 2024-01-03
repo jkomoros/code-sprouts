@@ -6,6 +6,7 @@ import {
 	SET_OPENAI_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
+	START_EDITING,
 	START_STREAMING_SPROUT,
 	STREAM_INCREMENTAL_MESSAGE,
 	SomeAction,
@@ -26,6 +27,7 @@ const INITIAL_STATE : DataState = {
 	draftMessage: '',
 	attachedImage: null,
 	editorOpen: false,
+	editing: false,
 	writtenSprouts: {}
 };
 
@@ -87,6 +89,12 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			editorOpen: action.open
+		};
+	case START_EDITING:
+		return {
+			...state,
+			editorOpen: true,
+			editing: true
 		};
 	case WRITE_SPROUT:
 		return {
