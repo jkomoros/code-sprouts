@@ -20,15 +20,39 @@ import {
 
 type FetchCacheKey = string;
 
+//5 minutes
+const CACHE_EXPIRATION = 1000 * 60 * 5;
+
 class BrowserFetcher {
 
 	private _localWriteablePath: Path | null = null;
 
 	//These are previously kicked off fetches that are still in progress, or are already done.
-	private _existingFetches: Map<FetchCacheKey, Promise<Response>>;
+	private _existingFetches: Map<FetchCacheKey, {promise: Promise<Response>, timestamp: Date}>;
+	private _cacheTimeoutID : number | null = null;
 
 	constructor() {
 		this._existingFetches = new Map();
+
+	}
+
+	private _clearExpiredFetches() {
+		this._cacheTimeoutID = null;
+		for (const [key, value] of this._existingFetches.entries()) {
+			if (value.timestamp.getTime() + CACHE_EXPIRATION < Date.now()) {
+				this._existingFetches.delete(key);
+			}
+		}
+		this._startCacheTimeout();
+	}
+
+	private _startCacheTimeout() {
+		if (this._cacheTimeoutID !== null) return;
+		if (this._existingFetches.size > 0) {
+			this._cacheTimeoutID = window.setTimeout(() => {
+				this._clearExpiredFetches();
+			}, CACHE_EXPIRATION);
+		}
 	}
 
 	private _fetchCacheKey(path: Path, init? : RequestInit): FetchCacheKey {
@@ -44,11 +68,12 @@ class BrowserFetcher {
 			if (!basePromise) throw new Error('Unexpected null basePromise');
 			return new Promise(resolve => {
 				//Every vended promise with the exception of the first is responsible for cloning the response.
-				basePromise.then((response) => {
+				basePromise.promise.then((response) => {
 					resolve(response.clone());
 				});
 			});
 		}
+		this._startCacheTimeout();
 		const promise = new Promise<Response>((resolve, reject) => {
 			fetch(path, init).then((response) => {
 				//We don't delete the _expectedResponse. In the future if
@@ -63,7 +88,7 @@ class BrowserFetcher {
 			});
 		});
 
-		this._existingFetches.set(key, promise);
+		this._existingFetches.set(key, {promise, timestamp : new Date()});
 		return promise;
 	}
 
