@@ -425,13 +425,6 @@ class SproutView extends connect(store)(PageViewElement) {
 								>
 									${PLUS_ICON}
 								</button>
-								<button
-									class='small'
-									@click=${this._handleViewSprout}
-									title='View the current sprout'
-								>
-									${PREVIEW_ICON}
-								</button>
 								${this._mayCreateSprout ? 
 		html`
 								<button
@@ -446,7 +439,15 @@ class SproutView extends connect(store)(PageViewElement) {
 							</div>
 						</div>
 						<div class='title'>
-							<h2>${this._currentSproutConfig?.title || this._currentSproutName}</h2>			
+							<h2>${this._currentSproutConfig?.title || this._currentSproutName}
+								<button
+									class='small'
+									@click=${this._handleViewSprout}
+									title='View the current sprout'
+								>
+									${PREVIEW_ICON}
+								</button>
+							</h2>			
 							<p class='description'>
 								${this._currentSproutConfig?.description || 'A sprout without a description'}
 							</p>
