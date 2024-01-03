@@ -151,6 +151,14 @@ class BrowserFetcher {
 		//This requires a directory.json file in each folder.
 		const result: Path[] = [];
 		for (let basePath of basePaths) {
+			if (this.pathIsLocalWriteable(basePath)) {
+				//TODO: this currently assumes that every item in the local writeable path is a sprout.
+				const items = LocalStorageFilesystem.listDirectory(basePath);
+				for (const item of items) {
+					result.push(joinPath(basePath, item));
+				}
+				continue;
+			}
 			basePath = makeFinalPath(basePath);
 			try {
 				const response = await this.fetch(`${basePath}/${DIRECTORY_LISTING_FILE}`);
