@@ -32,7 +32,8 @@ import {
 
 import {
 	selectCurrentSprout,
-	selectEditorOpen
+	selectEditorOpen,
+	selectIsEditing
 } from '../selectors.js';
 
 import {
@@ -89,6 +90,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	override stateChanged(state : RootState) {
 		this.open = selectEditorOpen(state);
 		this._currentSprout = selectCurrentSprout(state);
+		this._editing = selectIsEditing(state);
 	}
 
 	private sproutChanged() {
