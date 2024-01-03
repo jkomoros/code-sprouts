@@ -18,9 +18,47 @@ import {
 	LocalStorageFilesystem
 } from './local_storage_filesystem.js';
 
+type FetchCacheKey = string;
+
 class BrowserFetcher {
 
 	private _localWriteablePath: Path | null = null;
+
+	private _activeFetches: Map<FetchCacheKey, Promise<Response>>;
+
+	constructor() {
+		this._activeFetches = new Map();
+	}
+
+	private _fetchCacheKey(path: Path, init? : RequestInit): FetchCacheKey {
+		const result = [path];
+		result.push(init?.method || 'GET');
+		return result.join('|');
+	}
+
+	private fetch(path : Path, init? : RequestInit) : Promise<Response> {
+		const key = this._fetchCacheKey(path, init);
+		if (this._activeFetches.has(key)) {
+			const basePromise = this._activeFetches.get(key);
+			if (!basePromise) throw new Error('Unexpected null basePromise');
+			return new Promise(resolve => {
+				basePromise.then((response) => {
+					resolve(response.clone());
+				});
+			});
+		}
+		const promise = new Promise<Response>((resolve, reject) => {
+			fetch(path, init).then((response) => {
+				this._activeFetches.delete(key);
+				resolve(response);
+			}).catch((error) => {
+				reject(error);
+			});
+		});
+
+		this._activeFetches.set(key, promise);
+		return promise;
+	}
 
 	set localWriteablePath(path: Path) {
 		this._localWriteablePath = path;
@@ -40,7 +78,7 @@ class BrowserFetcher {
 			return LocalStorageFilesystem.readFile(path);
 		}
 		path = makeFinalPath(path);
-		const response = await fetch(path);
+		const response = await this.fetch(path);
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
@@ -53,7 +91,7 @@ class BrowserFetcher {
 		}
 		path = makeFinalPath(path);
 		try {
-			const response = await fetch(path, { method: 'HEAD' });
+			const response = await this.fetch(path, { method: 'HEAD' });
 			return response.status === 200;
 		} catch (e) {
 			return false;
@@ -65,7 +103,7 @@ class BrowserFetcher {
 			return LocalStorageFilesystem.listDirectory(path);
 		}
 		path = makeFinalPath(path);
-		const response = await fetch(joinPath(path, DIRECTORY_LISTING_FILE));
+		const response = await this.fetch(joinPath(path, DIRECTORY_LISTING_FILE));
 		if (!response.ok) return [];
 		const json = await response.json();
 		const data = directoryListingFileSchema.parse(json);
@@ -83,7 +121,7 @@ class BrowserFetcher {
 		for (let basePath of basePaths) {
 			basePath = makeFinalPath(basePath);
 			try {
-				const response = await fetch(`${basePath}/${DIRECTORY_LISTING_FILE}`);
+				const response = await this.fetch(`${basePath}/${DIRECTORY_LISTING_FILE}`);
 				if (!response.ok) {
 					continue;
 				}
