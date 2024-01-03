@@ -77,7 +77,8 @@ import {
 	SYNC_ICON,
 	WARNING_ICON,
 	LOCK_ICON,
-	PREVIEW_ICON
+	PREVIEW_ICON,
+	CLOUD_DOWNLOAD_ICON
 } from './my-icons.js';
 
 import {
@@ -423,7 +424,7 @@ class SproutView extends connect(store)(PageViewElement) {
 									@click=${this._handleAddSprout}
 									title='Add a new sprout'
 								>
-									${PLUS_ICON}
+									${CLOUD_DOWNLOAD_ICON}
 								</button>
 								${this._mayCreateSprout ? 
 		html`
