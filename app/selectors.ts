@@ -13,6 +13,7 @@ import {
 import {
 	AIProvider
 } from '../src/llm.js';
+import { fetcher } from './fetcher.js';
 
 export const selectPage = (state : RootState) => state.app ? state.app.page : '';
 export const selectPageExtra = (state : RootState) => state.app ? state.app.pageExtra : '';
@@ -69,3 +70,9 @@ export const selectCurrentSproutConversation = createSelector(
 
 //In the future there will be much more complex logic.
 export const selectMayCreateSprout = (_state : RootState) => true;
+
+//In the future more logic might be here.
+export const selectMayEditCurrentSprout = createSelector(
+	selectCurrentSproutName,
+	(sproutName) => fetcher.pathIsLocalWriteable(sproutName || '')
+);
