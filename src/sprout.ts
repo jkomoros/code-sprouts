@@ -157,6 +157,8 @@ export class Sprout {
 	private _outOfDateFiles : Record<Path, boolean> = {};
 	private _fetcher : FetcherWithoutListSprouts;
 
+	private _inProgressCompilation? : Promise<[CompiledSprout | null, Record<string, boolean>]>;
+
 	static setFetcher(input : Fetcher) : void {
 		_fetcher = input;
 	}
@@ -273,39 +275,56 @@ export class Sprout {
 		return result;
 	}
 
-	private async _compiled() : Promise<CompiledSprout | null> {
-		if (this._compiledData === undefined) {
-			const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
-			if (await this._fetcher.fileExists(compiledSproutPath)) {
-				const compiledData = await this._fetcher.fileFetch(compiledSproutPath);
-				//Tnis will throw if invalid shape.
-				const parseResult = compiledSproutSchema.safeParse(JSON.parse(compiledData));
-				if (parseResult.success) {
-					const data = parseResult.data;
-					const compiledLastUpdated = new Date(data.lastUpdated);
-					if (this._fetcher.supportsLastUpdated()) {
-						this._outOfDateFiles = {};
-						for (const file of await this._filesToCheckForCompilation()) {
-							const path = joinPath(this._path, file);
-							if (!await this._fetcher.fileExists(path)) continue;
-							const lastUpdated = await this._fetcher.fileLastUpdated(path);
-							if (lastUpdated === null) break;
-							if (lastUpdated > compiledLastUpdated) {
-								//If any of the base files are newer than the compiled file, we need to recompile.
-								if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
-								this._outOfDateFiles[path] = true;
-							}
+	//Returns the compiledSprout and any out of date files.
+	private async _calculateCompiled() : Promise<[CompiledSprout | null, Record<string, boolean>]> {
+		const outOfDateFiles : Record<string, boolean> = {};
+		const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
+		if (await this._fetcher.fileExists(compiledSproutPath)) {
+			const compiledData = await this._fetcher.fileFetch(compiledSproutPath);
+			//Tnis will throw if invalid shape.
+			const parseResult = compiledSproutSchema.safeParse(JSON.parse(compiledData));
+			if (parseResult.success) {
+				const data = parseResult.data;
+				const compiledLastUpdated = new Date(data.lastUpdated);
+				if (this._fetcher.supportsLastUpdated()) {
+					for (const file of await this._filesToCheckForCompilation()) {
+						const path = joinPath(this._path, file);
+						if (!await this._fetcher.fileExists(path)) continue;
+						const lastUpdated = await this._fetcher.fileLastUpdated(path);
+						if (lastUpdated === null) break;
+						if (lastUpdated > compiledLastUpdated) {
+							//If any of the base files are newer than the compiled file, we need to recompile.
+							if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
+							this._outOfDateFiles[path] = true;
 						}
 					}
-					this._compiledData = data;
-				} else {
-					if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file invalid: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
-					this._compiledData = null;
 				}
+				return [data, outOfDateFiles];
 			} else {
-				if(this._debugLogger) this._debugLogger(`${this.name}: No compiled file`);
-				this._compiledData = null;
+				if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file invalid: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
+				return [null, outOfDateFiles];
 			}
+		} else {
+			if(this._debugLogger) this._debugLogger(`${this.name}: No compiled file`);
+			return [null, outOfDateFiles];
+		}
+	
+	}
+
+	private async _compiled() : Promise<CompiledSprout | null> {
+		if (this._compiledData === undefined) {
+			let result : [CompiledSprout | null, Record<string, boolean>] | undefined = undefined;
+			if (this._inProgressCompilation) {
+				if(this._debugLogger) this._debugLogger(`${this.name}: Waiting for compilation`);
+				result = await this._inProgressCompilation;
+			} else {
+				if (this._debugLogger) this._debugLogger(`${this.name}: Fetching compiled result`);
+				this._inProgressCompilation = this._calculateCompiled();
+				result = await this._inProgressCompilation;
+				this._inProgressCompilation = undefined;
+			}
+			this._compiledData = result[0];
+			this._outOfDateFiles = result[1];
 		}
 		if (!this._compiledData && this._disallowCompilation) throw new Error(`${this.name}: No compiled file and disallowCompilation is true`);
 		return this._compiledData;
