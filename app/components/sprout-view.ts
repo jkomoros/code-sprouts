@@ -422,7 +422,7 @@ class SproutView extends connect(store)(PageViewElement) {
 								<button
 									class='small'
 									@click=${this._handleAddSprout}
-									title='Add a new sprout'
+									title='Import a sprout from another location'
 								>
 									${CLOUD_DOWNLOAD_ICON}
 								</button>
