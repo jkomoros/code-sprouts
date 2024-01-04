@@ -16,7 +16,7 @@ import {
 	Fetcher,
 	FetcherWithoutListSprouts,
 	Logger,
-	NakedUncompiledPackagedSprout,
+	UncompiledPackagedSprout,
 	PackagedSprout,
 	Path,
 	Prompt,
@@ -140,12 +140,12 @@ export class Sprout {
 	private _aiProvider? : AIProvider;
 
 	//TODO: do this for the _doCompile too.
-	private _inProgressFetchUncompiled? : Promise<NakedUncompiledPackagedSprout>;
+	private _inProgressFetchUncompiled? : Promise<UncompiledPackagedSprout>;
 	private _inProgressFetchCompiled? : Promise<CompiledSprout | null>;
 
 	private _disallowCompilation : boolean;
 	private _disallowFormatting : boolean;
-	private _uncompiledPackage? : NakedUncompiledPackagedSprout;
+	private _uncompiledPackage? : UncompiledPackagedSprout;
 	private _compiledSprout? : CompiledSprout | null;
 	private _debugLogger? : Logger;
 	private _id : string;
@@ -242,7 +242,7 @@ export class Sprout {
 		return parseResult.data;
 	}
 
-	async fetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout>  {
+	async fetchUncompiledPackage() : Promise<UncompiledPackagedSprout>  {
 		if (this._uncompiledPackage) return this._uncompiledPackage;
 		if (this._inProgressFetchUncompiled) {
 			return this._inProgressFetchUncompiled;
@@ -254,7 +254,7 @@ export class Sprout {
 		return result;
 	}
 
-	async _actuallyFetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout> {
+	async _actuallyFetchUncompiledPackage() : Promise<UncompiledPackagedSprout> {
 		const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
 		const sproutConfig = await this._fetcher.fileFetch(sproutConfigPath);
 
@@ -278,7 +278,7 @@ export class Sprout {
 		}
 
 		//We don't bother checking if files are out of date; this is jus
-		const result : NakedUncompiledPackagedSprout = {
+		const result : UncompiledPackagedSprout = {
 			'sprout.json': sproutConfig,
 			'instructions.md': instructions,
 		};
@@ -292,7 +292,7 @@ export class Sprout {
 	}
 
 	//Returns null if it doesn't require compilation, or an array of strings describing the reasons it's comipled otherwise.
-	private _requiresCompilation(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : null | string[] {
+	private _requiresCompilation(uncompiled : UncompiledPackagedSprout, previous : CompiledSprout | null) : null | string[] {
 		if (!previous) return ['no previous provided'];
 		const result : string[] = [];
 		const configJSON = JSON.parse(uncompiled['sprout.json']);
@@ -344,20 +344,20 @@ export class Sprout {
 		return this._compiledSprout;
 	}
 
-	private _calculateConfig(uncompiled : NakedUncompiledPackagedSprout) : SproutConfig {
+	private _calculateConfig(uncompiled : UncompiledPackagedSprout) : SproutConfig {
 		const configJSON = JSON.parse(uncompiled['sprout.json']);
 		return sproutConfigSchema.parse(configJSON);
 	}
 
-	private _calculateBaseInstructions(uncompiled : NakedUncompiledPackagedSprout) : string {
+	private _calculateBaseInstructions(uncompiled : UncompiledPackagedSprout) : string {
 		return uncompiled['instructions.md'];
 	}
 
-	private _calculateSchemaText(uncompiled : NakedUncompiledPackagedSprout) : string {
+	private _calculateSchemaText(uncompiled : UncompiledPackagedSprout) : string {
 		return uncompiled['schema.ts'] || '';
 	}
 
-	private async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
+	private async _doCompile(uncompiled : UncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
 		
 		//TODO: rename this once old machinery is gone.
 
@@ -781,12 +781,12 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 	}
 }
 
-export const packagedSproutFromUncompiled = async (uncompiled: NakedUncompiledPackagedSprout, ai : AIProvider) : Promise<PackagedSprout> =>  {
+export const packagedSproutFromUncompiled = async (uncompiled: UncompiledPackagedSprout, ai : AIProvider) : Promise<PackagedSprout> =>  {
 	return packagedSproutFromUncompiledImpl(uncompiled, ai);
 };
 
 //In this file because we need Sprout to be defined. and don't want a cycle from util.ts back t here
-const packagedSproutFromUncompiledImpl = async (uncompiled : NakedUncompiledPackagedSprout, ai? : AIProvider) : Promise<PackagedSprout> => {
+const packagedSproutFromUncompiledImpl = async (uncompiled : UncompiledPackagedSprout, ai? : AIProvider) : Promise<PackagedSprout> => {
 	const dummySproutName = 'example';
 	const sprout = new Sprout(dummySproutName, {ai, packagedSprout: uncompiled});
 	const compiled = await sprout.compiledData();

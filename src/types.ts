@@ -249,20 +249,7 @@ export const packagedSproutSchema = z.object({
 	[SPROUT_SUBINSTUCTIONS_DIR]: z.record(subInstructionsFilenameSchema, z.string()).optional()
 });
 
-//TODO: get rid of NakedPackagedSprout
-//NOTE: needs to be kept up to date with file structure in constants.ts
-export type NakedPackagedSprout = {
-	'sprout.json' : string,
-	//If changing this location, also change NakedUncompiledPackagedSprout
-	'sprout.compiled.json' : string,
-	'instructions.md': string,
-	//If changing the remaining keys, update NakedUncompiledPackagedSproutNotNeedingAI
-	'schema.ts'? : string
-	'sub_instructions'?: {
-		[mdFile : SubInstructionsFilename]: string
-	},
-}
-export type NakedUncompiledPackagedSprout = Omit<NakedPackagedSprout, typeof SPROUT_COMPILED_PATH>;
+export type UncompiledPackagedSprout = Omit<PackagedSprout, typeof SPROUT_COMPILED_PATH>;
 
 //This type is allowed to be used anywhere a DirectoryInfo is.
 export type PackagedSprout = z.infer<typeof packagedSproutSchema>;
