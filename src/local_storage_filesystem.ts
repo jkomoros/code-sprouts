@@ -22,12 +22,6 @@ export class LocalStorageFilesystem {
 		return str !== null;
 	}
 
-	static lastUpdated(filename : Path) : Date {
-		const info = this.fileInfo(filename);
-		if (!info) throw new Error(`File not found: ${filename}`);
-		return new Date(info.lastModified);
-	}
-
 	private static fileInfo(filename : Path) : FileInfo | null {
 		const str = window.localStorage.getItem(this.localStorageKeyForFile(filename));
 		if (str === null) {
