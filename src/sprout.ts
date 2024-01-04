@@ -282,6 +282,63 @@ export class Sprout {
 		return result;
 	}
 
+	async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous? : CompiledSprout) : Promise<CompiledSprout> {
+		
+		//TODO: rename this once old machinery is gone.
+
+		const version = 0 as const;
+		const lastUpdated = new Date().toISOString();
+		const name = this.name;
+
+		const configJSON = JSON.parse(uncompiled['sprout.json']);
+		const config = sproutConfigSchema.parse(configJSON);
+
+		const baseInstructions = uncompiled['instructions.md'];
+
+		const schemaText = uncompiled['schema.ts'] || '';
+		
+		const subInstructions : SubInstructionsMap = {};
+
+		for(const [filename, instructions] of Object.entries(uncompiled['sub_instructions'] || {})) {
+			const name = filename.replace(/\.md$/, '');
+			//If the previous instructions are precisely the same, use them and continue.
+			//Calculating a summary is an expensive LLM operation.
+			if (previous) {
+				if (previous.subInstructions[name] && previous.subInstructions[name].instructions == instructions) {
+					subInstructions[name] = previous.subInstructions[name];
+					continue;
+				}
+			}
+			const summary = await this.summaryForSubInstruction(instructions);
+			subInstructions[name] = {
+				summary,
+				instructions
+			};
+		}
+
+		let starterState : Record<string, unknown> = {};
+
+		if (schemaText) {
+			//We need to caculate a starterState. Can we use the previous one or not?
+			if (previous && previous.schemaText == schemaText) {
+				starterState = previous.starterState;
+			} else {
+				starterState = await this.starterStateForSchemaText(schemaText);
+			}
+		}
+
+		return {
+			version,
+			lastUpdated,
+			name,
+			config,
+			baseInstructions,
+			schemaText,
+			subInstructions,
+			starterState
+		};
+	}
+
 	async compiled() : Promise<boolean> {
 		const compiled = await this._compiled();
 		return Boolean(compiled) && Object.keys(this._outOfDateFiles).length == 0;
@@ -509,6 +566,22 @@ type Result = {
 		await this.config();
 		await this.baseInstructions();
 		await this.schemaText();
+	}
+
+	private async starterStateForSchemaText(schemaText : string) : Promise<SproutState> {
+		if (!schemaText) return {};
+		//TODO: don't use an LLM for this / cache the result so we don't have to run it each time
+		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
+		const prompt = `Return the JSON of a default/empty object conforming to this typescript schema (following comments on defaults):
+${schemaText}
+`;
+		const rawJSON = await this._aiProvider.prompt(prompt, {
+			jsonResponse: true,
+			modelRequirements: {
+				jsonResponse: true
+			}
+		});
+		return JSON.parse(rawJSON);
 	}
 
 	async starterState() : Promise<SproutState> {
