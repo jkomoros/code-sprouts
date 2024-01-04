@@ -428,6 +428,25 @@ export class Sprout {
 		return true;
 	}
 
+	//Like fetchUncompiledSprout, but can be derived without actually fetchign those files.
+	async package() : Promise<UncompiledPackagedSprout> {
+		const result : UncompiledPackagedSprout = {
+			'sprout.json': JSON.stringify(await this.config(), null, '\t'),
+			'instructions.md': await this.baseInstructions(),
+		};
+		const schemaText = await this.schemaText();
+		if (schemaText) result['schema.ts'] = schemaText;
+		const subInstructions = await this.subInstructions();
+		if (Object.keys(subInstructions).length > 0) {
+			const subInstructionsDir : Record<SubInstructionsFilename, string> = {};
+			for (const [name, info] of Object.entries(subInstructions)) {
+				subInstructionsDir[`${name}.md`] = info.instructions;
+			}
+			result['sub_instructions'] = subInstructionsDir;
+		}
+		return result;
+	}
+
 	async config() : Promise<SproutConfig> {
 		const compiled = await this.compiledData();
 		if(compiled) return compiled.config;
