@@ -250,3 +250,49 @@ export const sproutBaseNameLegal = (proposedName : string) : boolean => {
 	const parseResult = sproutBaseNameSchema.safeParse(proposedName);
 	return parseResult.success;
 };
+
+const LOG_DEEP_EQUAL_DIFFERENCES = false;
+
+//Tests for deep eqaulity of a and b. note: not yet tested for anythong other
+//than objects, arrays, strings, numbers, bools.∑ If a and b are too non-equal
+//objecst, and objectChecker is provided, then if both return true from
+//objectChecker then deepEqual will short-circuit and return true.
+export const deepEqual = (a : unknown, b : unknown, objectChecker : ((object: unknown) => boolean) | null = null) : boolean => {
+	if (a === b) return true;
+	if (!a || !b) return false;
+	if (typeof a != 'object' || typeof b != 'object') return false;
+	if (Array.isArray(a)) {
+		if (!Array.isArray(b)) return false;
+		if (a.length != b.length) return false;
+		for (const [i, val] of a.entries()) {
+			if (!deepEqual(b[i], val, objectChecker)) return false;
+		}
+		return true;
+	}
+	if (objectChecker && objectChecker(a) && objectChecker(b)) return true;
+	//Two objects
+	if (Object.keys(a).length != Object.keys(b).length) {
+		if (LOG_DEEP_EQUAL_DIFFERENCES) {
+			const aKeys = new Set(Object.keys(a));
+			const bKeys = new Set(Object.keys(b));
+			if (aKeys.size > bKeys.size) {
+				const difference = [...aKeys].filter(x => !bKeys.has(x));
+				console.log('a has keys ', difference, 'that b lacks', a, b);
+			} else {
+				const difference = [...bKeys].filter(x => !aKeys.has(x));
+				console.log('b has keys ', difference, 'that a lacks', a, b);
+			}
+		}
+		return false;
+	}
+	const stringKeyedB = b as {[key : string] : unknown};
+	for (const [key, val] of Object.entries(a)) {
+		if (!deepEqual(val, stringKeyedB[key], objectChecker)) {
+			if (LOG_DEEP_EQUAL_DIFFERENCES) {
+				console.log('Key', key, ' is different in a and b: ', val, stringKeyedB[key], a, b);
+			}
+			return false;
+		}
+	}
+	return true;
+};

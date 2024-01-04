@@ -62,7 +62,8 @@ import {
 	makeDirectoryInfo,
 	randomString,
 	trimExtraNewlines,
-	writeFileToDirectoryInfo
+	writeFileToDirectoryInfo,
+	deepEqual
 } from './util.js';
 
 import {
@@ -282,7 +283,23 @@ export class Sprout {
 		return result;
 	}
 
-	async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous? : CompiledSprout) : Promise<CompiledSprout> {
+	async _requiresCompilation(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<boolean> {
+		if (!previous) return true;
+		const configJSON = JSON.parse(uncompiled['sprout.json']);
+		const config = sproutConfigSchema.parse(configJSON);
+		if (!deepEqual(config, previous.config)) return true;
+		if (uncompiled['instructions.md'] != previous.baseInstructions) return true;
+		if (uncompiled['schema.ts'] != previous.schemaText) return true;
+		if (Object.keys(uncompiled['sub_instructions'] || {}).length != Object.keys(previous.subInstructions).length) return true;
+		for (const [filename, instructions] of Object.entries(uncompiled['sub_instructions'] || {})) {
+			const name = filename.replace(/\.md$/, '');
+			if (!previous.subInstructions[name]) return true;
+			if (previous.subInstructions[name].instructions != instructions) return true;
+		}
+		return false;
+	}
+
+	async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
 		
 		//TODO: rename this once old machinery is gone.
 
