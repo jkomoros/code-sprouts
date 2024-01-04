@@ -22,6 +22,48 @@ import {
 } from './store.js';
 
 /*
+
+TODO: clean up the Sprout file fetching and compiling machinery.
+
+We don't need to actually care about lastUpdated because all of the files are so
+small that the main overhead is requesting all of them at once.
+
+The raw files are fetched into a structure called a PackagedUncompiledSprout.
+
+This is in the shape of a DirectoryInfo, but with explicitly enumerated
+filenames (outside of sub_instructions). FileInfo goes away and just becomes a
+string, the stringified file contents.
+
+PackedSprout is a sprout that has all of it files, including a CompiledSprout
+file, as well as all of the inputs.
+
+A sprout also has a fetchUncompiledPackage() method that returns a
+PackagedUncompiledSprout by fetching each file (caching the answer). It also has
+a fetchCompiledSprout() that fetches and returns the CompiledSprout, caching it
+
+The compilation process takes a packagedUncompiledSprout and a previous
+compiledSprout and returns a new compiledSprout.
+
+For each field in the output, it does the transformation (typically a filename
+change for a sub-folder keys, or instructions).
+
+Some fields require expensive compilation, like calling an AI. These will check
+if the input text is identical as the provided compiledSprout and if so, will
+just copy over the previous results.
+
+A sprout has a method package(compiled : boolean) PackagedUncompiledSprout |
+PackagedSprout. First, it calls fetchUncompiledPackage if it does not have a
+cached answer. If it's uncompiled, it returns that. If it's compiled it also
+fetches the compiledSprout, passes both to the compilation process, and then
+returns that result. and returns that.
+
+- Remove all lastUpdated stuff from Sprout and Fetcher, and get rid of the idea
+  of a non-naked DirectoryInfo, because we never check for lastUpdated.
+
+*/
+
+
+/*
 	TODO: Do the same _inProgessCompilation process for all calcualted properties of Sprout that might do a network request.
 	TODO: create a sprout .package(compiled : boolean) method that returns a NakedPackagedSprout or NakedUncompiledPackagedSprout:
 		package<T extends boolean>(compiled: T): T extends true ? NakedPackagedSprout : NakedUncompiledPackagedSprout; 
