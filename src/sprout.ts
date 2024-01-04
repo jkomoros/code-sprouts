@@ -495,26 +495,9 @@ ${schemaText}
 	}
 
 	async starterState() : Promise<SproutState> {
-
-		const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
-
 		const compiled = await this.compiledData();
-		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.starterState;
-
-		const schemaText = await this.schemaText();
-		if (!schemaText) return {};
-		//TODO: don't use an LLM for this / cache the result so we don't have to run it each time
-		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
-		const prompt = `Return the JSON of a default/empty object conforming to this typescript schema (following comments on defaults):
-${schemaText}
-`;
-		const rawJSON = await this._aiProvider.prompt(prompt, {
-			jsonResponse: true,
-			modelRequirements: {
-				jsonResponse: true
-			}
-		});
-		return JSON.parse(rawJSON);
+		if(!compiled)  throw new Error('No compiled data and no starterState available');
+		return compiled.starterState;
 	}
 
 	async lastState() : Promise<SproutState> {
