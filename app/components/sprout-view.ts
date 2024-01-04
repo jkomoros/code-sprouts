@@ -26,6 +26,7 @@ import {
 	selectSproutData,
 	selectSproutStreaming,
 	selectMayCreateSprout,
+	selectIsEditing,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -191,6 +192,9 @@ class SproutView extends connect(store)(PageViewElement) {
 
 	@state()
 		_draftMessage : string = '';
+	
+	@state()
+		_editing : boolean = false;
 
 	static override get styles() {
 		return [
@@ -531,6 +535,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._draftMessage = selectDraftMessage(state);
 		this._imageUpload = selectAttachedImage(state);
 		this._mayCreateSprout = selectMayCreateSprout(state);
+		this._editing = selectIsEditing(state);
 	}
 
 	override firstUpdated() {
@@ -643,6 +648,8 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _focusTextArea() {
 		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
 		if (!textarea) throw new Error('No textarea');
+		//Don't steal focus when editing is ahppening.
+		if (this._editing) return;
 		focusElementIfNoOtherFocus(textarea);
 	}
 
