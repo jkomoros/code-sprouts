@@ -30,6 +30,7 @@ import {
 
 import {
 	closeEditor,
+	editingModifySprout,
 	startEditing
 } from '../actions/data.js';
 
@@ -57,6 +58,7 @@ import {
 	HelpStyles,
 	help,
 } from './help-badges.js';
+import { clone } from '../../src/util.js';
 
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
@@ -174,6 +176,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<label>Instructions ${help('The main instructions that tell the bot what to do.')}</label>
 			<textarea
 				?disabled=${!this._editing}
+				@change=${this._handleInstructionsChanged}
 				.value=${snapshot['instructions.md']}
 			></textarea>
 			<label>Schema ${help('If provided, this should be a type defined in typescript.')}</label>
@@ -198,6 +201,19 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	private _handleEditingClicked() {
 		if (!this._editing) store.dispatch(startEditing());
+	}
+
+	private _handleInstructionsChanged(e : InputEvent) {
+		const textarea = e.target as HTMLTextAreaElement;
+		const newValue = textarea.value;
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		clonedSnapshot['instructions.md'] = newValue;
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
 	}
 
 	override _shouldClose(dismissed : boolean) {
