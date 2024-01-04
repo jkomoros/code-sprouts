@@ -262,10 +262,10 @@ export type NakedPackagedSprout = {
 		[mdFile : SubInstructionsFilename]: string
 	},
 }
-export type NakedUncompiledPackagedSprout = Omit<NakedPackagedSprout, 'sprout.compiled.json'>;
+export type NakedUncompiledPackagedSprout = Omit<NakedPackagedSprout, typeof SPROUT_COMPILED_PATH>;
 
 //TODO: figur eout a name that's not a pardoy of itself.
-export type NakedUncompiledPackagedSproutNotNeedingAI = Omit<NakedUncompiledPackagedSprout, 'schema.ts' | 'sub_instructions'>;
+export type NakedUncompiledPackagedSproutNotNeedingAI = Omit<NakedUncompiledPackagedSprout, typeof SPROUT_SCHEMA_PATH | typeof SPROUT_SUBINSTUCTIONS_DIR>;
 
 //This type is allowed to be used anywhere a DirectoryInfo is.
 export type PackagedSprout = z.infer<typeof packagedSproutSchema>;
