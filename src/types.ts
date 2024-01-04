@@ -225,23 +225,16 @@ export type Logger = (...messages : string[]) => void;
 //Logs each input with no newlines.
 export type StreamLogger = (input : string) => void;
 
-export const fileInfoSchema = z.object({
-	content: z.string(),
-	lastModified: z.string().datetime()
-});
-
-export type FileInfo = z.infer<typeof fileInfoSchema>;
-
 //NOTE: has to be kept in sync manually with DirectoryInfo.
 export const directoryInfoSchema: z.Schema<DirectoryInfo> = z.object({
 	directories: z.record(z.string(), z.lazy(() => directoryInfoSchema)),
-	files: z.record(z.string(), fileInfoSchema)
+	files: z.record(z.string(), z.string())
 });
 
 //NOTE: has to be kept in sync manually with directoryInfoSchema.
 export type DirectoryInfo = {
     directories: Record<string, DirectoryInfo>,
-    files: Record<string, FileInfo>
+    files: Record<string, string>
 }
 
 export type NakedDirectoryInfo = {
@@ -253,15 +246,15 @@ export const packagedSproutSchema = z.object({
 	directories: z.object({
 		sub_instructions: z.object({
 			directories: z.record(z.string(), z.never()),
-			files: z.record(subInstructionsFilenameSchema, fileInfoSchema)
+			files: z.record(subInstructionsFilenameSchema, z.string())
 		}).optional()
 	}),
 	files: z.object({
-		'directory.json': fileInfoSchema,
-		'sprout.json': fileInfoSchema,
-		'sprout.compiled.json': fileInfoSchema,
-		'instructions.md': fileInfoSchema,
-		'schema.ts': fileInfoSchema.optional()
+		'directory.json': z.string(),
+		'sprout.json': z.string(),
+		'sprout.compiled.json': z.string(),
+		'instructions.md': z.string(),
+		'schema.ts': z.string().optional()
 	})
 });
 

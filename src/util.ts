@@ -16,7 +16,6 @@ import {
 	Fetcher,
 	NakedDirectoryInfo,
 	NakedPackagedSprout,
-	FileInfo,
 	sproutBaseNameSchema,
 	FileListingType
 } from './types.js';
@@ -112,19 +111,13 @@ export const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string
 			result.directories[name] = makeDirectoryInfo(value, timestamp);
 			continue;
 		}
-		result.files[name] = {
-			content: value,
-			lastModified: timestamp
-		};
+		result.files[name] = value;
 	}
 	const directoryListing : DirectoryListingFile = {
 		directories: Object.keys(result.directories),
 		files: Object.keys(result.files)
 	};
-	result.files['directory.json'] = {
-		content: JSON.stringify(directoryListing, null, '\t'),
-		lastModified: timestamp
-	};
+	result.files['directory.json'] = JSON.stringify(directoryListing, null, '\t');
 	return result;
 };
 
@@ -151,13 +144,13 @@ export const writeDirectoryInfo = async (fetcher : Fetcher, info : DirectoryInfo
 	for (const [directory, directoryInfo] of TypedObject.entries(info.directories)) {
 		await writeDirectoryInfo(fetcher, directoryInfo, joinPath(path, directory));
 	}
-	for (const [filename, fileInfo] of TypedObject.entries(info.files)) {
+	for (const [filename, content] of TypedObject.entries(info.files)) {
 		const filePath = joinPath(path, filename);
-		await fetcher.writeFile(filePath, fileInfo.content);
+		await fetcher.writeFile(filePath, content);
 	}
 };
 
-const readFileInfoFromDirectoryInfo = (info : DirectoryInfo, path : Path) : FileInfo => {
+export const readFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : string => {
 	const parts = path.split('/');
 	if (parts.length === 0) throw new Error('Invalid path');
 	const firstPart = parts[0];
@@ -169,14 +162,9 @@ const readFileInfoFromDirectoryInfo = (info : DirectoryInfo, path : Path) : File
 		throw new Error(`File not found: ${path}`);
 	}
 	if (firstPart in info.directories) {
-		return readFileInfoFromDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'));
+		return readFileFromDirectoryInfo(info.directories[firstPart], parts.slice(1).join('/'));
 	}
 	throw new Error(`File not found: ${path}`);
-};
-
-export const readFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : string => {
-	const fileInfo =  readFileInfoFromDirectoryInfo(info, path);
-	return fileInfo.content;
 };
 
 export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path, type: FileListingType) : Path[] => {
@@ -218,14 +206,8 @@ export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data
 	const firstPart = parts[0];
 	if (parts.length === 1) {
 		//We're at the end of the path.
-		info.files[firstPart] = {
-			content: data,
-			lastModified: new Date().toISOString() 
-		};
-		info.files[DIRECTORY_LISTING_FILE] = {
-			content: JSON.stringify(directoryListingForDirectoryInfo(info), null, '\t'),
-			lastModified: new Date().toISOString()
-		};
+		info.files[firstPart] = data;
+		info.files[DIRECTORY_LISTING_FILE] = JSON.stringify(directoryListingForDirectoryInfo(info), null, '\t');
 		return;
 	}
 	if (!(firstPart in info.directories)) {

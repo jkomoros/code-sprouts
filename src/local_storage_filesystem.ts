@@ -1,8 +1,6 @@
 import {
-	FileInfo,
 	FileListingType,
-	Path,
-	fileInfoSchema
+	Path
 } from './types.js';
 
 import {
@@ -22,42 +20,14 @@ export class LocalStorageFilesystem {
 		return str !== null;
 	}
 
-	private static fileInfo(filename : Path) : FileInfo | null {
-		const str = window.localStorage.getItem(this.localStorageKeyForFile(filename));
-		if (str === null) {
-			return null;
-		}
-		const data = JSON.parse(str);
-		const fileInfoParseResult = fileInfoSchema.safeParse(data);
-		if (!fileInfoParseResult.success) {
-			throw new Error(`Invalid file info: ${fileInfoParseResult.error}`);
-		}
-		return fileInfoParseResult.data;
-	}
-
 	static readFile(filename : Path) : string {
-		const info = this.fileInfo(filename);
-		if (!info) throw new Error(`File not found: ${filename}`);
-		return info.content;
+		const data = window.localStorage.getItem(this.localStorageKeyForFile(filename));
+		if (data === null) throw new Error(`No such file: ${filename}`);
+		return data;
 	}
 
 	static writeFile(filename : Path, data : string) : void {
-
-		if (this.fileExists(filename)) {
-			const info = this.fileInfo(filename);
-			if (!info) throw new Error(`File not found despite existing: ${filename}`);
-			if (info.content === data) {
-				//No change, don't update the string
-				return;
-			}
-		}
-
-		const info : FileInfo = {
-			content: data,
-			lastModified: new Date().toISOString()
-		};
-
-		window.localStorage.setItem(this.localStorageKeyForFile(filename), JSON.stringify(info, null, '\t'));
+		window.localStorage.setItem(this.localStorageKeyForFile(filename), data);
 	}
 
 	static listDirectory(path : Path, type: FileListingType) : Path[] {
