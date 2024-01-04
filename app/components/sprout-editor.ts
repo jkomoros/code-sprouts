@@ -34,6 +34,7 @@ import {
 } from '../actions/data.js';
 
 import {
+	selectChangesMade,
 	selectCurrentSproutName,
 	selectEditorOpen,
 	selectIsEditing,
@@ -66,6 +67,9 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	@state()
 		_userMayEdit = false;
+
+	@state()
+		_changesMade = false;
 
 	static override get styles() {
 		return [
@@ -104,6 +108,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this._snapshot = selectSproutSnapshot(state);
 		this._currentSproutName = selectCurrentSproutName(state);
 		this._editing = selectIsEditing(state);
+		this._changesMade = selectChangesMade(state);
 		this._userMayEdit = selectMayEditCurrentSprout(state);
 	}
 
@@ -195,8 +200,17 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override buttonsRender() : TemplateResult {
 		return html`
-		<button class='round' @click=${this.closeDialog}>${CANCEL_ICON}</button>
-		${this._editing ? html`<button class='round default' @click=${() => this.save}>${CHECK_CIRCLE_OUTLINE_ICON}</button>` : html``}
+		<button
+			class='round'
+			@click=${this.closeDialog}
+			title='Cancel'
+		>${CANCEL_ICON}</button>
+		${this._editing ? html`<button
+			class='round default'
+			@click=${() => this.save}
+			title=${this._changesMade ? 'Save changes' : 'No changes to save'}
+			?disabled=${!this._changesMade}
+		>${CHECK_CIRCLE_OUTLINE_ICON}</button>` : html``}
 	`;
 	}
 
