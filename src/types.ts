@@ -226,36 +226,36 @@ export type Logger = (...messages : string[]) => void;
 export type StreamLogger = (input : string) => void;
 
 //NOTE: has to be kept in sync manually with DirectoryInfo.
-export const directoryInfoSchema: z.Schema<DirectoryInfo> = z.object({
-	directories: z.record(z.string(), z.lazy(() => directoryInfoSchema)),
-	files: z.record(z.string(), z.string())
-});
+export const directoryInfoSchema : z.Schema<DirectoryInfo> = z.record(
+	z.string(),
+	z.union([
+		z.string(),
+		z.lazy(() => directoryInfoSchema)
+	])
+);
 
 //NOTE: has to be kept in sync manually with directoryInfoSchema.
 export type DirectoryInfo = {
-    directories: Record<string, DirectoryInfo>,
-    files: Record<string, string>
+	[file : string]: string | DirectoryInfo
 }
 
+//TODO: get rid of NakedDiretoryInfo now that it's the same as DirectoryInfo.
+//TODO: get rid of NakedPackagedSprout
 export type NakedDirectoryInfo = {
 	[file : string]: string | NakedDirectoryInfo
 }
 
 //NOTE: needs to be kept up to date with file structure in constants.ts
 export const packagedSproutSchema = z.object({
-	directories: z.object({
-		sub_instructions: z.object({
-			directories: z.record(z.string(), z.never()),
-			files: z.record(subInstructionsFilenameSchema, z.string())
-		}).optional()
-	}),
-	files: z.object({
-		'directory.json': z.string(),
-		'sprout.json': z.string(),
-		'sprout.compiled.json': z.string(),
-		'instructions.md': z.string(),
-		'schema.ts': z.string().optional()
-	})
+	'directory.json': z.string(),
+	'sprout.json': z.string(),
+	'sprout.compiled.json': z.string(),
+	'instructions.md': z.string(),
+	'schema.ts': z.string().optional(),
+	sub_instructions: z.object({
+		directories: z.record(z.string(), z.never()),
+		files: z.record(subInstructionsFilenameSchema, z.string())
+	}).optional()
 });
 
 //NOTE: needs to be kept up to date with file structure in constants.ts

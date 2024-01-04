@@ -55,7 +55,6 @@ import fastJSONPatch from 'fast-json-patch';
 import {
 	assertUnreachable,
 	joinPath,
-	makeDirectoryInfo,
 	randomString,
 	trimExtraNewlines,
 	writeFileToDirectoryInfo,
@@ -794,14 +793,13 @@ const packagedSproutFromUncompiledNotNeedingAI = async (uncompiled : NakedUncomp
 
 //In this file because we need Sprout to be defined. and don't want a cycle from util.ts back t here
 const packagedSproutFromUncompiledImpl = async (uncompiled : NakedUncompiledPackagedSprout, ai? : AIProvider) : Promise<PackagedSprout> => {
-	const uncompiledPackedSprout = makeDirectoryInfo(uncompiled, new Date().toISOString());
 	const dummySproutName = 'example';
-	const sprout = new Sprout(dummySproutName, {ai, packagedSprout: uncompiledPackedSprout});
+	const sprout = new Sprout(dummySproutName, {ai, packagedSprout: uncompiled});
 	const compiled = await sprout.compiledData();
 	//TODO: can't I just verify the fetcher did something and now the file exists within it?
-	writeFileToDirectoryInfo(uncompiledPackedSprout, SPROUT_COMPILED_PATH, JSON.stringify(compiled, null, '\t'));
+	writeFileToDirectoryInfo(uncompiled, SPROUT_COMPILED_PATH, JSON.stringify(compiled, null, '\t'));
 	//This should be a reasonably safe assertion because we just wrote in the last file that needed to be there.
-	return uncompiledPackedSprout as PackagedSprout;
+	return uncompiled as PackagedSprout;
 };
 
 export const emptySprout = async () : Promise<PackagedSprout> => {
