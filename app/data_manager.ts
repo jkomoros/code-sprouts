@@ -65,6 +65,7 @@ returns that result. and returns that.
   formats.
 - Add a Sprout.recompileIfNecessary() that is only called if lastUpdated is
   above some epsilon; if not, it trusts the compiled sprout is fine.
+- Ensure that only one compilation process is running at a time.
 
 */
 

@@ -151,6 +151,7 @@ export class Sprout {
 	private _disallowCompilation : boolean;
 	private _disallowFormatting : boolean;
 	private _uncompiledPackage? : NakedUncompiledPackagedSprout;
+	private _compiledSprout? : CompiledSprout | null;
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
@@ -222,6 +223,23 @@ export class Sprout {
 		const config = await this.config();
 		if (!config.allowFormatting) return false;
 		return !this._disallowFormatting;
+	}
+
+	async fetchCompiledSprout() : Promise<CompiledSprout | null> {
+		if (this._compiledSprout !== undefined) return this._compiledSprout;
+		const compiledPath = joinPath(this._path, SPROUT_COMPILED_PATH);
+		if (!await this._fetcher.fileExists(compiledPath)) {
+			this._compiledSprout = null;
+			return null;
+		}
+		const compiledData = await this._fetcher.fileFetch(compiledPath);
+		const json = JSON.parse(compiledData);
+		const parseResult = compiledSproutSchema.safeParse(json);
+		if (!parseResult.success) {
+			throw new Error(`Invalid compiled sprout: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
+		}
+		this._compiledSprout = parseResult.data;
+		return this._compiledSprout;
 	}
 
 	async fetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout> {
