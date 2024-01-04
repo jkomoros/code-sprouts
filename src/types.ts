@@ -14,6 +14,7 @@ import {
 import OpenAI from 'openai';
 
 import { Stream } from 'openai/streaming.js';
+import { SPROUT_COMPILED_PATH, SPROUT_CONFIG_PATH, SPROUT_INSTRUCTIONS_PATH, SPROUT_SCHEMA_PATH, SPROUT_SUBINSTUCTIONS_DIR } from './constants.js';
 
 export const pathSchema = z.string();
 
@@ -241,11 +242,11 @@ export type DirectoryInfo = {
 
 //NOTE: needs to be kept up to date with file structure in constants.ts
 export const packagedSproutSchema = z.object({
-	'sprout.json': z.string(),
-	'sprout.compiled.json': z.string(),
-	'instructions.md': z.string(),
-	'schema.ts': z.string().optional(),
-	sub_instructions: z.record(subInstructionsFilenameSchema, z.string()).optional()
+	[SPROUT_CONFIG_PATH]: z.string(),
+	[SPROUT_COMPILED_PATH]: z.string(),
+	[SPROUT_INSTRUCTIONS_PATH]: z.string(),
+	[SPROUT_SCHEMA_PATH]: z.string().optional(),
+	[SPROUT_SUBINSTUCTIONS_DIR]: z.record(subInstructionsFilenameSchema, z.string()).optional()
 });
 
 //TODO: get rid of NakedPackagedSprout
