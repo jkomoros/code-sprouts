@@ -1,7 +1,8 @@
 import {
 	ImageURL,
 	PackagedSprout,
-	SproutName
+	SproutName,
+	UncompiledPackagedSprout
 } from '../src/types.js';
 
 import {
@@ -28,6 +29,7 @@ export type DataState = {
 	attachedImage: ImageURL | null,
 	editorOpen: boolean
 	editing: boolean,
+	sproutSnapshot : UncompiledPackagedSprout | null,
 	//These are not all sprouts in the writeable dir, just the ones that we have changed since we loaded.
 	writtenSprouts: Record<SproutName, PackagedSprout>
 }

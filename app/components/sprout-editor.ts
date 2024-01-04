@@ -1,4 +1,4 @@
-import { css, html, PropertyValues, TemplateResult } from 'lit';
+import { css, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -33,18 +33,18 @@ import {
 } from '../actions/data.js';
 
 import {
-	selectCurrentSprout,
+	selectCurrentSproutName,
 	selectEditorOpen,
 	selectIsEditing,
-	selectMayEditCurrentSprout
+	selectMayEditCurrentSprout,
+	selectSproutSnapshot
 } from '../selectors.js';
 
 import {
-	Sprout
-} from '../../src/sprout.js';
-
-import {
-	SproutConfig, SubInstructionsMap
+	SproutConfig,
+	sproutConfigSchema,
+	SproutName,
+	UncompiledPackagedSprout
 } from '../../src/types.js';
 
 import {
@@ -55,19 +55,10 @@ import {
 export class SproutEditor extends connect(store)(DialogElement) {
 	
 	@state()
-		_currentSprout : Sprout | null = null;
+		_snapshot : UncompiledPackagedSprout | null = null;
 
 	@state()
-		_sproutBaseInstructions : string = '';
-
-	@state()
-		_sproutSchemaText : string = '';
-
-	@state()
-		_sproutConfig : SproutConfig | null = null;
-
-	@state()
-		_sproutSubInstructions : SubInstructionsMap = {};
+		_currentSproutName : SproutName | null = null;
 
 	@state()
 		_editing = false;
@@ -95,36 +86,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override stateChanged(state : RootState) {
 		this.open = selectEditorOpen(state);
-		this._currentSprout = selectCurrentSprout(state);
+		this._snapshot = selectSproutSnapshot(state);
+		this._currentSproutName = selectCurrentSproutName(state);
 		this._editing = selectIsEditing(state);
 		this._userMayEdit = selectMayEditCurrentSprout(state);
-	}
-
-	private sproutChanged() {
-		if (!this._currentSprout) return;
-		this._sproutBaseInstructions = '';
-		this._currentSprout.baseInstructions().then(baseInstructions => {
-			this._sproutBaseInstructions = baseInstructions;
-		});
-		this._sproutSchemaText = '';
-		this._currentSprout.schemaText().then(schemaText => {
-			this._sproutSchemaText = schemaText;
-		});
-		this._sproutConfig = null;
-		this._currentSprout.config().then(config => {
-			this._sproutConfig = config;
-		});
-		this._sproutSubInstructions = {};
-		this._currentSprout.subInstructions().then(subInstructions => {
-			this._sproutSubInstructions = subInstructions;
-		});
-	}
-
-	override updated(changedProps : PropertyValues<this>) {
-		if (changedProps.has('_currentSprout') && this._currentSprout) {
-			//Don't call store.dispatch things in the update.
-			setTimeout(() => this.sproutChanged(), 0);
-		}
 	}
 
 	closeDialog() {
@@ -146,12 +111,15 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override innerRender() : TemplateResult {
 
-		const sprout = this._currentSprout;
+		const snapshot = this._snapshot;
 
-		if (!sprout) return html`No sprout.`;
+		if (!snapshot) return html`No sprout.`;
+
+		const config = sproutConfigSchema.parse(JSON.parse(snapshot['sprout.json']));
+		const subInstructions = snapshot['sub_instructions'] || {};
 
 		return html`
-			<h2>${sprout.name}
+			<h2>${this._currentSproutName || 'Unnamed Sprout'}
 				${this._userMayEdit ? 
 		html`
 					<button
@@ -168,28 +136,28 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			</h2>
 			<label>Config</label>
 			<div>
-				${this._sproutConfig
-		? html`<ul>${TypedObject.entries(this._sproutConfig).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
+				${config
+		? html`<ul>${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
 		: html`<em>No config</em>`}
 			</div>
 			<label>Instructions</label>
 			<textarea
 				?disabled=${!this._editing}
-				.value=${this._sproutBaseInstructions}
+				.value=${snapshot['instructions.md']}
 			></textarea>
 			<label>Schema</label>
 			<textarea
 				?disabled=${!this._editing}
-				.value=${this._sproutSchemaText || ''}
+				.value=${snapshot['schema.ts'] || ''}
 			></textarea>
 			<label>Sub-instructions</label>
-			${Object.keys(this._sproutSubInstructions).length > 0 ? 
-		Object.entries(this._sproutSubInstructions).map(([key, value]) => html`
+			${Object.keys(subInstructions).length > 0 ? 
+		Object.entries(subInstructions).map(([key, value]) => html`
 			<details>
 				<summary><label>${key}</label></summary>
 				<textarea
 					?disabled=${!this._editing}
-					.value=${value.instructions}
+					.value=${value}
 				></textarea>
 			</details>
 		`) :

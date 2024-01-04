@@ -29,6 +29,7 @@ const INITIAL_STATE : DataState = {
 	attachedImage: null,
 	editorOpen: false,
 	editing: false,
+	sproutSnapshot: null,
 	writtenSprouts: {}
 };
 
@@ -90,12 +91,14 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			editorOpen: true,
+			sproutSnapshot: action.snapshot
 		};
 	case CLOSE_EDITOR:
 		return {
 			...state,
 			editorOpen: false,
-			editing: false
+			editing: false,
+			sproutSnapshot: null
 		};
 	case START_EDITING:
 		return {

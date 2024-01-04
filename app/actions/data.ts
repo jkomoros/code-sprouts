@@ -202,12 +202,16 @@ export const attachImage = (file : File | null) : ThunkSomeAction => async (disp
 	});
 };
 
-export const openEditor = () : ThunkSomeAction => (dispatch, getState) => {
+export const openEditor = () : ThunkSomeAction => async (dispatch, getState) => {
 	const state = getState();
 	const alreadyOpen = selectEditorOpen(state);
 	if (alreadyOpen) return;
+	const sprout = selectCurrentSprout(state);
+	if (!sprout) throw new Error('No current sprout');
+	const snapshot = await sprout.package();
 	dispatch({
-		type: OPEN_EDITOR
+		type: OPEN_EDITOR,
+		snapshot
 	});
 };
 

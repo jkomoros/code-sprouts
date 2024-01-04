@@ -12,7 +12,8 @@ import {
 	packagedSproutSchema,
 	promptSchema,
 	sproutNameSchema,
-	sproutStateSchema
+	sproutStateSchema,
+	uncompiledPackagedSproutSchema
 } from '../src/types.js';
 
 export const UPDATE_PAGE = 'UPDATE_PAGE';
@@ -96,6 +97,7 @@ const actionAttachImage = z.object({
 
 const actionOpenEditor = z.object({
 	type: z.literal(OPEN_EDITOR),
+	snapshot: uncompiledPackagedSproutSchema
 }).strict();
 
 const actionCloseEditor = z.object({

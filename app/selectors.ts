@@ -28,6 +28,7 @@ export const selectAttachedImage = (state : RootState) => state.data ? state.dat
 export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
 export const selectEditorOpen = (state : RootState) => state.data ? state.data.editorOpen : false;
 export const selectIsEditing = (state : RootState) => state.data ? state.data.editing : false;
+export const selectSproutSnapshot = (state : RootState) => state.data ? state.data.sproutSnapshot : null;
 export const selectWrittenSprouts = (state : RootState) => state.data ? state.data.writtenSprouts : {};
 
 export const selectHashForCurrentState = (_state : RootState) => '';
