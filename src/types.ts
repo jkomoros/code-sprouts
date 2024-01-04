@@ -264,8 +264,5 @@ export type NakedPackagedSprout = {
 }
 export type NakedUncompiledPackagedSprout = Omit<NakedPackagedSprout, typeof SPROUT_COMPILED_PATH>;
 
-//TODO: figur eout a name that's not a pardoy of itself.
-export type NakedUncompiledPackagedSproutNotNeedingAI = Omit<NakedUncompiledPackagedSprout, typeof SPROUT_SCHEMA_PATH | typeof SPROUT_SUBINSTUCTIONS_DIR>;
-
 //This type is allowed to be used anywhere a DirectoryInfo is.
 export type PackagedSprout = z.infer<typeof packagedSproutSchema>;

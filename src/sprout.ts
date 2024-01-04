@@ -17,7 +17,6 @@ import {
 	FetcherWithoutListSprouts,
 	Logger,
 	NakedUncompiledPackagedSprout,
-	NakedUncompiledPackagedSproutNotNeedingAI,
 	PackagedSprout,
 	Path,
 	Prompt,
@@ -786,11 +785,6 @@ export const packagedSproutFromUncompiled = async (uncompiled: NakedUncompiledPa
 	return packagedSproutFromUncompiledImpl(uncompiled, ai);
 };
 
-const packagedSproutFromUncompiledNotNeedingAI = async (uncompiled : NakedUncompiledPackagedSproutNotNeedingAI) : Promise<PackagedSprout> => {
-	//We know we don't need AI to compile any of these provided fields so can skip adding AI.
-	return packagedSproutFromUncompiledImpl(uncompiled);
-};
-
 //In this file because we need Sprout to be defined. and don't want a cycle from util.ts back t here
 const packagedSproutFromUncompiledImpl = async (uncompiled : NakedUncompiledPackagedSprout, ai? : AIProvider) : Promise<PackagedSprout> => {
 	const dummySproutName = 'example';
@@ -806,8 +800,15 @@ export const emptySprout = async () : Promise<PackagedSprout> => {
 	const config : SproutConfig = {
 		version: 0
 	};
-	return packagedSproutFromUncompiledNotNeedingAI({
+	//We can skip providing ai becuase we know that the files we require don't
+	//need it. _smokeTest below verifies a fast crash if this ever turns out to
+	//not be the case.
+	return packagedSproutFromUncompiledImpl({
 		'sprout.json': JSON.stringify(config, null, '\t'),
 		'instructions.md': ''
 	});
 };
+
+(async () => {
+	const _smokeTest = await emptySprout();
+})();
