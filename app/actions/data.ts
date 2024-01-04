@@ -230,6 +230,10 @@ export const startEditing = () : ThunkSomeAction => (dispatch, getState) => {
 	if (!currentSprout) throw new Error('No sprout');
 	const isEditing = selectIsEditing(state);
 	if (isEditing) throw new Error('Already editing');
+	const isOpen = selectEditorOpen(state);
+	if (!isOpen) {
+		dispatch(openEditor());
+	}
 	dispatch({
 		type: START_EDITING
 	});
