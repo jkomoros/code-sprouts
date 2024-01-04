@@ -9,13 +9,10 @@ import {
 import {
 	Path,
 	FinalPath,
-	PackagedSprout,
-	CompiledSprout,
 	DirectoryInfo,
 	DirectoryListingFile,
 	Fetcher,
 	NakedDirectoryInfo,
-	NakedPackagedSprout,
 	sproutBaseNameSchema,
 	FileListingType
 } from './types.js';
@@ -119,25 +116,6 @@ export const makeDirectoryInfo = (naked : NakedDirectoryInfo, timestamp : string
 	};
 	result.files['directory.json'] = JSON.stringify(directoryListing, null, '\t');
 	return result;
-};
-
-//TODO: this is currently unused.
-export const packagedSproutFromCompiled = (compiled : CompiledSprout) : PackagedSprout => {
-	const sprout : NakedPackagedSprout = {
-		'sprout.json': JSON.stringify(compiled.config, null, '\t'),
-		'instructions.md': compiled.baseInstructions,
-		'sprout.compiled.json': JSON.stringify(compiled, null, '\t'),
-	};
-	if (compiled.schemaText) {
-		sprout['schema.ts'] = compiled.schemaText;
-	}
-	if (Object.keys(compiled.subInstructions).length > 0) {
-		sprout.sub_instructions = {};
-		for (const [key, value] of Object.entries(compiled.subInstructions)) {
-			sprout.sub_instructions[key] = value.instructions;
-		}
-	}
-	return makeDirectoryInfo(sprout, compiled.lastUpdated) as PackagedSprout;
 };
 
 export const writeDirectoryInfo = async (fetcher : Fetcher, info : DirectoryInfo, path : Path = '') : Promise<void> => {
