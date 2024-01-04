@@ -7,7 +7,6 @@ import {
 } from './types.js';
 
 import {
-	fileLastUpdatedFromDirectoryInfo,
 	listDirectoryFromDirectoryInfo,
 	readFileFromDirectoryInfo,
 	writeFileToDirectoryInfo
@@ -79,18 +78,6 @@ class OverlayFetcher {
 		this._hasWrites;
 		return Promise.resolve();
 	}
-
-	supportsLastUpdated() : boolean {
-		return true;
-	}
-
-	fileLastUpdated(path : Path) : Promise<Date | null> {
-		if (!this.pathIsLocalWriteable(path)) return this._fetcher.fileLastUpdated(path);
-		const result = fileLastUpdatedFromDirectoryInfo(this._directory, this.internalPath(path));
-		return Promise.resolve(result);
-	}
-
-
 }
 
 export const overlayFetcher = (fetcher : Fetcher, pathPrefix : string, directory : DirectoryInfo) : FetcherWithoutListSprouts => {

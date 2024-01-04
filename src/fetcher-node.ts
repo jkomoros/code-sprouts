@@ -8,8 +8,7 @@ import {
 	readFileSync,
 	existsSync,
 	readdirSync,
-	writeFileSync,
-	statSync
+	writeFileSync
 } from 'fs';
 
 import {
@@ -55,15 +54,6 @@ class NodeFetcher {
 
 	mayWriteFile(_path : Path) : boolean {
 		return true;
-	}
-
-	supportsLastUpdated() : boolean {
-		return true;
-	}
-
-	async fileLastUpdated(path : Path) : Promise<Date> {
-		const stats = statSync(path);
-		return stats.mtime;
 	}
 
 	async listDirectory(path : Path, type : FileListingType) : Promise<Path[]> {

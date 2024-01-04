@@ -119,9 +119,6 @@ export type Fetcher = {
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
 	mayWriteFile(path : Path) : boolean;
 	writeFile(path : Path, data : string) : Promise<void>;
-	//Whether fileLastUpdated might work for ANY path.
-	supportsLastUpdated() : boolean;
-	fileLastUpdated(path : Path) : Promise<Date | null>;
 };
 
 export type FetcherWithoutListSprouts = Omit<Fetcher, 'listSprouts'>;

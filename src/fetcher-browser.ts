@@ -212,18 +212,6 @@ class BrowserFetcher {
 		}
 		throw new Error('Cannot write file in browser outside of local writeable path');
 	}
-
-	supportsLastUpdated() : boolean {
-		if (this._localWriteablePath) return true;
-		return false;
-	}
-
-	async fileLastUpdated(path : Path): Promise<Date | null> {
-		if (this.pathIsLocalWriteable(path)) {
-			return LocalStorageFilesystem.lastUpdated(path);
-		}
-		return null;
-	}
 }
 
 //Type to verify we match

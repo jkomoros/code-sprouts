@@ -179,11 +179,6 @@ export const readFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : s
 	return fileInfo.content;
 };
 
-export const fileLastUpdatedFromDirectoryInfo = (info : DirectoryInfo, path : Path) : Date => {
-	const fileInfo = readFileInfoFromDirectoryInfo(info, path);
-	return new Date(fileInfo.lastModified);
-};
-
 export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path, type: FileListingType) : Path[] => {
 	const parts = path.split('/');
 	if (parts.length === 0) throw new Error('Invalid path');
