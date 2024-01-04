@@ -2,6 +2,7 @@ import {
 	ADD_SPROUTS,
 	ATTACH_IMAGE,
 	CLOSE_EDITOR,
+	EDITING_MODIFY_SPROUT,
 	OPEN_EDITOR,
 	SELECT_SPROUT,
 	SET_OPENAI_API_KEY,
@@ -106,6 +107,12 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 			...state,
 			editorOpen: true,
 			editing: true
+		};
+	case EDITING_MODIFY_SPROUT:
+		return {
+			...state,
+			changesMade: true,
+			sproutSnapshot: action.snapshot,
 		};
 	case WRITE_SPROUT:
 		return {

@@ -32,6 +32,7 @@ export const ATTACH_IMAGE = 'ATTACH_IMAGE';
 export const OPEN_EDITOR = 'OPEN_EDITOR';
 export const CLOSE_EDITOR = 'CLOSE_EDITOR';
 export const START_EDITING = 'START_EDITING';
+export const EDITING_MODIFY_SPROUT = 'EDITING_MODIFY_SPROUT';
 export const WRITE_SPROUT = 'WRITE_SPROUT';
 
 const actionUpdatePage = z.object({
@@ -108,6 +109,11 @@ const actionStartEditing = z.object({
 	type: z.literal(START_EDITING),
 }).strict();
 
+const actionEditingModifySprout = z.object({
+	type: z.literal(EDITING_MODIFY_SPROUT),
+	snapshot: uncompiledPackagedSproutSchema,
+}).strict();
+
 const actionWriteSprout = z.object({
 	type: z.literal(WRITE_SPROUT),
 	name: sproutNameSchema,
@@ -130,6 +136,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionOpenEditor,
 	actionCloseEditor,
 	actionStartEditing,
+	actionEditingModifySprout,
 	actionWriteSprout
 ]);
 

@@ -42,7 +42,8 @@ import {
 	Path,
 	Prompt,
 	SproutName,
-	SproutState
+	SproutState,
+	UncompiledPackagedSprout
 } from '../../src/types.js';
 
 import {
@@ -241,6 +242,16 @@ export const startEditing = () : ThunkSomeAction => (dispatch, getState) => {
 	}
 	dispatch({
 		type: START_EDITING
+	});
+};
+
+export const editingModifySprout = (snapshot : UncompiledPackagedSprout) : ThunkSomeAction => async (dispatch, getState) => {
+	const state = getState();
+	const editing = selectIsEditing(state);
+	if (!editing) throw new Error('Not editing');
+	dispatch({
+		type: 'EDITING_MODIFY_SPROUT',
+		snapshot
 	});
 };
 
