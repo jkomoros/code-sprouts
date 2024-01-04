@@ -280,7 +280,7 @@ export class Sprout {
 	}
 
 	//Returns null if it doesn't require compilation, or an array of strings describing the reasons it's comipled otherwise.
-	_requiresCompilation(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : null | string[] {
+	private _requiresCompilation(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : null | string[] {
 		if (!previous) return ['no previous provided'];
 		const result : string[] = [];
 		const configJSON = JSON.parse(uncompiled['sprout.json']);
@@ -332,7 +332,7 @@ export class Sprout {
 		return this._compiledSprout;
 	}
 
-	async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
+	private async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
 		
 		//TODO: rename this once old machinery is gone.
 
@@ -340,6 +340,7 @@ export class Sprout {
 		const lastUpdated = new Date().toISOString();
 		const name = this.name;
 
+		//TODO: make each of these a private thing that is passed an uncompiledSprout and returns the relevant data.
 		const configJSON = JSON.parse(uncompiled['sprout.json']);
 		const config = sproutConfigSchema.parse(configJSON);
 
