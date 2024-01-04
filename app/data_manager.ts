@@ -57,10 +57,7 @@ cached answer. If it's uncompiled, it returns that. If it's compiled it also
 fetches the compiledSprout, passes both to the compilation process, and then
 returns that result. and returns that.
 
-- Next step: make all of the getters like schemaText etc just return from the compiled sprout.
 - Automate _requiresCompilation and _doCompile (since they're very overlapping)
-- Do the same inflight promise pattern we used for recompilation.
-- Remove all of the unused private fiels on Sprout.
 - Remove all lastUpdated stuff from Sprout and Fetcher, and get rid of the idea
   of a non-naked DirectoryInfo, because we never check for lastUpdated.
 - Remove the idea of a FileInfo, and just have a string.

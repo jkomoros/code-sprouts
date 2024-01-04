@@ -141,6 +141,10 @@ export class Sprout {
 	private _config?: SproutConfig;
 	// A null means it is affirmatively non existent.
 	private _aiProvider? : AIProvider;
+
+	private _inProgressFetchUncompiled? : Promise<NakedUncompiledPackagedSprout>;
+	private _inProgressFetchCompiled? : Promise<CompiledSprout | null>;
+
 	private _disallowCompilation : boolean;
 	private _disallowFormatting : boolean;
 	private _uncompiledPackage? : NakedUncompiledPackagedSprout;
@@ -215,9 +219,20 @@ export class Sprout {
 
 	async fetchCompiledSprout() : Promise<CompiledSprout | null> {
 		if (this._compiledSprout !== undefined) return this._compiledSprout;
+		if (this._inProgressFetchCompiled) {
+			return this._inProgressFetchCompiled;
+		}
+		this._inProgressFetchCompiled = this._actuallyFetchCompiledSprout();
+		const result = await this._inProgressFetchCompiled;
+		this._compiledSprout = result;
+		this._inProgressFetchCompiled = undefined;
+		return result;
+	}
+
+	async _actuallyFetchCompiledSprout() : Promise<CompiledSprout | null> {
+		
 		const compiledPath = joinPath(this._path, SPROUT_COMPILED_PATH);
 		if (!await this._fetcher.fileExists(compiledPath)) {
-			this._compiledSprout = null;
 			return null;
 		}
 		const compiledData = await this._fetcher.fileFetch(compiledPath);
@@ -226,13 +241,22 @@ export class Sprout {
 		if (!parseResult.success) {
 			throw new Error(`Invalid compiled sprout: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
 		}
-		this._compiledSprout = parseResult.data;
-		return this._compiledSprout;
+		return parseResult.data;
 	}
 
-	async fetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout> {
+	async fetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout>  {
 		if (this._uncompiledPackage) return this._uncompiledPackage;
+		if (this._inProgressFetchUncompiled) {
+			return this._inProgressFetchUncompiled;
+		}
+		this._inProgressFetchUncompiled = this._actuallyFetchUncompiledPackage();
+		const result = await this._inProgressFetchUncompiled;
+		this._uncompiledPackage = result;
+		this._inProgressFetchUncompiled = undefined;
+		return result;
+	}
 
+	async _actuallyFetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout> {
 		const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
 		const sproutConfig = await this._fetcher.fileFetch(sproutConfigPath);
 
@@ -266,7 +290,6 @@ export class Sprout {
 		if (Object.keys(subInstructions).length > 0) {
 			result['sub_instructions'] = subInstructions;
 		}
-		this._uncompiledPackage = result;
 		return result;
 	}
 
