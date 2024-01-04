@@ -332,6 +332,19 @@ export class Sprout {
 		return this._compiledSprout;
 	}
 
+	private _calculateConfig(uncompiled : NakedUncompiledPackagedSprout) : SproutConfig {
+		const configJSON = JSON.parse(uncompiled['sprout.json']);
+		return sproutConfigSchema.parse(configJSON);
+	}
+
+	private _calculateBaseInstructions(uncompiled : NakedUncompiledPackagedSprout) : string {
+		return uncompiled['instructions.md'];
+	}
+
+	private _calculateSchemaText(uncompiled : NakedUncompiledPackagedSprout) : string {
+		return uncompiled['schema.ts'] || '';
+	}
+
 	private async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
 		
 		//TODO: rename this once old machinery is gone.
@@ -340,13 +353,11 @@ export class Sprout {
 		const lastUpdated = new Date().toISOString();
 		const name = this.name;
 
-		//TODO: make each of these a private thing that is passed an uncompiledSprout and returns the relevant data.
-		const configJSON = JSON.parse(uncompiled['sprout.json']);
-		const config = sproutConfigSchema.parse(configJSON);
+		const config = this._calculateConfig(uncompiled);
 
-		const baseInstructions = uncompiled['instructions.md'];
+		const baseInstructions = this._calculateBaseInstructions(uncompiled);
 
-		const schemaText = uncompiled['schema.ts'] || '';
+		const schemaText = this._calculateSchemaText(uncompiled);
 		
 		const subInstructions : SubInstructionsMap = {};
 
