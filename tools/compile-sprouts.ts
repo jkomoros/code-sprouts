@@ -17,8 +17,8 @@ dotEnvConfig();
 
 const compileSprout = async (sproutPath: string, aiProvider : AIProvider): Promise<void> => {
 	const sprout = new Sprout(sproutPath, {ai: aiProvider, debugLogger: console.log});
-	const compiled = await sprout.compiled();
-	if (compiled) {
+	const needsCompilation = await sprout.requiresCompilation();
+	if (!needsCompilation) {
 		console.log(`Skipping ${sproutPath} because it is already compiled.`);
 		return;
 	}

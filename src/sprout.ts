@@ -43,11 +43,7 @@ import {
 	SPROUT_CONFIG_PATH,
 	SPROUT_INSTRUCTIONS_PATH,
 	SPROUT_SCHEMA_PATH,
-	BASE_SPROUT_PATHS,
-	BASE_SPROUT_DIRECTORIES,
-	FILE_EXTENSIONS_IN_SPROUT,
-	SPROUT_SUBINSTUCTIONS_DIR,
-	DIRECTORY_LISTING_FILE
+	SPROUT_SUBINSTUCTIONS_DIR
 } from './constants.js';
 
 import {
@@ -283,20 +279,54 @@ export class Sprout {
 		return result;
 	}
 
-	async _requiresCompilation(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<boolean> {
-		if (!previous) return true;
+	//Returns null if it doesn't require compilation, or an array of strings describing the reasons it's comipled otherwise.
+	_requiresCompilation(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : null | string[] {
+		if (!previous) return ['no previous provided'];
+		const result : string[] = [];
 		const configJSON = JSON.parse(uncompiled['sprout.json']);
 		const config = sproutConfigSchema.parse(configJSON);
-		if (!deepEqual(config, previous.config)) return true;
-		if (uncompiled['instructions.md'] != previous.baseInstructions) return true;
-		if (uncompiled['schema.ts'] != previous.schemaText) return true;
-		if (Object.keys(uncompiled['sub_instructions'] || {}).length != Object.keys(previous.subInstructions).length) return true;
+		if (!deepEqual(config, previous.config)) result.push('config not deep equal');
+		if (uncompiled['instructions.md'] != previous.baseInstructions) result.push('instructions not equal');
+		//This might be empty
+		const uncompiledSchemaText = uncompiled['schema.ts'] || '';
+		if (uncompiledSchemaText != previous.schemaText) result.push('schema.ts not equal');
+		if (Object.keys(uncompiled['sub_instructions'] || {}).length != Object.keys(previous.subInstructions).length) return ['sub_instructions length not equal'];
 		for (const [filename, instructions] of Object.entries(uncompiled['sub_instructions'] || {})) {
 			const name = filename.replace(/\.md$/, '');
-			if (!previous.subInstructions[name]) return true;
-			if (previous.subInstructions[name].instructions != instructions) return true;
+			if (!previous.subInstructions[name]) return [`sub_instructions missing ${name} in previous`];
+			if (previous.subInstructions[name].instructions != instructions) result.push(`sub_instructions ${name} not equal`);
 		}
-		return false;
+		if (result.length == 0) return null;
+		return result;
+	}
+
+	async compiledData(forceRefresh : boolean = false) : Promise<CompiledSprout> {
+		if (this._compiledSprout) return this._compiledSprout;
+		const compiled = await this.fetchCompiledSprout();
+		if (!forceRefresh && compiled) {
+			this._compiledSprout = compiled;
+			return compiled;
+		}
+
+		const compiledPath = joinPath(this._path, SPROUT_COMPILED_PATH);
+
+		//We need to try creating it.
+		if (this._disallowCompilation) {
+			if (compiled) {
+				if (this._debugLogger) this._debugLogger(`A forcedRefresh is requested but Sprout ${this.name} is disallowed from compiling. ${compiledPath} exists, so using it`);
+				return compiled;
+			}
+			throw new Error(`Compilation is disallowed and ${compiledPath} does not exist`);
+		}
+		const uncompiled = await this.fetchUncompiledPackage();
+		const result = await this._doCompile(uncompiled, compiled);
+
+		if (this._fetcher.mayWriteFile(compiledPath)) {
+			await this._fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
+		}
+
+		this._compiledSprout = result;
+		return this._compiledSprout;
 	}
 
 	async _doCompile(uncompiled : NakedUncompiledPackagedSprout, previous : CompiledSprout | null) : Promise<CompiledSprout> {
@@ -356,119 +386,25 @@ export class Sprout {
 		};
 	}
 
-	async compiled() : Promise<boolean> {
-		const compiled = await this._compiled();
-		return Boolean(compiled) && Object.keys(this._outOfDateFiles).length == 0;
-	}
-
-	//Returns the compiled data, compiling if necessary.
-	async compiledData() : Promise<CompiledSprout> {
-		const compiled = await this.compiled();
-		if (compiled) return this._compiledData as CompiledSprout;
-		await this.compile();
-		const nowCompiled = await this.compiled();
-		if (!nowCompiled) throw new Error('Could not compile');
-		return this._compiledData as CompiledSprout;
-	}
-
+	//This forces a recompile.
 	async compile() : Promise<void> {
-		if (await this.compiled()) {
-			if (this._debugLogger) this._debugLogger(`${this.name}: Already compiled`);
-			return;
-		}
-		const compiledPath = joinPath(this._path, SPROUT_COMPILED_PATH);
-		if (!this._fetcher.mayWriteFile(compiledPath)) {
-			if (this._debugLogger) this._debugLogger(`${this.name}: Not writable, not compiling`);
-			return;
-		}
-		const result : CompiledSprout = {
-			version: 0,
-			lastUpdated: new Date().toISOString(),
-			name: this.name,
-			config: await this.config(),
-			baseInstructions: await this.baseInstructions(),
-			subInstructions: await this.subInstructions(),
-			schemaText: await this.schemaText(),
-			starterState: await this.starterState()
-		};
-		if (this._debugLogger) this._debugLogger(`${this.name}: Compiling`);
-		this._fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
-		this._compiledData = result;
+		await this.compiledData(true);
 	}
 
-	private async _filesToCheckForCompilation() : Promise<Path[]> {
-		const result = [...BASE_SPROUT_PATHS];
-		for (const directory of BASE_SPROUT_DIRECTORIES) {
-			//TODO: should this be both or 'files'?
-			const items = await this._fetcher.listDirectory(joinPath(this._path, directory), 'both');
-			for (const item of items) {
-				if (!FILE_EXTENSIONS_IN_SPROUT.some(ext => item.endsWith(ext))) continue;
-				if (item == DIRECTORY_LISTING_FILE) continue;
-				result.push(joinPath(directory, item));
-			}
-		}
-		return result;
-	}
-
-	//Returns the compiledSprout and any out of date files.
-	private async _calculateCompiled() : Promise<[CompiledSprout | null, Record<string, boolean>]> {
-		const outOfDateFiles : Record<string, boolean> = {};
-		const compiledSproutPath = joinPath(this._path, SPROUT_COMPILED_PATH);
-		if (await this._fetcher.fileExists(compiledSproutPath)) {
-			const compiledData = await this._fetcher.fileFetch(compiledSproutPath);
-			//Tnis will throw if invalid shape.
-			const parseResult = compiledSproutSchema.safeParse(JSON.parse(compiledData));
-			if (parseResult.success) {
-				const data = parseResult.data;
-				const compiledLastUpdated = new Date(data.lastUpdated);
-				if (this._fetcher.supportsLastUpdated()) {
-					for (const file of await this._filesToCheckForCompilation()) {
-						const path = joinPath(this._path, file);
-						if (!await this._fetcher.fileExists(path)) continue;
-						const lastUpdated = await this._fetcher.fileLastUpdated(path);
-						if (lastUpdated === null) break;
-						if (lastUpdated > compiledLastUpdated) {
-							//If any of the base files are newer than the compiled file, we need to recompile.
-							if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file out of date: ${path} is newer than ${compiledSproutPath}`);
-							this._outOfDateFiles[path] = true;
-						}
-					}
-				}
-				return [data, outOfDateFiles];
-			} else {
-				if(this._debugLogger) this._debugLogger(`${this.name}: Compiled file invalid: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
-				return [null, outOfDateFiles];
-			}
-		} else {
-			if(this._debugLogger) this._debugLogger(`${this.name}: No compiled file`);
-			return [null, outOfDateFiles];
-		}
-	
-	}
-
-	private async _compiled() : Promise<CompiledSprout | null> {
-		if (this._compiledData === undefined) {
-			let result : [CompiledSprout | null, Record<string, boolean>] | undefined = undefined;
-			if (this._inProgressCompilation) {
-				if(this._debugLogger) this._debugLogger(`${this.name}: Waiting for compilation`);
-				result = await this._inProgressCompilation;
-			} else {
-				if (this._debugLogger) this._debugLogger(`${this.name}: Fetching compiled result`);
-				this._inProgressCompilation = this._calculateCompiled();
-				result = await this._inProgressCompilation;
-				this._inProgressCompilation = undefined;
-			}
-			this._compiledData = result[0];
-			this._outOfDateFiles = result[1];
-		}
-		if (!this._compiledData && this._disallowCompilation) throw new Error(`${this.name}: No compiled file and disallowCompilation is true`);
-		return this._compiledData;
+	//This remotely fetches the package to see if it needs recompilation.
+	async requiresCompilation() : Promise<boolean> {
+		const compiled = await this.fetchCompiledSprout();
+		const uncompiled = await this.fetchUncompiledPackage();
+		const result = this._requiresCompilation(uncompiled, compiled);
+		if (!result) return false;
+		if (this._debugLogger) this._debugLogger(`Sprout ${this.name} compiled because ${result.join(', ')}`);
+		return true;
 	}
 
 	async config() : Promise<SproutConfig> {
 		const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
 
-		const compiled = await this._compiled();
+		const compiled = await this.compiledData();
 		if(compiled && !this._outOfDateFiles[sproutConfigPath]) return compiled.config;
 
 		if (!this._config) {
@@ -488,7 +424,7 @@ export class Sprout {
 	async baseInstructions() : Promise<string> {
 		const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
 
-		const compiled = await this._compiled();
+		const compiled = await this.compiledData();
 		if(compiled && !this._outOfDateFiles[sproutInstructionsPath]) return compiled.baseInstructions;
 
 		if (this._baseInstructions === undefined) {
@@ -503,7 +439,7 @@ export class Sprout {
 	}
 
 	async subInstructions() : Promise<SubInstructionsMap> {
-		const compiled = await this._compiled();
+		const compiled = await this.compiledData();
 		const subInstructionNeedsCompilation = Object.keys(this._outOfDateFiles).some(file => file.includes('/' + SPROUT_SUBINSTUCTIONS_DIR + '/'));
 		if(compiled && !subInstructionNeedsCompilation) return compiled.subInstructions;
 
@@ -561,7 +497,7 @@ type Result = {
 	async schemaText() : Promise<string> {
 		const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
 
-		const compiled = await this._compiled();
+		const compiled = await this.compiledData();
 		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.schemaText;
 
 		if (this._schemaText === undefined) {
@@ -605,7 +541,7 @@ ${schemaText}
 
 		const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
 
-		const compiled = await this._compiled();
+		const compiled = await this.compiledData();
 		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.starterState;
 
 		const schemaText = await this.schemaText();
