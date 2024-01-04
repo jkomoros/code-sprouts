@@ -238,3 +238,8 @@ export const deepEqual = (a : unknown, b : unknown, objectChecker : ((object: un
 	}
 	return true;
 };
+
+export const clone = <T extends object>(input : T) : T => {
+	//TODO: a proper implementation for this. Doesn't structuredClone work?
+	return JSON.parse(JSON.stringify(input));
+};
