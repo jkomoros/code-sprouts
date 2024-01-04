@@ -15,6 +15,7 @@ import {
 } from '../types_store.js';
 
 import {
+	CANCEL_ICON,
 	CHECK_CIRCLE_OUTLINE_ICON,
 	EDIT_ICON
 } from './my-icons.js';
@@ -110,6 +111,11 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		store.dispatch(closeEditor(dismissed));
 	}
 
+	save() {
+		//TODO: actually save.
+		store.dispatch(closeEditor(false));
+	}
+
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
 		let control = html`<input type='text' ?disabled=${!this._editing} .value=${String(value)}></input>`;
 		switch (typeof value) {
@@ -189,7 +195,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override buttonsRender() : TemplateResult {
 		return html`
-		<button class='round default' @click=${this.closeDialog}>${CHECK_CIRCLE_OUTLINE_ICON}</button>
+		<button class='round' @click=${this.closeDialog}>${CANCEL_ICON}</button>
+		${this._editing ? html`<button class='round default' @click=${() => this.save}>${CHECK_CIRCLE_OUTLINE_ICON}</button>` : html``}
 	`;
 	}
 
