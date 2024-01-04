@@ -117,6 +117,7 @@ export const readFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : s
 		if (firstPart in info) {
 			const result = info[firstPart];
 			if (typeof result != 'string') throw new Error(`${path} was a folder not a file`);
+			return result;
 		}
 		throw new Error(`File not found: ${path}`);
 	}
