@@ -140,10 +140,6 @@ export class Sprout {
 	private _path : Path;
 	private _config?: SproutConfig;
 	// A null means it is affirmatively non existent.
-	private _compiledData? : CompiledSprout | null;
-	private _baseInstructions? : string;
-	private _subInstructions? : SubInstructionsMap;
-	private _schemaText? : string;
 	private _aiProvider? : AIProvider;
 	private _disallowCompilation : boolean;
 	private _disallowFormatting : boolean;
@@ -152,12 +148,7 @@ export class Sprout {
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
-	//If compilation notes that it's out of date, it will store in here which
-	//ones are not to be trusted.
-	private _outOfDateFiles : Record<Path, boolean> = {};
 	private _fetcher : FetcherWithoutListSprouts;
-
-	private _inProgressCompilation? : Promise<[CompiledSprout | null, Record<string, boolean>]>;
 
 	static setFetcher(input : Fetcher) : void {
 		_fetcher = input;
