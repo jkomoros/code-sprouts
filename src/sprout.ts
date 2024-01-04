@@ -300,7 +300,7 @@ export class Sprout {
 		return result;
 	}
 
-	async compiledData(forceRefresh : boolean = false) : Promise<CompiledSprout> {
+	async compiledData(forceRefresh : boolean = false) : Promise<CompiledSprout | null> {
 		if (this._compiledSprout) return this._compiledSprout;
 		const compiled = await this.fetchCompiledSprout();
 		if (!forceRefresh && compiled) {
@@ -316,8 +316,11 @@ export class Sprout {
 				if (this._debugLogger) this._debugLogger(`A forcedRefresh is requested but Sprout ${this.name} is disallowed from compiling. ${compiledPath} exists, so using it`);
 				return compiled;
 			}
-			throw new Error(`Compilation is disallowed and ${compiledPath} does not exist`);
+			if (this._debugLogger) this._debugLogger(`Compilation is disallowed and ${compiledPath} does not exist`);
+			return null;
 		}
+
+		//TODO: wrap in a try/catch.
 		const uncompiled = await this.fetchUncompiledPackage();
 		const result = await this._doCompile(uncompiled, compiled);
 
