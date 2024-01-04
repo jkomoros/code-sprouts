@@ -417,69 +417,23 @@ export class Sprout {
 	}
 
 	async config() : Promise<SproutConfig> {
-		const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
-
 		const compiled = await this.compiledData();
-		if(compiled && !this._outOfDateFiles[sproutConfigPath]) return compiled.config;
-
-		if (!this._config) {
-			if (!await this._fetcher.fileExists(sproutConfigPath)) {
-				throw new Error(`${this.name}: Config file ${sproutConfigPath} not found`);
-			}
-			const configData = await this._fetcher.fileFetch(sproutConfigPath);
-			//Tnis will throw if invalid shape.
-			const config = sproutConfigSchema.parse(JSON.parse(configData));
-			if (!config) throw new Error(`${this.name}: No config`);
-			this._config = config;
-		}
-		if (!this._config) throw new Error(`${this.name}: Couldn't create sprout`);
-		return this._config;
+		if(compiled) return compiled.config;
+		const uncompiled = await this.fetchUncompiledPackage();
+		return this._calculateConfig(uncompiled);
 	}
 
 	async baseInstructions() : Promise<string> {
-		const sproutInstructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
-
 		const compiled = await this.compiledData();
-		if(compiled && !this._outOfDateFiles[sproutInstructionsPath]) return compiled.baseInstructions;
-
-		if (this._baseInstructions === undefined) {
-			
-			if (!await this._fetcher.fileExists(sproutInstructionsPath)) {
-				throw new Error(`${this.name}: Instruction file ${sproutInstructionsPath} not found`);
-			}
-			this._baseInstructions = await this._fetcher.fileFetch(sproutInstructionsPath);
-		}
-		if (this._baseInstructions === undefined) throw new Error(`${this.name}: No instructions`);
-		return this._baseInstructions;
+		if(compiled) return compiled.baseInstructions;
+		const uncompiled = await this.fetchUncompiledPackage();
+		return this._calculateBaseInstructions(uncompiled);
 	}
 
 	async subInstructions() : Promise<SubInstructionsMap> {
 		const compiled = await this.compiledData();
-		const subInstructionNeedsCompilation = Object.keys(this._outOfDateFiles).some(file => file.includes('/' + SPROUT_SUBINSTUCTIONS_DIR + '/'));
-		if(compiled && !subInstructionNeedsCompilation) return compiled.subInstructions;
-
-		if (this._subInstructions === undefined) {
-			this._subInstructions = {};
-			//TODO: make sure this will return [] if the directory doesn't exist.
-			const items = await this._fetcher.listDirectory(joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR), 'file');
-			for (const item of items) {
-				const path = joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR, item);
-				if (!path.endsWith('.md')) continue;
-				const name = item.replace(/\.md$/, '');
-				if (!this._outOfDateFiles[path] && compiled && compiled.subInstructions[name]) {
-					this._subInstructions[name] = compiled.subInstructions[name];
-					continue;
-				}
-				const instructions = await this._fetcher.fileFetch(path);
-				const summary = await this.summaryForSubInstruction(instructions);
-				this._subInstructions[name] = {
-					summary,
-					instructions
-				};
-			}
-		}
-		if (this._subInstructions === undefined) throw new Error(`${this.name}: No sub-instructions`);
-		return this._subInstructions;
+		if (!compiled) throw new Error('No compiled data and no subInstructions available');
+		return compiled.subInstructions;
 	}
 
 	private async summaryForSubInstruction(instruction : string) : Promise<string> {
@@ -510,22 +464,10 @@ type Result = {
 	}
 
 	async schemaText() : Promise<string> {
-		const sproutSchemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
-
 		const compiled = await this.compiledData();
-		if(compiled && !this._outOfDateFiles[sproutSchemaPath]) return compiled.schemaText;
-
-		if (this._schemaText === undefined) {
-			if (await this._fetcher.fileExists(sproutSchemaPath)) {
-				//TODO: validate this is valid typescript
-				this._schemaText = await this._fetcher.fileFetch(sproutSchemaPath);
-			} else {
-				//An empty schema is valid
-				this._schemaText = '';
-			}
-		}
-		if (this._schemaText === undefined) throw new Error(`${this.name}: No schema`);
-		return this._schemaText;
+		if (compiled) return compiled.schemaText;
+		const uncompiled = await this.fetchUncompiledPackage();
+		return this._calculateSchemaText(uncompiled);
 	}
 
 	//throws if invalid
