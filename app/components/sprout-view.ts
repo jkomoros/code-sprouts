@@ -52,7 +52,7 @@ import {
 	createNamedSprout,
 	provideUserResponse,
 	selectSprout,
-	setEditorOpen,
+	openEditor,
 	setOpenAIAPIKey,
 	updateDraftMessage,
 	updateWithMainPageExtra
@@ -693,7 +693,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	}
 
 	private _handleViewSprout() {
-		store.dispatch(setEditorOpen(true));
+		store.dispatch(openEditor());
 	}
 
 	private _handleConversationInputSubmit() {

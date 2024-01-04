@@ -28,7 +28,7 @@ import {
 } from './button-shared-styles.js';
 
 import {
-	setEditorOpen,
+	closeEditor,
 	startEditing
 } from '../actions/data.js';
 
@@ -128,7 +128,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	closeDialog() {
-		store.dispatch(setEditorOpen(false));
+		store.dispatch(closeEditor());
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {

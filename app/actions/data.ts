@@ -1,6 +1,8 @@
 import { ThunkSomeAction } from '../store.js';
 
 import {
+	CLOSE_EDITOR,
+	OPEN_EDITOR,
 	SET_OPENAI_API_KEY,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
@@ -200,13 +202,21 @@ export const attachImage = (file : File | null) : ThunkSomeAction => async (disp
 	});
 };
 
-export const setEditorOpen = (open : boolean) : ThunkSomeAction => (dispatch, getState) => {
+export const openEditor = () : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 	const alreadyOpen = selectEditorOpen(state);
-	if (alreadyOpen === open) return;
+	if (alreadyOpen) return;
 	dispatch({
-		type: 'SET_EDITOR_OPEN',
-		open
+		type: OPEN_EDITOR
+	});
+};
+
+export const closeEditor = () : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const open = selectEditorOpen(state);
+	if (!open) return;
+	dispatch({
+		type: CLOSE_EDITOR
 	});
 };
 

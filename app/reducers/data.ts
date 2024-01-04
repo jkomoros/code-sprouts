@@ -1,8 +1,9 @@
 import {
 	ADD_SPROUTS,
 	ATTACH_IMAGE,
+	CLOSE_EDITOR,
+	OPEN_EDITOR,
 	SELECT_SPROUT,
-	SET_EDITOR_OPEN,
 	SET_OPENAI_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
@@ -85,11 +86,16 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 			...state,
 			attachedImage: action.image
 		};
-	case SET_EDITOR_OPEN:
+	case OPEN_EDITOR:
 		return {
 			...state,
-			editorOpen: action.open,
-			editing: !action.open ? false : state.editing
+			editorOpen: true,
+		};
+	case CLOSE_EDITOR:
+		return {
+			...state,
+			editorOpen: false,
+			editing: false
 		};
 	case START_EDITING:
 		return {
