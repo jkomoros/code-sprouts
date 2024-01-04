@@ -138,10 +138,10 @@ let _fetcher : Fetcher = fetcherImpl;
 
 export class Sprout {
 	private _path : Path;
-	private _config?: SproutConfig;
 	// A null means it is affirmatively non existent.
 	private _aiProvider? : AIProvider;
 
+	//TODO: do this for the _doCompile too.
 	private _inProgressFetchUncompiled? : Promise<NakedUncompiledPackagedSprout>;
 	private _inProgressFetchCompiled? : Promise<CompiledSprout | null>;
 
