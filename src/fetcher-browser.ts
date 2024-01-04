@@ -30,7 +30,7 @@ class BrowserFetcher {
 	private _localWriteablePath: Path | null = null;
 
 	//These are previously kicked off fetches that are still in progress, or are already done.
-	private _existingFetches: Map<FetchCacheKey, {promise: Promise<Response>, timestamp: Date}>;
+	private _existingFetches: Map<FetchCacheKey, {promise?: Promise<void>, response? : Response, timestamp: Date}>;
 	private _cacheTimeoutID : number | null = null;
 
 	constructor() {
@@ -65,33 +65,45 @@ class BrowserFetcher {
 
 	private fetch(path : Path, init? : RequestInit) : Promise<Response> {
 		const key = this._fetchCacheKey(path, init);
-		if (this._existingFetches.has(key)) {
-			const basePromise = this._existingFetches.get(key);
-			if (!basePromise) throw new Error('Unexpected null basePromise');
-			return new Promise(resolve => {
-				//Every vended promise with the exception of the first is responsible for cloning the response.
-				basePromise.promise.then((response) => {
-					resolve(response.clone());
+		if (!this._existingFetches.has(key)) {
+			this._startCacheTimeout();
+			const promise = new Promise<void>((resolve, reject) => {
+				fetch(path, init).then((response) => {
+					//We don't delete the _expectedResponse. In the future if
+					//someone fetches it again, they'll get a promise that will
+					//resolve immediately.
+	
+					//Store the original response so others can clone it.
+					const value = this._existingFetches.get(key);
+					if (!value) throw new Error('Unexpected null value');
+					value.response = response;
+					//We'll be vending multiple copies so we need to clone it. (You
+					//can't clone after already having read body).
+					resolve();
+				}).catch((error) => {
+					reject(error);
 				});
 			});
+	
+			this._existingFetches.set(key, {promise, timestamp : new Date()});
 		}
-		this._startCacheTimeout();
-		const promise = new Promise<Response>((resolve, reject) => {
-			fetch(path, init).then((response) => {
-				//We don't delete the _expectedResponse. In the future if
-				//someone fetches it again, they'll get a promise that will
-				//resolve immediately.
+		
 
-				//Only the initiator of the actual fetch is allowed to return
-				//the response immediately; everyone else must clone it.
-				resolve(response);
-			}).catch((error) => {
-				reject(error);
+		const basePromise = this._existingFetches.get(key);
+		if (!basePromise) throw new Error('Unexpected null basePromise');
+		if (basePromise.response) { 
+			return Promise.resolve(basePromise.response.clone());
+		}	
+		return new Promise(resolve => {
+			//Every vended promise with the exception of the first is responsible for cloning the response.
+			if (!basePromise.promise) throw new Error('Unexpected null basePromise.promise');
+			basePromise.promise.then(() => {
+				const value = this._existingFetches.get(key);
+				if (!value) throw new Error('Unexpected null value');
+				if (!value.response) throw new Error('Unexpected null value.response');
+				resolve(value.response.clone());
 			});
 		});
-
-		this._existingFetches.set(key, {promise, timestamp : new Date()});
-		return promise;
 	}
 
 	set localWriteablePath(path: Path) {
