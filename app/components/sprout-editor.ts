@@ -106,8 +106,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		this._userMayEdit = selectMayEditCurrentSprout(state);
 	}
 
-	closeDialog() {
-		store.dispatch(closeEditor());
+	closeDialog(dismissed : boolean) {
+		store.dispatch(closeEditor(dismissed));
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
@@ -183,8 +183,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		if (!this._editing) store.dispatch(startEditing());
 	}
 
-	override _shouldClose(_cancelled : boolean) {
-		this.closeDialog();
+	override _shouldClose(dismissed : boolean) {
+		this.closeDialog(dismissed);
 	}
 
 	override buttonsRender() : TemplateResult {

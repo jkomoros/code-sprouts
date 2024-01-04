@@ -17,6 +17,7 @@ import {
 
 import {
 	selectAttachedImage,
+	selectChangesMade,
 	selectCurrentSprout,
 	selectCurrentSproutName,
 	selectDraftMessage,
@@ -215,10 +216,14 @@ export const openEditor = () : ThunkSomeAction => async (dispatch, getState) => 
 	});
 };
 
-export const closeEditor = () : ThunkSomeAction => (dispatch, getState) => {
+export const closeEditor = (dismissed : boolean) : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 	const open = selectEditorOpen(state);
 	if (!open) return;
+	const changesMade = selectChangesMade(state);
+	if (changesMade && dismissed) {
+		if (!confirm('Are you sure you want to dismiss your changes?')) return;
+	}
 	dispatch({
 		type: CLOSE_EDITOR
 	});

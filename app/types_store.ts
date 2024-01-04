@@ -29,6 +29,7 @@ export type DataState = {
 	attachedImage: ImageURL | null,
 	editorOpen: boolean
 	editing: boolean,
+	changesMade : boolean,
 	sproutSnapshot : UncompiledPackagedSprout | null,
 	//These are not all sprouts in the writeable dir, just the ones that we have changed since we loaded.
 	writtenSprouts: Record<SproutName, PackagedSprout>

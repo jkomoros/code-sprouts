@@ -29,6 +29,7 @@ const INITIAL_STATE : DataState = {
 	attachedImage: null,
 	editorOpen: false,
 	editing: false,
+	changesMade: false,
 	sproutSnapshot: null,
 	writtenSprouts: {}
 };
