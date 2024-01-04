@@ -59,6 +59,12 @@ returns that result. and returns that.
 
 - Remove all lastUpdated stuff from Sprout and Fetcher, and get rid of the idea
   of a non-naked DirectoryInfo, because we never check for lastUpdated.
+- Remove the idea of a FileInfo, and just have a string.
+- Clean up the names of all the various packaged sprout types and variants.
+- Rename and clean up unused methods to shuttle back between the different
+  formats.
+- Add a Sprout.recompileIfNecessary() that is only called if lastUpdated is
+  above some epsilon; if not, it trusts the compiled sprout is fine.
 
 */
 

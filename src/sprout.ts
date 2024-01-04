@@ -25,6 +25,7 @@ import {
 	SproutName,
 	SproutState,
 	StreamLogger,
+	SubInstructionsFilename,
 	SubInstructionsMap,
 	SubInstructionsName,
 	compiledSproutSchema,
@@ -149,6 +150,7 @@ export class Sprout {
 	private _aiProvider? : AIProvider;
 	private _disallowCompilation : boolean;
 	private _disallowFormatting : boolean;
+	private _uncompiledPackage? : NakedUncompiledPackagedSprout;
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
@@ -220,6 +222,46 @@ export class Sprout {
 		const config = await this.config();
 		if (!config.allowFormatting) return false;
 		return !this._disallowFormatting;
+	}
+
+	async fetchUncompiledPackage() : Promise<NakedUncompiledPackagedSprout> {
+		if (this._uncompiledPackage) return this._uncompiledPackage;
+
+		const sproutConfigPath = joinPath(this._path, SPROUT_CONFIG_PATH);
+		const sproutConfig = await this._fetcher.fileFetch(sproutConfigPath);
+
+		const instructionsPath = joinPath(this._path, SPROUT_INSTRUCTIONS_PATH);
+		const instructions = await this._fetcher.fileFetch(instructionsPath);
+
+		const schemaPath = joinPath(this._path, SPROUT_SCHEMA_PATH);
+		let schemaText = '';
+		//TODO: this double-gets.
+		if (await this._fetcher.fileExists(schemaPath)) {
+			schemaText = await this._fetcher.fileFetch(schemaPath);
+		}
+
+		const subInstructionsPath = joinPath(this._path, SPROUT_SUBINSTUCTIONS_DIR);
+		const subInstructions : Record<SubInstructionsFilename, string> = {};
+		for (const subInstruction of await this._fetcher.listDirectory(subInstructionsPath, 'file')) {
+			if (!subInstruction.endsWith('.md')) continue;
+			const path = joinPath(subInstructionsPath, subInstruction);
+			const instructions = await this._fetcher.fileFetch(path);
+			subInstructions[subInstruction] = instructions;
+		}
+
+		//We don't bother checking if files are out of date; this is jus
+		const result : NakedUncompiledPackagedSprout = {
+			'sprout.json': sproutConfig,
+			'instructions.md': instructions,
+		};
+		if (schemaText) {
+			result['schema.ts']	= schemaText;
+		}
+		if (Object.keys(subInstructions).length > 0) {
+			result['sub_instructions'] = subInstructions;
+		}
+		this._uncompiledPackage = result;
+		return result;
 	}
 
 	async compiled() : Promise<boolean> {
