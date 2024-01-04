@@ -239,12 +239,6 @@ export type DirectoryInfo = {
 	[file : string]: string | DirectoryInfo
 }
 
-//TODO: get rid of NakedDiretoryInfo now that it's the same as DirectoryInfo.
-//TODO: get rid of NakedPackagedSprout
-export type NakedDirectoryInfo = {
-	[file : string]: string | NakedDirectoryInfo
-}
-
 //NOTE: needs to be kept up to date with file structure in constants.ts
 export const packagedSproutSchema = z.object({
 	'directory.json': z.string(),
@@ -258,6 +252,7 @@ export const packagedSproutSchema = z.object({
 	}).optional()
 });
 
+//TODO: get rid of NakedPackagedSprout
 //NOTE: needs to be kept up to date with file structure in constants.ts
 export type NakedPackagedSprout = {
 	'sprout.json' : string,
