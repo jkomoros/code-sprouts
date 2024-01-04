@@ -53,6 +53,11 @@ import {
 	TypedObject
 } from '../../src/typed-object.js';
 
+import {
+	HelpStyles,
+	help,
+} from './help-badges.js';
+
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
 	
@@ -76,6 +81,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			...DialogElement.styles,
 			SharedStyles,
 			ButtonSharedStyles,
+			HelpStyles,
 			css`
 				.buttons {
 					display: flex;
@@ -159,23 +165,23 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		html``
 }
 			</h2>
-			<label>Config</label>
+			<label>Config ${help('Various configuratino properties for the sprout')}</label>
 			<div>
 				${config
 		? html`${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}`
 		: html`<em>No config</em>`}
 			</div>
-			<label>Instructions</label>
+			<label>Instructions ${help('The main instructions that tell the bot what to do.')}</label>
 			<textarea
 				?disabled=${!this._editing}
 				.value=${snapshot['instructions.md']}
 			></textarea>
-			<label>Schema</label>
+			<label>Schema ${help('If provided, this should be a type defined in typescript.')}</label>
 			<textarea
 				?disabled=${!this._editing}
 				.value=${snapshot['schema.ts'] || ''}
 			></textarea>
-			<label>Sub-instructions</label>
+			<label>Sub-instructions ${help('Deeper instructions for specific actions that the bot can ask about.')}</label>
 			${Object.keys(subInstructions).length > 0 ? 
 		Object.entries(subInstructions).map(([key, value]) => html`
 			<details>
