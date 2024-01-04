@@ -241,7 +241,6 @@ export type DirectoryInfo = {
 
 //NOTE: needs to be kept up to date with file structure in constants.ts
 export const packagedSproutSchema = z.object({
-	'directory.json': z.string(),
 	'sprout.json': z.string(),
 	'sprout.compiled.json': z.string(),
 	'instructions.md': z.string(),
