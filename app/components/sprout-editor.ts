@@ -80,6 +80,20 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				textarea {
 					flex: 1;
 				}
+
+				.row {
+					display: flex;
+					flex-direction: column;
+					position: relative;
+				}
+
+				.row input[type=text] {
+					width: 100%;
+				}
+
+				.indented {
+					margin-left: 2em;
+				}
 			`
 		];
 	}
@@ -97,7 +111,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
-		let control = html`<input ?disabled=${!this._editing} .value=${String(value)}></input>`;
+		let control = html`<input type='text' ?disabled=${!this._editing} .value=${String(value)}></input>`;
 		switch (typeof value) {
 		case 'boolean':
 			control = html`<input type='checkbox' ?disabled=${!this._editing} .checked=${value}></input>`;
@@ -106,7 +120,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			control = html`<input type='number' ?disabled=${!this._editing} .value=${String(value)}></input>`;
 			break;
 		}
-		return html`<li><label>${key}</label>${control}</li>`;
+		return html`<div class='row indented'><label>${key}</label>${control}</div>`;
 	}
 
 	override innerRender() : TemplateResult {
@@ -137,7 +151,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<label>Config</label>
 			<div>
 				${config
-		? html`<ul>${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}</ul>`
+		? html`${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}`
 		: html`<em>No config</em>`}
 			</div>
 			<label>Instructions</label>
