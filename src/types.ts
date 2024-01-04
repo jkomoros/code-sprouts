@@ -241,15 +241,18 @@ export type DirectoryInfo = {
 }
 
 //NOTE: needs to be kept up to date with file structure in constants.ts
-export const packagedSproutSchema = z.object({
+export const uncompiledPackagedSproutSchema = z.object({
 	[SPROUT_CONFIG_PATH]: z.string(),
-	[SPROUT_COMPILED_PATH]: z.string(),
 	[SPROUT_INSTRUCTIONS_PATH]: z.string(),
 	[SPROUT_SCHEMA_PATH]: z.string().optional(),
 	[SPROUT_SUBINSTUCTIONS_DIR]: z.record(subInstructionsFilenameSchema, z.string()).optional()
 });
 
-export type UncompiledPackagedSprout = Omit<PackagedSprout, typeof SPROUT_COMPILED_PATH>;
+export type UncompiledPackagedSprout = z.infer<typeof uncompiledPackagedSproutSchema>;
+
+export const packagedSproutSchema = uncompiledPackagedSproutSchema.extend({
+	[SPROUT_COMPILED_PATH]: z.string()
+});
 
 //This type is allowed to be used anywhere a DirectoryInfo is.
 export type PackagedSprout = z.infer<typeof packagedSproutSchema>;
