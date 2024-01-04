@@ -804,8 +804,8 @@ export const emptySprout = async () : Promise<PackagedSprout> => {
 	//need it. _smokeTest below verifies a fast crash if this ever turns out to
 	//not be the case.
 	return packagedSproutFromUncompiledImpl({
-		'sprout.json': JSON.stringify(config, null, '\t'),
-		'instructions.md': ''
+		[SPROUT_CONFIG_PATH]: JSON.stringify(config, null, '\t'),
+		[SPROUT_INSTRUCTIONS_PATH]: ''
 	});
 };
 
