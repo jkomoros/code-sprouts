@@ -111,6 +111,7 @@ import {
 } from '../keyboard.js';
 
 import './sprout-editor.js';
+import { focusElementIfNoOtherFocus } from '../util.js';
 
 const sendShortcut : KeyboardAction = {
 	shortcut: {
@@ -642,7 +643,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _focusTextArea() {
 		const textarea = this.shadowRoot!.getElementById('conversation-input-textarea') as HTMLTextAreaElement;
 		if (!textarea) throw new Error('No textarea');
-		textarea.focus();
+		focusElementIfNoOtherFocus(textarea);
 	}
 
 	private _handleKeyDown(e : KeyboardEvent) {
