@@ -160,8 +160,8 @@ export const listDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path
 
 const directoryListingForDirectoryInfo = (info : DirectoryInfo) : DirectoryListingFile => {
 	return {
-		directories: Object.keys(info.directories),
-		files: Object.keys(info.files)
+		directories: Object.keys(info).filter(key => typeof info[key] != 'string'),
+		files: Object.keys(info).filter(key => typeof info[key] == 'string')
 	};
 };
 
