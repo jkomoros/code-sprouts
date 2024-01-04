@@ -246,10 +246,7 @@ export const packagedSproutSchema = z.object({
 	'sprout.compiled.json': z.string(),
 	'instructions.md': z.string(),
 	'schema.ts': z.string().optional(),
-	sub_instructions: z.object({
-		directories: z.record(z.string(), z.never()),
-		files: z.record(subInstructionsFilenameSchema, z.string())
-	}).optional()
+	sub_instructions: z.record(subInstructionsFilenameSchema, z.string()).optional()
 });
 
 //TODO: get rid of NakedPackagedSprout
