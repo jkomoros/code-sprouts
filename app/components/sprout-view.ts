@@ -232,7 +232,8 @@ class SproutView extends connect(store)(PageViewElement) {
 				}
 
 				.column {
-					width:60em;
+					max-width:60em;
+					width: 100%;
 					height: 100vh;
 					box-sizing: border-box;
 					display: flex;
