@@ -338,6 +338,7 @@ export class Sprout {
 		const result = await this._doCompile(uncompiled, compiled);
 
 		if (this._fetcher.mayWriteFile(compiledPath)) {
+			if (this._debugLogger) this._debugLogger(`Writing compiled sprout to ${compiledPath}`);
 			await this._fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
 		}
 
