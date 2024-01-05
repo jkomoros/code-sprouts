@@ -136,6 +136,16 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		store.dispatch(saveSprout());
 	}
 
+	private hiddenConfigText(config : SproutConfig) : string {
+		const items : string[] = [];
+		for (const [key, value] of TypedObject.entries(config)) {
+			if (HIDDEN_CONFIG_FIELDS[key]) {
+				items.push(`${key}:${String(value)}`);
+			}
+		}
+		return items.join(', ');
+	}
+
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
 		if (HIDDEN_CONFIG_FIELDS[key]) return html``;
 		let control = html`<input type='text' ?disabled=${!this._editing} .value=${String(value)}></input>`;
@@ -175,7 +185,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		html``
 }
 			</h2>
-			<label>Config ${help('Various configuratino properties for the sprout')}</label>
+			<label .title=${this.hiddenConfigText(config)}>Config ${help('Various configuratino properties for the sprout')}</label>
 			<div>
 				${config
 		? html`${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}`
