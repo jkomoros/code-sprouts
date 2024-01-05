@@ -69,6 +69,11 @@ const HIDDEN_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
 	version: true
 };
 
+//TODO: calculate this automatically based on sproutConfigSchema meta-programming
+const REQUIRED_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
+	version: true
+};
+
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
 	
@@ -184,7 +189,15 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				.value=${String(value)}></input>`;
 			break;
 		}
-		return html`<div class='row indented'><label>${key}</label>${control}</div>`;
+		const removeButton = REQUIRED_CONFIG_FIELDS[key] || !this._editing ? html`` : html`
+		<button
+			class='small'
+			title=${`Remove ${key}`}
+			data-key=${key}
+			@click=${this._handleConfigControlRemoved}
+		>${CANCEL_ICON}</button>
+		`;
+		return html`<div class='row indented'><label>${key}</label>${control}${removeButton}</div>`;
 	}
 
 	override innerRender() : TemplateResult {
@@ -290,6 +303,34 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		default:
 			assertUnreachable(key);
 		}
+
+		clonedSnapshot['sprout.json'] = JSON.stringify(config, null, '\t');
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleConfigControlRemoved(e : Event) {
+		let ele : HTMLButtonElement | null =  null;
+		for (const candidate of e.composedPath()) {
+			if (candidate instanceof HTMLButtonElement) {
+				ele = candidate;
+				break;
+			}
+		}
+
+		if (!ele) throw new Error('No button ele found');
+
+		const key = sproutConfigSchema.keyof().parse(ele.dataset.key);
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
+
+		if (REQUIRED_CONFIG_FIELDS[key]) throw new Error(`Can't remove ${key} because it's required`);
+
+		delete config[key];
 
 		clonedSnapshot['sprout.json'] = JSON.stringify(config, null, '\t');
 
