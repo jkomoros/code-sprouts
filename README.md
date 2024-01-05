@@ -1,5 +1,5 @@
 # Code Sprouts
-
+<img src='images/manifest/icon-96x96.png?raw=true' align='right' />
 This is a very simple tool to help create simple interactive bots that are primarily programmed using plain language, as well as a bit of structured state management.
 
 You can see a live demo at https://code-sprouts.web.app.
