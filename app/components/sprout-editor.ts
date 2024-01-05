@@ -265,7 +265,17 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			${Object.keys(subInstructions).length > 0 ? 
 		Object.entries(subInstructions).map(([key, value]) => html`
 			<details>
-				<summary><label>${key}</label></summary>
+				<summary>
+					<label>${key}</label>
+					${this._editing ? html`
+						<button
+							class='small'
+							title='Delete ${key} sub-instruction'
+							data-key=${key}
+							@click=${this._handleSubInstructionRemoved}
+						>${CANCEL_ICON}</button>
+					` : html``}
+				</summary>
 				<textarea
 					?disabled=${!this._editing}
 					data-key=${key}
@@ -455,6 +465,35 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			...subInstructions,
 			[subInstructionFileName]: newValue
 		};
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleSubInstructionRemoved(e : InputEvent) {
+
+		let ele : HTMLButtonElement | null =  null;
+		for (const candidate of e.composedPath()) {
+			if (candidate instanceof HTMLButtonElement) {
+				ele = candidate;
+				break;
+			}
+		}
+
+		if (!ele) throw new Error('No button ele found');
+
+		const subInstructionFileName = ele.dataset.key;
+
+		if (!subInstructionFileName) throw new Error('Unknown name');
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		const subInstructions = clone(clonedSnapshot['sub_instructions'] || {});
+
+		delete subInstructions[subInstructionFileName];
+
+		clonedSnapshot['sub_instructions'] = subInstructions;
 
 		store.dispatch(editingModifySprout(clonedSnapshot));
 	}
