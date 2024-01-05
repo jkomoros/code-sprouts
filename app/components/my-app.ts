@@ -3,6 +3,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
+import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { customElement, property, state } from 'lit/decorators.js';
 
 // This element is connected to the Redux store.
@@ -11,6 +12,7 @@ import { store } from '../store.js';
 // These are the actions needed by this element.
 import {
 	navigate,
+	updateMobile,
 	updateOffline,
 } from '../actions/app.js';
 
@@ -121,6 +123,9 @@ class MyApp extends connect(store)(LitElement) {
 	override firstUpdated() {
 		installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
 		installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
+		installMediaQueryWatcher('(max-width: 900px)',(isMobile) => {
+			store.dispatch(updateMobile(isMobile));
+		});
 	}
 
 	override updated(changedProps : Map<keyof MyApp, MyApp[keyof MyApp]>) {
