@@ -42,7 +42,7 @@ export type SproutState = z.infer<typeof sproutStateSchema>;
 
 //Note: when changing, re-run `npm run generate:schemas` and update README.md's section 'sprout.json fields'
 export const sproutConfigSchema = z.object({
-	version: z.literal(0),
+	formatVersion: z.literal(0).describe('The version of the library the sprout is targetting'),
 	title: z.optional(z.string().describe('The title of the sprout')),
 	description: z.optional(z.string().describe('A description of the sprout')),
 	allowImages : z.optional(z.boolean().describe('Whether the bot allows images')),

@@ -167,7 +167,7 @@ More complex sprouts might have sub-instructions, which are summarized for the b
 
 ### sprout.json fields
 
-#### version : number
+#### formatVersion : number
 
 Required. The version of the format, currently only accepts `0`.
 

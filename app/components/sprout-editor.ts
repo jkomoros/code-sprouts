@@ -79,7 +79,7 @@ type ConfigFieldInfo = {
 }
 
 const CONFIG_FIELDS : Record<keyof SproutConfig, ConfigFieldInfo> = {
-	version: {
+	formatVersion: {
 		hidden: true,
 		optional: false,
 		description: 'A format version number for the sprout'
@@ -370,8 +370,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
 
 		switch (key) {
-		case 'version':
-			throw new Error('version may not be added');
+		case 'formatVersion':
+			throw new Error('formatVersion may not be added');
 		case 'title':
 		case 'description':
 			config[key] = '';
@@ -420,7 +420,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
 		switch(key) {
-		case 'version':
+		case 'formatVersion':
 			throw new Error('Cannot change version');
 		case 'title':
 		case 'description':

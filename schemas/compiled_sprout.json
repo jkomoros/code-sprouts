@@ -15,9 +15,10 @@
 		"config": {
 			"type": "object",
 			"properties": {
-				"version": {
+				"formatVersion": {
 					"type": "number",
-					"const": 0
+					"const": 0,
+					"description": "The version of the library the sprout is targetting"
 				},
 				"title": {
 					"type": "string",
@@ -37,7 +38,7 @@
 				}
 			},
 			"required": [
-				"version"
+				"formatVersion"
 			],
 			"additionalProperties": false
 		},
@@ -61,6 +62,9 @@
 					"instructions"
 				],
 				"additionalProperties": false
+			},
+			"propertyNames": {
+				"pattern": "^[a-zA-Z0-9_-]+$"
 			}
 		},
 		"schemaText": {

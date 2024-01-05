@@ -818,7 +818,7 @@ const packagedSproutFromUncompiledImpl = async (uncompiled : UncompiledPackagedS
 
 export const emptySprout = async (title? : string, description? : string) : Promise<PackagedSprout> => {
 	const config : SproutConfig = {
-		version: 0
+		formatVersion: 0
 	};
 	if (title !== undefined) config.title = title;
 	if (description !== undefined) config.description = description;
