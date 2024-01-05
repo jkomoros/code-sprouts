@@ -66,7 +66,11 @@ import {
 	assertUnreachable,
 	clone
 } from '../../src/util.js';
-import { eleFromEvent } from '../util.js';
+
+import {
+	eleFromEvent,
+	baseFileName
+} from '../util.js';
 
 const HIDDEN_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
 	version: true
@@ -267,11 +271,11 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		Object.entries(subInstructions).map(([key, value]) => html`
 			<details>
 				<summary>
-					<label>${key}</label>
+					<label>${baseFileName(key)}</label>
 					${this._editing ? html`
 						<button
 							class='small'
-							title='Delete ${key} sub-instruction'
+							title='Delete ${baseFileName(key)} sub-instruction'
 							data-key=${key}
 							@click=${this._handleSubInstructionRemoved}
 						>${CANCEL_ICON}</button>
@@ -464,7 +468,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	private _handleSubInstructionRemoved(e : InputEvent) {
 
-		const ele = eleFromEvent(e);
+		const ele = eleFromEvent(e, HTMLButtonElement);
 
 		const subInstructionFileName = ele.dataset.key;
 

@@ -9,3 +9,8 @@ export const eleFromEvent = <E extends HTMLElement = HTMLButtonElement>(e: Event
 
 	throw new Error(`No element of type ${type.name} found in event path`);
 };
+
+export const baseFileName = (filename : string) : string => {
+	const parts = filename.split('.');
+	return parts.slice(0, parts.length - 1).join('.');
+};
