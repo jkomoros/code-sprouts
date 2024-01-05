@@ -24,6 +24,10 @@ import {
 	SPROUT_VIEW_PATH
 } from '../types.js';
 
+import {
+	selectPageExtra
+} from '../selectors.js';
+
 @customElement('my-app')
 class MyApp extends connect(store)(LitElement) {
 
@@ -32,6 +36,9 @@ class MyApp extends connect(store)(LitElement) {
 
 	@state()
 		_page = '';
+
+	@state()
+		_pageExtra = '';
 
 	@state()
 		_offline = false;
@@ -129,8 +136,9 @@ class MyApp extends connect(store)(LitElement) {
 	}
 
 	override updated(changedProps : Map<keyof MyApp, MyApp[keyof MyApp]>) {
-		if (changedProps.has('_page')) {
-			const pageTitle = this.appTitle + ' - ' + this._page;
+		if (changedProps.has('_pageExtra')) {
+			const extra = this._pageExtra.endsWith('/') ? this._pageExtra.slice(0, -1) : this._pageExtra;
+			const pageTitle = extra + ' - ' + this.appTitle;
 			updateMetadata({
 				title: pageTitle,
 				description: pageTitle
@@ -141,6 +149,7 @@ class MyApp extends connect(store)(LitElement) {
 
 	override stateChanged(state : RootState) {
 		this._page = state.app.page;
+		this._pageExtra = selectPageExtra(state);
 		this._offline = state.app.offline;
 	}
 }
