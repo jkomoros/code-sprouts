@@ -6,7 +6,6 @@ import {
 	jsonPatchRFC6902Schema
 } from './types_json_patch.js';
 
-
 import {
 	absoluteRegExp
 } from './util.js';
@@ -14,7 +13,14 @@ import {
 import OpenAI from 'openai';
 
 import { Stream } from 'openai/streaming.js';
-import { SPROUT_COMPILED_PATH, SPROUT_CONFIG_PATH, SPROUT_INSTRUCTIONS_PATH, SPROUT_SCHEMA_PATH, SPROUT_SUBINSTUCTIONS_DIR } from './constants.js';
+
+import {
+	SPROUT_COMPILED_PATH,
+	SPROUT_CONFIG_PATH,
+	SPROUT_INSTRUCTIONS_PATH,
+	SPROUT_SCHEMA_PATH,
+	SPROUT_SUBINSTUCTIONS_DIR
+} from './constants.js';
 
 export const pathSchema = z.string();
 
@@ -52,7 +58,8 @@ export const sproutConfigSchema = z.object({
 export type SproutConfig = z.infer<typeof sproutConfigSchema>;
 
 const environmentSchema = z.object({
-	openai_api_key : z.string().optional()
+	openai_api_key : z.string().optional(),
+	anthropic_api_key : z.string().optional()
 });
 
 export type Environment = z.infer<typeof environmentSchema>;
@@ -137,13 +144,15 @@ export const completionModelID = z.enum([
 	'openai.com:gpt-4',
 	'openai.com:gpt-4-32k',
 	'openai.com:gpt-4-1106-preview',
-	'openai.com:gpt-4-vision-preview'
+	'openai.com:gpt-4-vision-preview',
+	'anthropic.com:claude-2.1'
 ]);
 
 export type CompletionModelID = z.infer<typeof completionModelID>;
 
 export const modelProvider = z.enum([
-	'openai.com'
+	'openai.com',
+	'anthropic.com'
 ]);
 
 export type ModelProvider = z.infer<typeof modelProvider>;

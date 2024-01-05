@@ -1,9 +1,18 @@
 import {
+	computePromptAnthropic,
+	computePromptStreamAnthropic, 
+	computeTokenCountAnthropic
+} from './anthropic.js';
+
+import {
 	computePromptOpenAI,
 	computePromptStreamOpenAI,
 	computeTokenCountOpenAI
 } from './openai.js';
-import { TypedObject } from './typed-object.js';
+
+import {
+	TypedObject
+} from './typed-object.js';
 
 import {
 	CompletionInfo,
@@ -18,7 +27,8 @@ import {
 } from './types.js';
 
 import {
-	assertUnreachable, mergeObjects
+	assertUnreachable,
+	mergeObjects
 } from './util.js';
 
 export const extractModel = (model : CompletionModelID) : [name : ModelProvider, modelName : string] => {
@@ -30,6 +40,11 @@ export const extractModel = (model : CompletionModelID) : [name : ModelProvider,
 const BASE_OPENAI_COMPLETION_INFO = {
 	compute: computePromptOpenAI,
 	computeStream: computePromptStreamOpenAI
+};
+
+const BASE_ANTHROPIC_COMPLETION_INFO = {
+	compute: computePromptAnthropic,
+	computeStream: computePromptStreamAnthropic
 };
 
 export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInfo } = {
@@ -62,6 +77,10 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 		...BASE_OPENAI_COMPLETION_INFO,
 		maxTokens: 4096,
 		supportsImages: true
+	},
+	'anthropic.com:claude-2.1': {
+		...BASE_ANTHROPIC_COMPLETION_INFO,
+		maxTokens: 4096
 	}
 };
 
@@ -85,6 +104,10 @@ export const INFO_BY_PROVIDER : {[name in ModelProvider]: ProviderInfo} = {
 	'openai.com': {
 		defaultCompletionModel: 'openai.com:gpt-3.5-turbo',
 		apiKeyVar: 'openai_api_key'
+	},
+	'anthropic.com': {
+		defaultCompletionModel: 'anthropic.com:claude-2.1',
+		apiKeyVar: 'anthropic_api_key'
 	}
 };
 
@@ -128,6 +151,8 @@ export const computeTokenCount = async (text : Prompt, model : CompletionModelID
 	switch(provider) {
 	case 'openai.com':
 		return computeTokenCountOpenAI(modelName, text);
+	case 'anthropic.com':
+		return computeTokenCountAnthropic(modelName, text);
 	default:
 		assertUnreachable(provider);
 	}
