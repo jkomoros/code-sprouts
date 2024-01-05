@@ -114,8 +114,14 @@ export class SproutEditor extends connect(store)(DialogElement) {
 					position: relative;
 				}
 
-				.row input[type=text] {
+				.row .control {
+					display: flex;
+					flex-direction: row;
 					width: 100%;
+				}
+
+				.row input[type=text] {
+					flex: 1;
 				}
 
 				.indented {
@@ -197,7 +203,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			@click=${this._handleConfigControlRemoved}
 		>${CANCEL_ICON}</button>
 		`;
-		return html`<div class='row indented'><label>${key}</label>${control}${removeButton}</div>`;
+		return html`<div class='row indented'><label>${key}</label><div class='control'>${control}${removeButton}</div></div>`;
 	}
 
 	override innerRender() : TemplateResult {
