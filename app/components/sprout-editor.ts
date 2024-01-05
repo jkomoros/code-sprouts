@@ -200,7 +200,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		return html`
 			<select class='indented' @change=${this._handleAddMissingConfigKey}>
 				<option value=''>Add config key</option>
-				${missingKeys.map(key => html`<option .value=${key}>${key}</option>`)}
+				${missingKeys.map(key => html`<option .value=${key} .title=${CONFIG_FIELDS[key].description}>${key}</option>`)}
 			</select>`;
 	}
 
@@ -238,7 +238,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			@click=${this._handleConfigControlRemoved}
 		>${CANCEL_ICON}</button>
 		`;
-		return html`<div class='row indented'><label>${key}</label><div class='control'>${control}${removeButton}</div></div>`;
+		return html`<div class='row indented'><label>${key} ${help(CONFIG_FIELDS[key].description)}</label><div class='control'>${control}${removeButton}</div></div>`;
 	}
 
 	override innerRender() : TemplateResult {
