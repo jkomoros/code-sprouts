@@ -16,6 +16,7 @@ import {
 
 import {
 	CHECK_CIRCLE_OUTLINE_ICON,
+	OPEN_IN_NEW
 } from './my-icons.js';
 
 import {
@@ -57,6 +58,13 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 					margin-block-end: 0.5em;
 				}
 
+				a svg {
+					height: 1em;
+					width: 1em;
+					/* inherit the color of the a.color */
+					fill: currentcolor;
+				}
+
 			`
 		];
 	}
@@ -73,12 +81,13 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 		return html`
 			<h3>Please provide your API key</h3>
 			<p>This application requires your <strong>OPENAI_API_KEY</strong> to run.</p>
-			<p>This will be stored in your browser's local storage and never transmitted anywhere but directly to OpenAI.com.</p>
+			<p>This will be stored in your browser's local storage and never transmitted anywhere but directly to openai.com.</p>
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
-			<p>If you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at <a href='https://github.com/jkomoros/code-sprouts' target="_blank">https://github.com/jkomoros/code-sprouts</a></p>
+			<p>If you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at <a href='https://github.com/jkomoros/code-sprouts' target="_blank">https://github.com/jkomoros/code-sprouts ${OPEN_IN_NEW}</a></p>
 			<label>OPENAI_API_KEY</label>
 			<input
 				type='text'
+				autofocus
 			/>
 		`;
 	}
