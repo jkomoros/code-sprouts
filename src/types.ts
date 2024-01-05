@@ -57,7 +57,7 @@ const environmentSchema = z.object({
 
 export type Environment = z.infer<typeof environmentSchema>;
 
-const subInstructionNameSchema = z.string().regex(absoluteRegExp(DEFAULT_NAME_REGEXP));
+export const subInstructionNameSchema = z.string().regex(absoluteRegExp(DEFAULT_NAME_REGEXP));
 
 export type SubInstructionsName = z.infer<typeof subInstructionNameSchema>;
 

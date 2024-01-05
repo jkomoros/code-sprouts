@@ -17,7 +17,8 @@ import {
 import {
 	CANCEL_ICON,
 	CHECK_CIRCLE_OUTLINE_ICON,
-	EDIT_ICON
+	EDIT_ICON,
+	PLUS_ICON
 } from './my-icons.js';
 
 import {
@@ -48,6 +49,7 @@ import {
 	SproutConfig,
 	sproutConfigSchema,
 	SproutName,
+	subInstructionNameSchema,
 	UncompiledPackagedSprout
 } from '../../src/types.js';
 
@@ -250,7 +252,16 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				@change=${this._handleSchemaTextChanged}
 				.value=${snapshot['schema.ts'] || ''}
 			></textarea>
-			<label>Sub-instructions ${help('Deeper instructions for specific actions that the bot can ask about.')}</label>
+			<label>Sub-instructions
+				${help('Deeper instructions for specific actions that the bot can ask about.')}
+				${this._editing ? html`
+					<button
+						class='small'
+						@click=${this._handleAddSubInstruction}
+						title='Add sub-instruction'
+					>${PLUS_ICON}</button>
+				` : html``}
+			</label>
 			${Object.keys(subInstructions).length > 0 ? 
 		Object.entries(subInstructions).map(([key, value]) => html`
 			<details>
@@ -389,6 +400,29 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		}
 
 		clonedSnapshot['sprout.json'] = JSON.stringify(config, null, '\t');
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleAddSubInstruction() {
+
+		const rawName = prompt('What should the sub-instruction\'s name be?');
+		if (rawName === null) return;
+
+		const name = subInstructionNameSchema.parse(rawName);
+
+		const fileName = `${name}.md`;
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		const subInstructions = clonedSnapshot['sub_instructions'] || {};
+
+		clonedSnapshot['sub_instructions'] = {
+			...subInstructions,
+			[fileName]: ''
+		};
 
 		store.dispatch(editingModifySprout(clonedSnapshot));
 	}
