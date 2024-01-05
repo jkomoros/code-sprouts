@@ -50,3 +50,5 @@ export const store = createStore(
 );
 
 export type ThunkSomeAction = ThunkAction<void, RootState, undefined, SomeAction>;
+
+export const getState = () : RootState => store.getState() as RootState;
