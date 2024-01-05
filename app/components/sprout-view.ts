@@ -12,7 +12,7 @@ import {
 import DOMPurify from 'dompurify';
 
 // This element is connected to the Redux store.
-import { store } from '../store.js';
+import { getState, store } from '../store.js';
 
 import {
 	selectAttachedImage,
@@ -27,6 +27,7 @@ import {
 	selectSproutStreaming,
 	selectMayCreateSprout,
 	selectIsEditing,
+	selectDialogOpen,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -111,13 +112,19 @@ import {
 	shortcutDisplayString
 } from '../keyboard.js';
 
+import {
+	focusElementIfNoOtherFocus
+} from '../util.js';
+
 import './sprout-editor.js';
-import { focusElementIfNoOtherFocus } from '../util.js';
 
 const sendShortcut : KeyboardAction = {
 	shortcut: {
 		key: 'Enter',
-		allowWhileEditing: true
+		allowWhileEditing: true,
+		disabled: () => {
+			return selectDialogOpen(getState());
+		}
 	},
 	action: () => {
 		store.dispatch(provideUserResponse());
