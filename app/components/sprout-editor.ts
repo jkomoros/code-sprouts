@@ -111,10 +111,6 @@ export class SproutEditor extends connect(store)(DialogElement) {
 					justify-content: flex-end;
 				}
 
-				textarea {
-					flex: 1;
-				}
-
 				.row {
 					display: flex;
 					flex-direction: column;
@@ -129,6 +125,12 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 				.row input[type=text] {
 					flex: 1;
+				}
+
+				textarea {
+					/* TODO: figure out why this is overflowing width-wize at 100% */
+					width: calc(100% - 1em);
+					min-height: 5em;
 				}
 
 				.indented {
