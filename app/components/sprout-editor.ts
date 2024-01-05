@@ -148,13 +148,22 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
 		if (HIDDEN_CONFIG_FIELDS[key]) return html``;
-		let control = html`<input type='text' ?disabled=${!this._editing} .value=${String(value)}></input>`;
+		let control = html`<input
+			type='text'
+			?disabled=${!this._editing}
+			.value=${String(value)}></input>`;
 		switch (typeof value) {
 		case 'boolean':
-			control = html`<input type='checkbox' ?disabled=${!this._editing} .checked=${value}></input>`;
+			control = html`<input
+				type='checkbox'
+				?disabled=${!this._editing}
+				.checked=${value}></input>`;
 			break;
 		case 'number':
-			control = html`<input type='number' ?disabled=${!this._editing} .value=${String(value)}></input>`;
+			control = html`<input
+				type='number'
+				?disabled=${!this._editing}
+				.value=${String(value)}></input>`;
 			break;
 		}
 		return html`<div class='row indented'><label>${key}</label>${control}</div>`;
