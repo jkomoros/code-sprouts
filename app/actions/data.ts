@@ -40,6 +40,7 @@ import {
 } from '../signaller.js';
 
 import {
+	DirectoryInfo,
 	ImageURL,
 	Path,
 	Prompt,
@@ -55,8 +56,17 @@ import {
 } from '../../src/util.js';
 
 import {
-	emptySprout, packagedSproutFromUncompiled
+	emptySprout,
+	packagedSproutFromUncompiled
 } from '../../src/sprout.js';
+
+import {
+	Zippable,
+	strToU8,
+	zipSync
+} from 'fflate';
+
+import fileSaver from 'file-saver';
 
 import dataManager from '../data_manager.js';
 
@@ -287,4 +297,39 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 	await dataManager.writeSprout(fullName, sprout);
 	dispatch(addOrSelectSprout(fullName));
 	dispatch(startEditing());
+};
+
+const zippableBundle = (info : DirectoryInfo) : Zippable => {
+	const data : Zippable = {};
+	for (const [filename, contents] of Object.entries(info)) {
+		if (typeof contents === 'string') {
+			data[filename] = strToU8(contents);
+			break;
+		}
+		data[filename] = zippableBundle(contents);
+	}
+	return data;
+};
+
+export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, getState) => {
+	const state = getState();
+	const name = selectCurrentSproutName(state);
+	if (!name) throw new Error('No current sprout');
+	const sprout = selectCurrentSprout(state);
+	if (!sprout) throw new Error('No sprout');
+
+	const lastNamePart = name.split('/').pop();
+	if (!lastNamePart) throw new Error('No last name part');
+
+	//TODO: include compiled file
+	//TODO: include directory.json
+	const pkg = await sprout.package();
+
+	const data = zippableBundle(pkg);
+	const zipped = zipSync(data);
+	const blob = new Blob([zipped], {type: 'application/zip'});
+
+	fileSaver.saveAs(blob, `${lastNamePart}.zip`);
+
+
 };
