@@ -17,6 +17,7 @@ import {
 import {
 	CANCEL_ICON,
 	CHECK_CIRCLE_OUTLINE_ICON,
+	CLOUD_DOWNLOAD_ICON,
 	EDIT_ICON,
 	PLUS_ICON
 } from './my-icons.js';
@@ -31,6 +32,7 @@ import {
 
 import {
 	closeEditor,
+	downloadCurrentSprout,
 	editingModifySprout,
 	saveSprout,
 	startEditing
@@ -254,6 +256,15 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 		return html`
 			<h2>${this._currentSproutName || 'Unnamed Sprout'}
+				<button
+					class='small'
+					@click=${this._handleDownloadClicked}
+					title='Download copy of sprout'
+				>
+					<!-- TODO: a better download icon -->
+					${CLOUD_DOWNLOAD_ICON}
+				</button>
+
 				${this._userMayEdit ? 
 		html`
 					<button
@@ -321,6 +332,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		`) :
 		html`<em>No sub-instructions</em>`}
 		`;
+	}
+
+	private _handleDownloadClicked() {
+		store.dispatch(downloadCurrentSprout());
 	}
 
 	private _handleEditingClicked() {
