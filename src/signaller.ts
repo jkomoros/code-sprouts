@@ -5,9 +5,14 @@ import {
 } from './types.js';
 
 type SignallerSproutInfo = {
+	//If getUserMessage is called before a user message is available, we return
+	//this channel that will resolve when we recieve it.
 	userMessageCallback? : (response : Prompt) => void,
+	//When provideUserResponse happens before the caller tries to fetch it, we store it here.
 	userMessage? : Prompt,
+	//This is a signal that callers who need to be ready to end early can use Promise.race() on.
 	doneSignal : Promise<void>,
+	//This is the callback that makes doneSignal return.
 	resolveDone : () => void,
 	done : boolean
 }
