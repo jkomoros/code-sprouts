@@ -42,6 +42,7 @@ import {
 	selectEditorOpen,
 	selectIsEditing,
 	selectMayEditCurrentSprout,
+	selectMobile,
 	selectSproutSnapshot
 } from '../selectors.js';
 
@@ -167,6 +168,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	override stateChanged(state : RootState) {
 		this.open = selectEditorOpen(state);
+		this.mobile = selectMobile(state);
 		this._snapshot = selectSproutSnapshot(state);
 		this._currentSproutName = selectCurrentSproutName(state);
 		this._editing = selectIsEditing(state);
