@@ -257,9 +257,10 @@ export const saveSprout = () : ThunkSomeAction => async (dispatch, getState) => 
 	if (!aiProvider) throw new Error('No AI provider');
 	const name = selectCurrentSproutName(state);
 	if (name === null) throw new Error('no name');
+	//These next two steps can take some time, so close the editor first, so the user knows the button did something.
+	dispatch(closeEditor(false));
 	const pkg = await packagedSproutFromUncompiled(snapshot, aiProvider);
 	await dataManager.writeSprout(name, pkg);
-	dispatch(closeEditor(false));
 };
 
 export const editingModifySprout = (snapshot : UncompiledPackagedSprout) : ThunkSomeAction => async (dispatch, getState) => {
