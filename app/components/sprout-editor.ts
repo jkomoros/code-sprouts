@@ -409,9 +409,14 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		const rawName = prompt('What should the sub-instruction\'s name be?');
 		if (rawName === null) return;
 
-		const name = subInstructionNameSchema.parse(rawName);
+		const nameParseResult = subInstructionNameSchema.safeParse(rawName);
+		
+		if (!nameParseResult.success) {
+			alert(`${rawName} is not a legal name`);
+			return;
+		}
 
-		const fileName = `${name}.md`;
+		const fileName = `${nameParseResult.data}.md`;
 
 		const snapshot = this._snapshot;
 		if (!snapshot) throw new Error('no snapshot');
