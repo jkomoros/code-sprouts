@@ -282,7 +282,7 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 	const sproutExists = await dataManager.sproutExists(fullName);
 	if (sproutExists) throw new Error(`Sprout ${fullName} already exists`);
 
-	const sprout = await emptySprout();
+	const sprout = await emptySprout(name, `A sprout called ${name}`);
 	await dataManager.writeSprout(fullName, sprout);
 	dispatch(addOrSelectSprout(fullName));
 	dispatch(startEditing());

@@ -815,10 +815,12 @@ const packagedSproutFromUncompiledImpl = async (uncompiled : UncompiledPackagedS
 	return uncompiled as PackagedSprout;
 };
 
-export const emptySprout = async () : Promise<PackagedSprout> => {
+export const emptySprout = async (title? : string, description? : string) : Promise<PackagedSprout> => {
 	const config : SproutConfig = {
 		version: 0
 	};
+	if (title !== undefined) config.title = title;
+	if (description !== undefined) config.description = description;
 	//We can skip providing ai becuase we know that the files we require don't
 	//need it. _smokeTest below verifies a fast crash if this ever turns out to
 	//not be the case.
