@@ -66,6 +66,7 @@ import {
 	assertUnreachable,
 	clone
 } from '../../src/util.js';
+import { eleFromEvent } from '../util.js';
 
 const HIDDEN_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
 	version: true
@@ -357,15 +358,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private _handleConfigControlRemoved(e : Event) {
-		let ele : HTMLButtonElement | null =  null;
-		for (const candidate of e.composedPath()) {
-			if (candidate instanceof HTMLButtonElement) {
-				ele = candidate;
-				break;
-			}
-		}
-
-		if (!ele) throw new Error('No button ele found');
+		const ele = eleFromEvent(e);
 
 		const key = sproutConfigSchema.keyof().parse(ele.dataset.key);
 
@@ -471,15 +464,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	private _handleSubInstructionRemoved(e : InputEvent) {
 
-		let ele : HTMLButtonElement | null =  null;
-		for (const candidate of e.composedPath()) {
-			if (candidate instanceof HTMLButtonElement) {
-				ele = candidate;
-				break;
-			}
-		}
-
-		if (!ele) throw new Error('No button ele found');
+		const ele = eleFromEvent(e);
 
 		const subInstructionFileName = ele.dataset.key;
 
