@@ -79,7 +79,8 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	override innerRender() : TemplateResult {
 		if (this._apiKey) return html`You have provided your API key.`;
 		return html`
-			<h3>Please provide your API key</h3>
+			<h3>Welcome</h3>
+			<p>Code Sprouts allows you to run simple GPT-based bots created by yourself or others. You can learn more about what it can do at the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#code-sprouts' target='_blank'>README ${OPEN_IN_NEW}</a></p>
 			<p>This application requires your <strong>OPENAI_API_KEY</strong> to run.</p>
 			<p>This will be stored in your browser's local storage and never transmitted anywhere but directly to openai.com.</p>
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
