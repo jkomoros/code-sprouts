@@ -61,6 +61,7 @@ import {
 } from './help-badges.js';
 
 import {
+	assertUnreachable,
 	clone
 } from '../../src/util.js';
 
@@ -151,18 +152,24 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		let control = html`<input
 			type='text'
 			?disabled=${!this._editing}
+			data-key=${key}
+			@change=${this._handleConfigControlChanged}
 			.value=${String(value)}></input>`;
 		switch (typeof value) {
 		case 'boolean':
 			control = html`<input
 				type='checkbox'
 				?disabled=${!this._editing}
+				data-key=${key}
+				@change=${this._handleConfigControlChanged}
 				.checked=${value}></input>`;
 			break;
 		case 'number':
 			control = html`<input
 				type='number'
 				?disabled=${!this._editing}
+				data-key=${key}
+				@change=${this._handleConfigControlChanged}
 				.value=${String(value)}></input>`;
 			break;
 		}
@@ -239,6 +246,38 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		const clonedSnapshot = clone(snapshot);
 
 		clonedSnapshot['instructions.md'] = newValue;
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleConfigControlChanged(e : InputEvent) {
+		const ele = e.composedPath()[0];
+		if (!(ele instanceof HTMLInputElement)) throw new Error('not input ele');
+		const key = sproutConfigSchema.keyof().parse(ele.dataset.key);
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
+		switch(key) {
+		case 'version':
+			throw new Error('Cannot change version');
+		case 'title':
+		case 'description':
+			if (config[key] === ele.value) return;
+			config[key] = ele.value;
+			break;
+		case 'allowFormatting':
+		case 'allowImages':
+			if (config[key] === ele.checked) return;
+			config[key] = ele.checked;
+			break;
+		default:
+			assertUnreachable(key);
+		}
+
+		clonedSnapshot['sprout.json'] = JSON.stringify(config, null, '\t');
 
 		store.dispatch(editingModifySprout(clonedSnapshot));
 	}
