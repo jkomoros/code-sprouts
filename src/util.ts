@@ -165,6 +165,16 @@ const directoryListingForDirectoryInfo = (info : DirectoryInfo) : DirectoryListi
 	};
 };
 
+//Modifies the info and sub-infos in place to add an up-to-date directory
+//listing for each folder.
+export const addDirectoryListings = (info : DirectoryInfo) : void => {
+	info[DIRECTORY_LISTING_FILE] = JSON.stringify(directoryListingForDirectoryInfo(info), null, '\t');
+	for (const contents of Object.values(info)) {
+		if (typeof contents == 'string') continue;
+		addDirectoryListings(contents);
+	}
+};
+
 //Note: modifies directory in place. It keeps directory.json up to date.
 export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data : string) : void => {
 	const parts = path.split('/');
