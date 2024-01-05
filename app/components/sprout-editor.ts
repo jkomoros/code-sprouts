@@ -147,6 +147,17 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		return items.join(', ');
 	}
 
+	private selectToAddMissingConfig(config : SproutConfig) : TemplateResult {
+		if (!this._editing) return html``;
+		const missingKeys = TypedObject.keys(sproutConfigSchema.shape).filter(key => !(key in config));
+		if (missingKeys.length == 0) return html``;
+		return html`
+			<select class='indented' @change=${this._handleAddMissingConfigKey}>
+				<option value=''>Add config key</option>
+				${missingKeys.map(key => html`<option .value=${key}>${key}</option>`)}
+			</select>`;
+	}
+
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
 		if (HIDDEN_CONFIG_FIELDS[key]) return html``;
 		let control = html`<input
@@ -206,6 +217,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				${config
 		? html`${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}`
 		: html`<em>No config</em>`}
+				${this.selectToAddMissingConfig(config)}
 			</div>
 			<label>Instructions ${help('The main instructions that tell the bot what to do.')}</label>
 			<textarea
@@ -246,6 +258,40 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		const clonedSnapshot = clone(snapshot);
 
 		clonedSnapshot['instructions.md'] = newValue;
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleAddMissingConfigKey(e : Event) {
+		const ele = e.composedPath()[0];
+		if (!(ele instanceof HTMLSelectElement)) throw new Error('Not select ele');
+		const rawKey = ele.value;
+		ele.value = '';
+		if (rawKey === '') return;
+		const key = sproutConfigSchema.keyof().parse(rawKey);
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
+
+		switch (key) {
+		case 'version':
+			throw new Error('version may not be added');
+		case 'title':
+		case 'description':
+			config[key] = '';
+			break;
+		case 'allowImages':
+		case 'allowFormatting':
+			config[key] = true;
+			break;
+		default:
+			assertUnreachable(key);
+		}
+
+		clonedSnapshot['sprout.json'] = JSON.stringify(config, null, '\t');
 
 		store.dispatch(editingModifySprout(clonedSnapshot));
 	}
