@@ -3,6 +3,7 @@ import {
 	UPDATE_OFFLINE,
 	UPDATE_HASH,
 	SomeAction,
+	UPDATE_MOBILE,
 } from '../actions.js';
 
 import {
@@ -13,6 +14,7 @@ const INITIAL_STATE : AppState = {
 	page: '',
 	pageExtra: '',
 	offline: false,
+	mobile: false,
 	hash: '',
 };
 
@@ -33,6 +35,11 @@ const app = (state : AppState = INITIAL_STATE, action : SomeAction) : AppState =
 		return {
 			...state,
 			hash: action.hash
+		};
+	case UPDATE_MOBILE:
+		return {
+			...state,
+			mobile: action.mobile
 		};
 	default:
 		return state;

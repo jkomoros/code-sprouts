@@ -14,6 +14,7 @@ export type AppState = {
 	page : string;
 	pageExtra : string;
 	offline : boolean;
+	mobile: boolean;
 	hash: string;
 };
 

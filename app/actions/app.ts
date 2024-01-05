@@ -1,13 +1,15 @@
 import {
 	UPDATE_PAGE,
 	UPDATE_OFFLINE,
-	UPDATE_HASH
+	UPDATE_HASH,
+	UPDATE_MOBILE
 } from '../actions.js';
 
 import {
 	selectCurrentSproutName,
 	selectHash,
 	selectHashForCurrentState,
+	selectMobile,
 	selectPage,
 	selectPageExtra,
 } from '../selectors.js';
@@ -101,6 +103,16 @@ export const updateOffline = (offline : boolean) : ThunkSomeAction => (dispatch)
 	dispatch({
 		type: UPDATE_OFFLINE,
 		offline
+	});
+};
+
+export const updateMobile = (mobile : boolean) : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const current = selectMobile(state);
+	if (current == mobile) return;
+	dispatch({
+		type: UPDATE_MOBILE,
+		mobile
 	});
 };
 

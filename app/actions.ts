@@ -19,6 +19,7 @@ import {
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_HASH = 'UPDATE_HASH';
+export const UPDATE_MOBILE = 'UPDATE_MOBILE';
 
 export const ADD_SPROUTS = 'ADD_SPROUTS';
 export const SELECT_SPROUT = 'SELECT_SPROUT';
@@ -52,6 +53,11 @@ const actionUpdateHash = z.object({
 	type: z.literal(UPDATE_HASH),
 	hash: z.string()
 }).strict();
+
+const actionUpdateMobile = z.object({
+	type: z.literal(UPDATE_MOBILE),
+	mobile: z.boolean()
+});
 
 const actionAddSprouts = z.object({
 	type: z.literal(ADD_SPROUTS),
@@ -124,6 +130,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
 	actionUpdateHash,
+	actionUpdateMobile,
 	actionAddSprouts,
 	actionSelectSprout,
 	actionSetOpenAPIKey,

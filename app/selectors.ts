@@ -13,11 +13,15 @@ import {
 import {
 	AIProvider
 } from '../src/llm.js';
-import { fetcher } from './fetcher.js';
+
+import {
+	fetcher
+} from './fetcher.js';
 
 export const selectPage = (state : RootState) => state.app ? state.app.page : '';
 export const selectPageExtra = (state : RootState) => state.app ? state.app.pageExtra : '';
 export const selectHash = (state : RootState) => state.app ? state.app.hash : '';
+export const selectMobile = (state : RootState) => state.app ? state.app.mobile : false;
 
 export const selectCurrentSproutName = (state : RootState) => state.data ? state.data.currentSproutName : null;
 export const selectSproutData = (state : RootState) => state.data ? state.data.sprouts : {};
