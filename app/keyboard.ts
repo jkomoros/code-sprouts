@@ -64,6 +64,8 @@ export const keyboardShortcut = z.object({
 	//Unless this is true, then when textEditingActive is true, the shortcut
 	//will not match by default.
 	allowWhileEditing: z.boolean().optional(),
+	//If this is provided, and it returns true, then the shortcut will not activate.
+	disabled: z.function(z.tuple([]), z.boolean()).optional(),
 	key : keyboardKey,
 });
 
@@ -103,6 +105,8 @@ const effectiveCtrlMeta = (shortcut : KeyboardShortcut) : [ctrlKey : boolean, me
 export const eventMatchesShortcut = (e : KeyboardEvent, shortcut : KeyboardShortcut) : boolean => {
 
 	if (!shortcut.allowWhileEditing && textEditingActive()) return false;
+
+	if (shortcut.disabled && shortcut.disabled()) return false;
 
 	const [shortcutCtrlKey, shortcutMetaKey] = effectiveCtrlMeta(shortcut);
 
