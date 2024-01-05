@@ -72,13 +72,38 @@ import {
 	baseFileName
 } from '../util.js';
 
-const HIDDEN_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
-	version: true
-};
+type ConfigFieldInfo = {
+	hidden: boolean,
+	optional: boolean,
+	description: string
+}
 
-//TODO: calculate this automatically based on sproutConfigSchema meta-programming
-const REQUIRED_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
-	version: true
+const CONFIG_FIELDS : Record<keyof SproutConfig, ConfigFieldInfo> = {
+	version: {
+		hidden: true,
+		optional: false,
+		description: 'A format version number for the sprout'
+	},
+	title: {
+		hidden: false,
+		optional: true,
+		description: 'The title of the sprout'
+	},
+	description: {
+		hidden: false,
+		optional: true,
+		description: 'A description of the sprout'
+	},
+	allowImages: {
+		hidden: false,
+		optional: true,
+		description: 'Whether the bot allows images'
+	},
+	allowFormatting: {
+		hidden: false,
+		optional: true,
+		description: 'Whether the bot should return markdown formatting'
+	}
 };
 
 @customElement('sprout-editor')
@@ -160,7 +185,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	private hiddenConfigText(config : SproutConfig) : string {
 		const items : string[] = [];
 		for (const [key, value] of TypedObject.entries(config)) {
-			if (HIDDEN_CONFIG_FIELDS[key]) {
+			const info = CONFIG_FIELDS[key];
+			if (info.hidden) {
 				items.push(`${key}:${String(value)}`);
 			}
 		}
@@ -179,7 +205,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
-		if (HIDDEN_CONFIG_FIELDS[key]) return html``;
+		if (CONFIG_FIELDS[key].hidden) return html``;
 		let control = html`<input
 			type='text'
 			?disabled=${!this._editing}
@@ -204,7 +230,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				.value=${String(value)}></input>`;
 			break;
 		}
-		const removeButton = REQUIRED_CONFIG_FIELDS[key] || !this._editing ? html`` : html`
+		const removeButton = !CONFIG_FIELDS[key].optional || !this._editing ? html`` : html`
 		<button
 			class='small'
 			title=${`Remove ${key}`}
@@ -374,7 +400,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
 
-		if (REQUIRED_CONFIG_FIELDS[key]) throw new Error(`Can't remove ${key} because it's required`);
+		if (!CONFIG_FIELDS[key].optional) throw new Error(`Can't remove ${key} because it's required`);
 
 		delete config[key];
 
