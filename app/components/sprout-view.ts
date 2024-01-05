@@ -399,6 +399,11 @@ class SproutView extends connect(store)(PageViewElement) {
 					object-fit: contain;
 				}
 
+				.cancelled .speaker {
+					color: var(--app-warning-color);
+					transition: color var(--fast-animation) ease-in-out;
+				}
+
 				span.loading svg {
 					fill: var(--dark-gray-color);
 					height:1.0em;
@@ -661,6 +666,7 @@ class SproutView extends connect(store)(PageViewElement) {
 			assertUnreachable(speakerType);
 		}
 		const showLoading = turn.speaker === 'sprout' && this._sproutStreaming && lastTurn;
+		const cancelled = turn.speaker === 'sprout' && turn.status == 'cancelled';
 		const text = textForPrompt(turn.message);
 		const images = promptImages(turn.message);
 		let textEle =  markdownElement(text);
@@ -669,8 +675,8 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		return html`
 			<div class='conversation-turn'>
-				<div class='conversation-turn-speaker'>
-					<span>${speaker}</span>
+				<div class='conversation-turn-speaker ${cancelled ? 'cancelled' : ''}'>
+					<span class='speaker' title=${cancelled ? 'Response cancelled by user' : speaker}>${speaker}</span>
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
 					<div class='flex'></div>
 					${showState && speakerType == 'sprout' 
