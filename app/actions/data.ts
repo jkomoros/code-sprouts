@@ -304,7 +304,7 @@ const zippableBundle = (info : DirectoryInfo) : Zippable => {
 	for (const [filename, contents] of Object.entries(info)) {
 		if (typeof contents === 'string') {
 			data[filename] = strToU8(contents);
-			break;
+			continue;
 		}
 		data[filename] = zippableBundle(contents);
 	}
