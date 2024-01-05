@@ -321,9 +321,8 @@ export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, ge
 	const lastNamePart = name.split('/').pop();
 	if (!lastNamePart) throw new Error('No last name part');
 
-	//TODO: include compiled file
 	//TODO: include directory.json
-	const pkg = await sprout.package();
+	const pkg = await sprout.compiledPackage();
 
 	//We want the sprout, when unzipped, to not put its files in the directory
 	//it was unzipped in, but a subdirectory.
