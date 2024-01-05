@@ -604,7 +604,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		store.dispatch(addDefaultSprouts());
 		store.dispatch(canonicalizePath());
 		let key : string | null = await dataManager.retrieveAPIKey('openai.com');
-		if (!key) key = prompt('What is your OPENAI_API_KEY?\nThis will be stored in your browser\'s local storage and never transmitted elsewhere.\nNo sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.') || '';
+		if (!key) key = prompt('What is your OPENAI_API_KEY?\n\nThis will be stored in your browser\'s local storage and never transmitted anywhere but directly to OpenAI.com.\n\nNo sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.\n\nIf you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at https://github.com/jkomoros/code-sprouts') || '';
 		if (key) {
 			store.dispatch(setOpenAIAPIKey(key));
 		}
