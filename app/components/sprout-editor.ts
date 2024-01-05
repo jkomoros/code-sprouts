@@ -247,6 +247,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 			<label>Schema ${help('If provided, this should be a type defined in typescript.')}</label>
 			<textarea
 				?disabled=${!this._editing}
+				@change=${this._handleSchemaTextChanged}
 				.value=${snapshot['schema.ts'] || ''}
 			></textarea>
 			<label>Sub-instructions ${help('Deeper instructions for specific actions that the bot can ask about.')}</label>
@@ -277,6 +278,23 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		const clonedSnapshot = clone(snapshot);
 
 		clonedSnapshot['instructions.md'] = newValue;
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleSchemaTextChanged(e : InputEvent) {
+		const textarea = e.target as HTMLTextAreaElement;
+		const newValue = textarea.value;
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		if (newValue === '') {
+			delete clonedSnapshot['schema.ts'];
+		} else {
+			clonedSnapshot['schema.ts'] = newValue;
+		}
 
 		store.dispatch(editingModifySprout(clonedSnapshot));
 	}
