@@ -325,7 +325,13 @@ export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, ge
 	//TODO: include directory.json
 	const pkg = await sprout.package();
 
-	const data = zippableBundle(pkg);
+	//We want the sprout, when unzipped, to not put its files in the directory
+	//it was unzipped in, but a subdirectory.
+	const finalPkg : DirectoryInfo = {
+		[lastNamePart]: pkg
+	};
+
+	const data = zippableBundle(finalPkg);
 	const zipped = zipSync(data);
 	const blob = new Blob([zipped], {type: 'application/zip'});
 
