@@ -16,6 +16,7 @@ import {
 } from '../types.js';
 
 import {
+	selectAIProvider,
 	selectAttachedImage,
 	selectChangesMade,
 	selectCurrentSprout,
@@ -24,6 +25,7 @@ import {
 	selectEditorOpen,
 	selectIsEditing,
 	selectSproutData,
+	selectSproutSnapshot,
 	selectSproutStreaming
 } from '../selectors.js';
 
@@ -53,7 +55,7 @@ import {
 } from '../../src/util.js';
 
 import {
-	emptySprout
+	emptySprout, packagedSproutFromUncompiled
 } from '../../src/sprout.js';
 
 import dataManager from '../data_manager.js';
@@ -243,6 +245,21 @@ export const startEditing = () : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
 		type: START_EDITING
 	});
+};
+
+export const saveSprout = () : ThunkSomeAction => async (dispatch, getState) => {
+	const state = getState();
+	const isEditing = selectIsEditing(state);
+	if (!isEditing) throw new Error('not editing');
+	const snapshot = selectSproutSnapshot(state);
+	if (!snapshot) throw new Error('No snapshot');
+	const aiProvider = selectAIProvider(state);
+	if (!aiProvider) throw new Error('No AI provider');
+	const name = selectCurrentSproutName(state);
+	if (name === null) throw new Error('no name');
+	const pkg = await packagedSproutFromUncompiled(snapshot, aiProvider);
+	await dataManager.writeSprout(name, pkg);
+	dispatch(closeEditor(false));
 };
 
 export const editingModifySprout = (snapshot : UncompiledPackagedSprout) : ThunkSomeAction => async (dispatch, getState) => {

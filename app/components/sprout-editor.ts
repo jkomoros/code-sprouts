@@ -31,6 +31,7 @@ import {
 import {
 	closeEditor,
 	editingModifySprout,
+	saveSprout,
 	startEditing
 } from '../actions/data.js';
 
@@ -125,8 +126,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	save() {
-		//TODO: actually save.
-		store.dispatch(closeEditor(false));
+		store.dispatch(saveSprout());
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
@@ -229,7 +229,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		>${CANCEL_ICON}</button>
 		${this._editing ? html`<button
 			class='round default'
-			@click=${() => this.save}
+			@click=${this.save}
 			title=${this._changesMade ? 'Save changes' : 'No changes to save'}
 			?disabled=${!this._changesMade}
 		>${CHECK_CIRCLE_OUTLINE_ICON}</button>` : html``}
