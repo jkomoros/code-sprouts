@@ -50,6 +50,7 @@ import {
 } from '../../src/types.js';
 
 import {
+	addDirectoryListings,
 	joinPath,
 	normalizeSproutPath,
 	sproutBaseNameLegal
@@ -321,8 +322,9 @@ export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, ge
 	const lastNamePart = name.split('/').pop();
 	if (!lastNamePart) throw new Error('No last name part');
 
-	//TODO: include directory.json
 	const pkg = await sprout.compiledPackage();
+	//Add directory.json listings
+	addDirectoryListings(pkg);
 
 	//We want the sprout, when unzipped, to not put its files in the directory
 	//it was unzipped in, but a subdirectory.
