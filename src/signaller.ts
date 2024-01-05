@@ -75,17 +75,21 @@ export abstract class ConversationSignaller {
 		});
 	}
 
+	//This signals to the sprout to wrap it up and stop running.
 	finish(sprout : Sprout) : void {
 		const info = this.getSproutInfo(sprout);
 		info.done = true;
 		info.resolveDone();
 	}
 
+	//This is what things that want to know if they shoudl finish early can
+	//watch.
 	doneSignal(sprout : Sprout) : Promise<void> {
 		const info = this.getSproutInfo(sprout);
 		return info.doneSignal;
 	}
 
+	//This returns whether finish() has been called
 	done(sprout : Sprout) : boolean {
 		const info = this.getSproutInfo(sprout);
 		return info.done;
