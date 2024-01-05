@@ -278,6 +278,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		html``
 }
 			</h2>
+			<label>For more information on the structure of a sprout, see the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#creating-a-sprout' target='_blank'>documentation</a>.</label>
 			<label .title=${this.hiddenConfigText(config)}>Config ${help('Various configuration properties for the sprout')}</label>
 			<div>
 				${config
