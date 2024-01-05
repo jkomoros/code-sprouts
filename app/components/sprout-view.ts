@@ -1,5 +1,6 @@
 import { html, css, TemplateResult, PropertyValues} from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -28,6 +29,7 @@ import {
 	selectMayCreateSprout,
 	selectIsEditing,
 	selectDialogOpen,
+	selectMobile,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -202,6 +204,9 @@ class SproutView extends connect(store)(PageViewElement) {
 	
 	@state()
 		_editing : boolean = false;
+	
+	@state()
+		_moblie : boolean = false;
 
 	static override get styles() {
 		return [
@@ -270,6 +275,21 @@ class SproutView extends connect(store)(PageViewElement) {
 					padding-bottom: 1em;
 					margin-bottom: 1em;
 					border-bottom: var(--subtle-border);
+				}
+
+				.mobile .toolbar {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+
+				.mobile .toolbar .controls {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+				}
+
+				.mobile .toolbar .title {
+					margin-left: 0;
 				}
 
 				.title h2 {
@@ -409,9 +429,14 @@ class SproutView extends connect(store)(PageViewElement) {
 
 		const remoteDomain = pathIsRemote(this._currentSproutName || '');
 
+		const classes = {
+			container: true,
+			mobile: this._moblie
+		};
+
 		return html`
 			<sprout-editor></sprout-editor>
-			<div class='container'>
+			<div class=${classMap(classes)}>
 				<div class='column'>
 					<div class='toolbar'>
 						<div class='controls'>
@@ -544,6 +569,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._imageUpload = selectAttachedImage(state);
 		this._mayCreateSprout = selectMayCreateSprout(state);
 		this._editing = selectIsEditing(state);
+		this._moblie = selectMobile(state);
 	}
 
 	override firstUpdated() {
