@@ -52,6 +52,11 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 					justify-content: flex-end;
 				}
 
+				p {
+					margin-block-start: 0.5em;
+					margin-block-end: 0.5em;
+				}
+
 			`
 		];
 	}
@@ -66,7 +71,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	override innerRender() : TemplateResult {
 		if (this._apiKey) return html`You have provided your API key.`;
 		return html`
-			<h3>OpenAI API Key</h3>
+			<h3>Please provide your API key</h3>
 			<p>This application requires your <strong>OPENAI_API_KEY</strong> to run.</p>
 			<p>This will be stored in your browser's local storage and never transmitted anywhere but directly to OpenAI.com.</p>
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
