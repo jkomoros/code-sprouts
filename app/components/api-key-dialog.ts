@@ -94,8 +94,8 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	}
 
 	override _shouldClose() {
-		//The only way to get out of this dialog is to click the cancel button.
-
+		//TODO: allow the dialog to be required and not show any affordances to close.
+		alert('You must provide an API key to use this application');
 	}
 
 	private _handleSubmitClicked() {
