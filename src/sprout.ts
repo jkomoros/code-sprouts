@@ -654,6 +654,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 	private prepareForConversation() : ConversationMessageSprout {
 		const sproutResponse : ConversationMessageSprout = {
 			speaker: 'sprout',
+			status: 'active',
 			message: ''
 		};
 		this._conversation = [
@@ -703,7 +704,8 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			]);
 
 			if (signaller.streamingStopped(this)) {
-				//TODO: clean up the turn that was started.
+				if (this._debugLogger) this._debugLogger('Streaming stopped by user');
+				sproutResponse.status = 'cancelled';
 				return '';
 			}
 			
@@ -757,6 +759,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		//fastJSONPatch applies the patch in place by default. The second true is for mutateDocumen: false
 		const newState = fastJSONPatch.applyPatch(oldState, fastJSONPatch.deepClone(turn.patch), false, false).newDocument;
 		sproutResponse.state = newState;
+		sproutResponse.status = 'done';
 		if (this._debugLogger) this._debugLogger(`New State:\n${JSON.stringify(newState, null, '\t')}`);
 		return turn.messageForUser;
 	}

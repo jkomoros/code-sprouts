@@ -207,6 +207,11 @@ const conversationMessageUserSchema = z.object({
 
 const conversationMessageSproutSchema = z.object({
 	speaker: z.literal('sprout'),
+	status: z.enum([
+		'active',
+		'done',
+		'cancelled'
+	]),
 	message: promptSchema,
 	state: sproutStateSchema.optional()
 });
