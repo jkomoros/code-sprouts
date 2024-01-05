@@ -683,6 +683,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const promptHasImages = promptIncludesImage(prompt);
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (this._debugLogger) this._debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
+		signaller.streamWillStart(this);
 		const stream = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
 			debugLogger: this._debugLogger,
@@ -698,10 +699,13 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		while (true) {
 			const iteratorResult = await Promise.race([
 				iterator.next(),
-				signaller.doneSignal(this)
+				signaller.stopStreamingSignal(this)
 			]);
 
-			if (signaller.done(this)) return '';
+			if (signaller.streamingStopped(this)) {
+				//TODO: clean up the turn that was started.
+				return '';
+			}
 			
 			if (typeof iteratorResult == 'undefined') throw new Error('Undefined iterator result');
 			if (iteratorResult.done) break;

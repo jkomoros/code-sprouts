@@ -10,6 +10,13 @@ type SignallerSproutInfo = {
 	userMessageCallback? : (response : Prompt) => void,
 	//When provideUserResponse happens before the caller tries to fetch it, we store it here.
 	userMessage? : Prompt,
+
+	//This is the signal that callers can use Promise.race() to see if they need to stop streaming early for any reason.
+	stopStreamSignal? : Promise<void>,
+	//This is the callback to complete cancelStreamInput.
+	resolveStopStreamSignal? : () => void,
+	streamingStopped : boolean;
+
 	//This is a signal that callers who need to be ready to end early can use Promise.race() on.
 	doneSignal : Promise<void>,
 	//This is the callback that makes doneSignal return.
@@ -21,6 +28,7 @@ type SignallerSproutInfo = {
 const createSproutInfo = () : SignallerSproutInfo => {
 	const info : Partial<SignallerSproutInfo> = {
 		done: false,
+		streamingStopped: false
 	};
 	const doneSignal = new Promise<void>(resolve => {
 		info.resolveDone = resolve;
@@ -34,6 +42,15 @@ export abstract class ConversationSignaller {
 
 	constructor() {
 		this._sproutInfo = new WeakMap();
+	}
+
+	streamWillStart (sprout : Sprout) : void {
+		const info = this.getSproutInfo(sprout);
+		info.streamingStopped = false;
+		const stopStreamSignal = new Promise<void>(resolve => {
+			info.resolveStopStreamSignal = resolve;
+		});
+		info.stopStreamSignal = stopStreamSignal;
 	}
 
 	//Async methods
@@ -80,9 +97,30 @@ export abstract class ConversationSignaller {
 		});
 	}
 
+	//This can be called to tell a stream that is currently streaming to cancel the rest of the turn and prepare for the next turn.
+	stopStreaming(sprout : Sprout) : void {
+		const info = this.getSproutInfo(sprout);
+		info.streamingStopped = true;
+		if (info.resolveStopStreamSignal) info.resolveStopStreamSignal();
+	}
+
+	stopStreamingSignal(sprout : Sprout) : Promise<void> {
+		const info = this.getSproutInfo(sprout);
+		//If there isn't a signal, we need to return a promise that never resolves.
+		//Callers will race this with other promises.
+		return info.stopStreamSignal || new Promise(() => {});
+	}
+
+	streamingStopped(sprout : Sprout) : boolean {
+		const info = this.getSproutInfo(sprout);
+		return info.streamingStopped;
+	}
+
 	//This signals to the sprout to wrap it up and stop running.
 	finish(sprout : Sprout) : void {
 		const info = this.getSproutInfo(sprout);
+		//Some callers will only race on cancelStreamSignal, so we need to cancel it too.
+		this.stopStreaming(sprout);
 		info.done = true;
 		info.resolveDone();
 	}
