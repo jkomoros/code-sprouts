@@ -448,6 +448,16 @@ export class Sprout {
 		return result;
 	}
 
+	async compiledPackage() : Promise<PackagedSprout> {
+		const uncompiled = await this.package();
+		const compiled = await this.compiledData(true);
+		if (!compiled) throw new Error('No compiled data');
+		return {
+			...uncompiled,
+			'sprout.compiled.json': JSON.stringify(compiled, null, '\t')
+		};
+	}
+
 	async config() : Promise<SproutConfig> {
 		const compiled = await this.compiledData();
 		if(compiled) return compiled.config;
