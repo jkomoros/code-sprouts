@@ -34,6 +34,12 @@ export const selectWrittenSprouts = (state : RootState) => state.data ? state.da
 
 export const selectHashForCurrentState = (_state : RootState) => '';
 
+//This will be a convenient place to extend later.
+export const selectDialogOpen = createSelector(
+	selectEditorOpen,
+	(editorOpen) => editorOpen
+);
+
 export const selectAIProvider = createSelector(
 	selectOpenAIAPIKey,
 	(apiKey) => apiKey ? new AIProvider({openai_api_key: apiKey}) : null
