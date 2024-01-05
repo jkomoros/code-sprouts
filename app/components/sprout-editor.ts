@@ -278,7 +278,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		html``
 }
 			</h2>
-			<label .title=${this.hiddenConfigText(config)}>Config ${help('Various configuratino properties for the sprout')}</label>
+			<label .title=${this.hiddenConfigText(config)}>Config ${help('Various configuration properties for the sprout')}</label>
 			<div>
 				${config
 		? html`${TypedObject.entries(config).map(([key, value]) => this.rowForConfig(key, value))}`
@@ -291,7 +291,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				@change=${this._handleInstructionsChanged}
 				.value=${snapshot['instructions.md']}
 			></textarea>
-			<label>Schema ${help('If provided, this should be a type defined in typescript.')}</label>
+			<label>Schema (optional)${help('If provided, this should be a type defined in typescript.')}</label>
 			<textarea
 				?disabled=${!this._editing}
 				@change=${this._handleSchemaTextChanged}
