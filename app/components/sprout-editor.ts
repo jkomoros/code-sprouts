@@ -268,6 +268,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				<summary><label>${key}</label></summary>
 				<textarea
 					?disabled=${!this._editing}
+					data-key=${key}
+					@change=${this._handleSubInstructionChanged}
 					.value=${value}
 				></textarea>
 			</details>
@@ -427,6 +429,31 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		clonedSnapshot['sub_instructions'] = {
 			...subInstructions,
 			[fileName]: ''
+		};
+
+		store.dispatch(editingModifySprout(clonedSnapshot));
+	}
+
+	private _handleSubInstructionChanged(e : InputEvent) {
+
+		const ele = e.composedPath()[0];
+		if (!(ele instanceof HTMLTextAreaElement)) throw new Error('not text area');
+
+		const subInstructionFileName = ele.dataset.key;
+
+		if (!subInstructionFileName) throw new Error('Unknown name');
+
+		const newValue = ele.value;
+
+		const snapshot = this._snapshot;
+		if (!snapshot) throw new Error('no snapshot');
+		const clonedSnapshot = clone(snapshot);
+
+		const subInstructions = clonedSnapshot['sub_instructions'] || {};
+
+		clonedSnapshot['sub_instructions'] = {
+			...subInstructions,
+			[subInstructionFileName]: newValue
 		};
 
 		store.dispatch(editingModifySprout(clonedSnapshot));
