@@ -18,7 +18,31 @@ You can also interact with your sprouts from the command line via `node build/sr
 
 The first time you run either the webapp or the CLI it will ask you to set your OPENAI_API_KEY if not already set.
 
+## Overview of Code Sprouts
+
+Think of Code Sprouts like OpenAI's GPTs, but hosted wherever you want them to be, and with more intricate possibilities for complex logic.
+
+OpenAI's GPTs are simple pre-built configurations that provide ChatGPT with a starting prompt to tell it how to behave with the user. Users can "install" these bots by visiting ChatGPT and going to its directory. These bots allow tinkerers--even ones without a technical background--to create custom bots that reflect their expertise and goals. GPTs are great, but they are only usable within the proto-aggregator of ChatGPT. At this era of ecosystem development, it's time for open-ended tinkering across a community.
+
+Code Sprouts are run by a viewer. This project is the canonical viewer; you can host your own instance, or use https://code-sprouts.web.app/ for convenience.
+
+A viewer is pointed at a specific Code Sprout to execute it. A Code Sprout is a folder of static, declarative configuration describing the behavior of the sprout. A user would point their viewer at the sprout folder. This viewer allows doing that easily from the URL: `https://code-sprouts.web.app/view/raw.githubusercontent.com/jkomoros/code-sprouts/main/examples/eliza` would load up the code sprout hosted at `https://raw.githubusercontent.com/jkomoros/code-sprouts/main/examples/eliza`. The default web app comes preloaded with a few examples accessible via a drop-down.
+
+Because Code Sprouts are declarative and static, **the sprout cannot view any information about the user**, including the messages sent to the bot or the user's API keys. The only thing a sprout's owner would be able to tell is that someone somewhere fetched the sprout configuration.
+
+The Code Sprout folder has a few files within it declaring the behavior of the sprout (described in the next section). Sprouts can also be "compiled" into a single file containing all of the processed configuration. This allows viewers to run the sprout with only a single fetch and without additional processing. If the compiled version is not available, the viewer falls back on fetching the individual files.
+
+You can create sprouts by hand by creating files in the `sprouts/` directory, or by using a GUI editor in the webapp to create private, local sprouts.
+
+Code Sprouts are not exactly like GPTs. A few differences:
+- Creators and end-users must (currently) provide their own `OPENAI_API_KEY` to a viewer to run each sprout.
+- Creators can host their configuration anywhere they want, and end-users can use whatever sprout viewer they want.
+- Code Sprouts do not currently support uploading additional content to do RAG-style bots.
+- Code Sprouts allow more complex state management logic and instruction management than GPTs.
+
 ## Creating a Sprout
+
+This section walks through creating a sprout by creating files. The web app also has a GUI for creating sprouts. Just click the plus icon next to the sprout selector and you can start editing a sprout live without writing any code.
 
 A sprout is a named folder (typically in `sprouts/` but with version-controlled sprouts in `examples/` too) with the following directory shape:
 
