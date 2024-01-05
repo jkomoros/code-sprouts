@@ -237,7 +237,8 @@ export class Sprout {
 		const json = JSON.parse(compiledData);
 		const parseResult = compiledSproutSchema.safeParse(json);
 		if (!parseResult.success) {
-			throw new Error(`Invalid compiled sprout: ${JSON.stringify(parseResult.error.errors, null, '\t')}`);
+			if (this._debugLogger) this._debugLogger(`Sprout ${this.name} has invalid compiled data: ${parseResult.error.message} so returning null`);
+			return null;
 		}
 		return parseResult.data;
 	}
