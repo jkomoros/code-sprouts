@@ -80,6 +80,7 @@ import {
 	SEND_ICON,
 	SYNC_ICON,
 	WARNING_ICON,
+	CANCEL_ICON,
 	LOCK_ICON,
 	PREVIEW_ICON,
 	CLOUD_DOWNLOAD_ICON
@@ -540,15 +541,28 @@ class SproutView extends connect(store)(PageViewElement) {
 								${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
 							</button>
 						`: ''}
-						<button
-							class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
-							@click=${this._handleConversationInputSubmit}
-							title=${'Send ' + shortcutDisplayString(sendShortcut.shortcut)}
-							?disabled=${this._sproutStreaming}
-						>
-							<!-- TODO: Cmd-Enter to send -->
-							${SEND_ICON}
-						</button>
+						${this._sproutStreaming ? 
+		html`
+								<button
+									class='button round'
+									@click=${this._handleStopStreamingClicked}
+									title='Stop the bot from thinking more so you can send another message'
+								>	
+									<!-- TODO: stop icon -->
+									${CANCEL_ICON}
+								</button>
+		` : html`
+								<button
+									class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
+									@click=${this._handleConversationInputSubmit}
+									title=${'Send ' + shortcutDisplayString(sendShortcut.shortcut)}
+									?disabled=${this._sproutStreaming}
+								>
+									${SEND_ICON}
+								</button>
+							`
+}
+
 					</div>
 				</div>
 			</div>
@@ -694,6 +708,13 @@ class SproutView extends connect(store)(PageViewElement) {
 	private _handleDraftMessageInput(e : Event) {
 		const textarea = e.target as HTMLTextAreaElement;
 		store.dispatch(updateDraftMessage(textarea.value));
+	}
+
+	private _handleStopStreamingClicked() {
+		//TODO: implement this.
+		const sprout = this._currentSprout;
+		if (!sprout) throw new Error('No sprout');
+		signaller.stopStreaming(sprout);
 	}
 
 	private _handleAddSprout() {
