@@ -358,7 +358,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private _handleConfigControlRemoved(e : Event) {
-		const ele = eleFromEvent(e);
+		const ele = eleFromEvent(e, HTMLButtonElement);
 
 		const key = sproutConfigSchema.keyof().parse(ele.dataset.key);
 
