@@ -19,6 +19,7 @@ import {
 	CHECK_CIRCLE_OUTLINE_ICON,
 	DOWNLOAD_ICON,
 	EDIT_ICON,
+	OPEN_IN_NEW,
 	PLUS_ICON
 } from './my-icons.js';
 
@@ -155,6 +156,13 @@ export class SproutEditor extends connect(store)(DialogElement) {
 					flex: 1;
 				}
 
+				a svg {
+					height: 1em;
+					width: 1em;
+					/* inherit the color of the a.color */
+					fill: currentcolor;
+				}
+
 				textarea {
 					/* TODO: figure out why this is overflowing width-wize at 100% */
 					width: calc(100% - 1em);
@@ -278,7 +286,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		html``
 }
 			</h2>
-			<label>For more information on the structure of a sprout, see the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#creating-a-sprout' target='_blank'>documentation</a>.</label>
+			<label>For more information on the structure of a sprout, see the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#creating-a-sprout' target='_blank'>documentation ${OPEN_IN_NEW}</a>.</label>
 			<label .title=${this.hiddenConfigText(config)}>Config ${help('Various configuration properties for the sprout')}</label>
 			<div>
 				${config
