@@ -314,7 +314,7 @@ export class Sprout {
 	}
 
 	async compiledData(forceRefresh : boolean = false) : Promise<CompiledSprout | null> {
-		if (this._compiledSprout) return this._compiledSprout;
+		if (this._compiledSprout && !forceRefresh) return this._compiledSprout;
 		const compiled = await this.fetchCompiledSprout();
 		if (!forceRefresh && compiled) {
 			this._compiledSprout = compiled;
