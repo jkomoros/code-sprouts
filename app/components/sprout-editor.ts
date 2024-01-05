@@ -17,7 +17,7 @@ import {
 import {
 	CANCEL_ICON,
 	CHECK_CIRCLE_OUTLINE_ICON,
-	CLOUD_DOWNLOAD_ICON,
+	DOWNLOAD_ICON,
 	EDIT_ICON,
 	PLUS_ICON
 } from './my-icons.js';
@@ -261,8 +261,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 					@click=${this._handleDownloadClicked}
 					title='Download copy of sprout'
 				>
-					<!-- TODO: a better download icon -->
-					${CLOUD_DOWNLOAD_ICON}
+					${DOWNLOAD_ICON}
 				</button>
 
 				${this._userMayEdit ? 
