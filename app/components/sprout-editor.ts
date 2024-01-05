@@ -59,7 +59,14 @@ import {
 	HelpStyles,
 	help,
 } from './help-badges.js';
-import { clone } from '../../src/util.js';
+
+import {
+	clone
+} from '../../src/util.js';
+
+const HIDDEN_CONFIG_FIELDS : Partial<Record<keyof SproutConfig, true>> = {
+	version: true
+};
 
 @customElement('sprout-editor')
 export class SproutEditor extends connect(store)(DialogElement) {
@@ -130,6 +137,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private rowForConfig(key : keyof SproutConfig, value : unknown) : TemplateResult {
+		if (HIDDEN_CONFIG_FIELDS[key]) return html``;
 		let control = html`<input type='text' ?disabled=${!this._editing} .value=${String(value)}></input>`;
 		switch (typeof value) {
 		case 'boolean':
