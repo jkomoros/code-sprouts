@@ -301,20 +301,28 @@ export class AIProvider {
 		return result;
 	}
 
-	async prompt(prompt: Prompt, opts : PromptOptions = {}) : Promise<string> {
+	async prompt(prompt: Prompt, opts : PromptOptions = {}) : Promise<{model: CompletionModelID, result: string}> {
 		opts = mergeObjects(this._opts, opts);
 		opts = await this.extendPromptOptionsWithExtras(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computePrompt(prompt, model, this._keys, opts);
+		const result = await computePrompt(prompt, model, this._keys, opts);
+		return {
+			model,
+			result
+		};
 	}
 
-	async promptStream(prompt : Prompt, opts: PromptOptions = {}) : Promise<PromptStream> {
+	async promptStream(prompt : Prompt, opts: PromptOptions = {}) : Promise<{model: CompletionModelID, stream: PromptStream}> {
 		opts = mergeObjects(this._opts, opts);
 		opts = await this.extendPromptOptionsWithExtras(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computeStream(prompt, model, this._keys, opts);
+		const stream = await computeStream(prompt, model, this._keys, opts);
+		return {
+			model,
+			stream
+		};
 	}
 
 	async tokenCount(prompt : Prompt, opts : PromptOptions = {}) : Promise<number> {

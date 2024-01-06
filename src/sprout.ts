@@ -494,7 +494,7 @@ type Result = {
 }`;
 
 		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
-		const summary = await this._aiProvider.prompt(prompt, {
+		const {result: summary} = await this._aiProvider.prompt(prompt, {
 			jsonResponse: true,
 			modelRequirements: {
 				jsonResponse: true,
@@ -531,7 +531,7 @@ type Result = {
 		const prompt = `Return the JSON of a default/empty object conforming to this typescript schema (following comments on defaults):
 ${schemaText}
 `;
-		const rawJSON = await this._aiProvider.prompt(prompt, {
+		const {result: rawJSON} = await this._aiProvider.prompt(prompt, {
 			jsonResponse: true,
 			modelRequirements: {
 				jsonResponse: true
@@ -699,7 +699,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (this._debugLogger) this._debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		signaller.streamWillStart(this);
-		const stream = await this._aiProvider.promptStream(prompt, {
+		const {stream} = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
 			debugLogger: this._debugLogger,
 			modelRequirements: {
