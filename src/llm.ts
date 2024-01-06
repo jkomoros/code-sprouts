@@ -273,7 +273,7 @@ export class AIProvider {
 		throw new Error('No model matches requirements');
 	}
 
-	private async extendPromptOptionsWithTokenCount(prompt: Prompt, input : PromptOptions) : Promise<PromptOptions> {
+	private async extendPromptOptionsWithExtras(prompt: Prompt, input : PromptOptions) : Promise<PromptOptions> {
 		//TODO: once there are multiple providers, we don't know which tokenCount to use for them if the model isn't provided.
 		const tokenCount = await this.tokenCount(prompt, input);
 		const result = {
@@ -284,12 +284,20 @@ export class AIProvider {
 			...result.modelRequirements,
 			contextSizeAtLeast: tokenCount	
 		};
+		//Set a constraint on the model for the providers we have keys for.
+		const providersWithAPIKeys = TypedObject.keys(this._keys).filter(key => this._keys[key]);
+		//Only set a constraint if we only have a subset of keys available.
+		if (providersWithAPIKeys.length != modelProvider.options.length) {
+			//TODO: if modelProvider is already set and it's a strict subset, use that instead.
+			//This list might be [] if there are no keys, which is fine, because then there are no models that should match.
+			result.modelRequirements.modelProvider = providersWithAPIKeys;
+		}
 		return result;
 	}
 
 	async prompt(prompt: Prompt, opts : PromptOptions = {}) : Promise<string> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
+		opts = await this.extendPromptOptionsWithExtras(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
 		return computePrompt(prompt, model, this._keys, opts);
@@ -297,7 +305,7 @@ export class AIProvider {
 
 	async promptStream(prompt : Prompt, opts: PromptOptions = {}) : Promise<PromptStream> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
+		opts = await this.extendPromptOptionsWithExtras(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
 		return computeStream(prompt, model, this._keys, opts);
