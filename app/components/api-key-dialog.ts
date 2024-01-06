@@ -39,8 +39,19 @@ import {
 } from '../selectors.js';
 
 import {
-	APIKeys
+	APIKeys,
+	modelProvider,
+	ModelProvider
 } from '../../src/types.js';
+
+import {
+	TypedObject
+} from '../../src/typed-object.js';
+
+const KEY_NAMES : Record<ModelProvider, string> = {
+	'openai.com': 'OPENAI_API_KEY',
+	'anthropic.com': 'ANTHROPIC_API_KEY'
+};
 
 @customElement('api-key-dialog')
 export class APIKeyDialog extends connect(store)(DialogElement) {
@@ -86,15 +97,19 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 		return html`
 			<h3>Welcome</h3>
 			<p>Code Sprouts allows you to run simple GPT-based bots created by yourself or others. You can learn more about what it can do at the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#code-sprouts' target='_blank'>README ${OPEN_IN_NEW}</a></p>
-			<p>This application requires your <strong>OPENAI_API_KEY</strong> to run.</p>
+			<p>This application requires at least one API key to a supported LLM provider to run.</p>
 			<p>This will be stored in your browser's local storage and never transmitted anywhere but directly to openai.com.</p>
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
 			<p>If you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at <a href='https://github.com/jkomoros/code-sprouts' target="_blank">https://github.com/jkomoros/code-sprouts ${OPEN_IN_NEW}</a></p>
-			<label>OPENAI_API_KEY</label>
-			<input
-				type='text'
-				autofocus
-			/>
+			<h4>Provide at least one of the following:</h4>
+			${TypedObject.entries(KEY_NAMES).map(([provider, name]) => html`
+				<label>${name}</label>
+				<input
+					type='text'
+					.value=${this._apiKeys[provider] || ''}
+					data-provider=${provider}
+				></input>
+			`)}
 		`;
 	}
 
@@ -105,11 +120,16 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	}
 
 	private _handleSubmitClicked() {
-		const ele = this.shadowRoot!.querySelector('input') as HTMLInputElement;
-		if (!ele) return;
-		const apiKey = ele.value;
-		if (!apiKey) alert('You must provide an API key');
-		store.dispatch(setAPIKey('openai.com', apiKey));
+		const eles = this.shadowRoot?.querySelectorAll('input') as NodeListOf<HTMLInputElement>;
+		if (![...eles].some(ele => ele.value)) {
+			alert('You must provide at least one API key');
+			return;
+		}
+		for (const ele of eles) {
+			const provider = modelProvider.parse(ele.dataset.provider);
+			const key = ele.value;
+			store.dispatch(setAPIKey(provider, key));
+		}
 	}
 
 	override buttonsRender() : TemplateResult {
