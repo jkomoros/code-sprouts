@@ -94,6 +94,9 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 
 
 	override innerRender() : TemplateResult {
+
+		const defaultProviders = TypedObject.keys(KEY_NAMES).slice(0, 1);
+		const otherProviders = TypedObject.keys(KEY_NAMES).slice(1);
 		return html`
 			<h3>Welcome</h3>
 			<p>Code Sprouts allows you to run simple GPT-based bots created by yourself or others. You can learn more about what it can do at the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#code-sprouts' target='_blank'>README ${OPEN_IN_NEW}</a></p>
@@ -102,14 +105,29 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
 			<p>If you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at <a href='https://github.com/jkomoros/code-sprouts' target="_blank">https://github.com/jkomoros/code-sprouts ${OPEN_IN_NEW}</a></p>
 			<h4>Provide at least one of the following:</h4>
-			${TypedObject.entries(KEY_NAMES).map(([provider, name]) => html`
-				<label>${name}</label>
-				<input
-					type='text'
-					.value=${this._apiKeys[provider] || ''}
-					data-provider=${provider}
-				></input>
+			${defaultProviders.map(provider => html`
+					<label for=${provider}>${KEY_NAMES[provider]}</label>
+					<input
+						type='text'
+						id=${provider}
+						data-provider=${provider}
+						.value=${this._apiKeys[provider] || ''}
+					/>
 			`)}
+			${otherProviders.length ? html`
+				<details>
+					<summary>Other providers</summary>
+					${otherProviders.map(provider => html`
+						<label for=${provider}>${KEY_NAMES[provider]}</label>
+						<input
+							type='text'
+							id=${provider}
+							data-provider=${provider}
+							.value=${this._apiKeys[provider] || ''}
+						/>
+				`)}
+				</details>
+			`: html``}
 		`;
 	}
 
