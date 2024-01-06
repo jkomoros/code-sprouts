@@ -53,7 +53,7 @@ export const selectAnthropicAPIKey = createSelector(
 	(keys) => keys['anthropic.com'] || ''
 );
 
-const selectAPIKeysDialogAutoOpen = createSelector(
+export const selectAPIKeysDialogAutoOpen = createSelector(
 	selectAPIKeys,
 	(keys) => !Object.values(keys).some(str => Boolean(str))
 );

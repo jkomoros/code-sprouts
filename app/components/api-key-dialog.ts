@@ -34,6 +34,7 @@ import {
 
 import {
 	selectAPIKeys,
+	selectAPIKeysDialogAutoOpen,
 	selectAPIKeysDialogOpen,
 	selectMobile
 } from '../selectors.js';
@@ -65,6 +66,9 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	@state()
 		_apiKeys : APIKeys = {};
 
+	@state()
+		_firstRun : boolean = false;
+
 	static override get styles() {
 		return [
 			...DialogElement.styles,
@@ -95,6 +99,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	override stateChanged(state : RootState) {
 		this.open = selectAPIKeysDialogOpen(state);
 		this._apiKeys = selectAPIKeys(state);
+		this._firstRun = selectAPIKeysDialogAutoOpen(state);
 		this.mobile = selectMobile(state);
 	}
 
@@ -121,7 +126,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 					/>
 			`)}
 			${otherProviders.length ? html`
-				<details>
+				<details .open=${!this._firstRun}>
 					<summary>Other providers</summary>
 					${otherProviders.map(provider => html`
 						<label for=${provider}>${KEY_NAMES[provider].keyName}</label>
