@@ -52,10 +52,21 @@ export const selectAnthropicAPIKey = createSelector(
 	(keys) => keys['anthropic.com'] || ''
 );
 
+const selectAPIKeysDialogAutoOpen = createSelector(
+	selectAPIKeys,
+	(keys) => Object.values(keys).some(str => Boolean(str))
+);
+
+export const selectAPIKeysDialogOpen = createSelector(
+	selectAPIKeysDialogAutoOpen,
+	(autoOpen) => autoOpen
+);
+
 //This will be a convenient place to extend later.
 export const selectDialogOpen = createSelector(
 	selectEditorOpen,
-	(editorOpen) => editorOpen
+	selectAPIKeysDialogOpen,
+	(editorOpen, apiKeysOpen) => editorOpen || apiKeysOpen
 );
 
 export const selectAIProvider = createSelector(

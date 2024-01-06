@@ -32,6 +32,7 @@ import {
 } from '../actions/data.js';
 
 import {
+	selectAPIKeysDialogOpen,
 	selectMobile,
 	selectOpenAIAPIKey,
 } from '../selectors.js';
@@ -71,7 +72,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 
 	override stateChanged(state : RootState) {
 		this._apiKey = selectOpenAIAPIKey(state);
-		this.open = this._apiKey == '';
+		this.open = selectAPIKeysDialogOpen(state);
 		this.mobile = selectMobile(state);
 	}
 
