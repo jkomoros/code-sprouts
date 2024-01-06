@@ -34,7 +34,7 @@ export const computePromptStreamOpenAI = async (modelName : string, apiKey : str
 			}
 		],
 		//Explicitly don't limit max_tokens.
-		max_tokens: modelInfo.maxTokens,
+		max_tokens: modelInfo.maxOutputTokens,
 		stream: true
 	};
 
@@ -86,7 +86,7 @@ export const computePromptOpenAI = async (modelName : string, apiKey : string, p
 			}
 		],
 		//Explicitly don't limit max_tokens.
-		max_tokens: modelInfo.maxTokens
+		max_tokens: modelInfo.maxOutputTokens
 	};
 
 	if (modelInfo.supportsJSONResponseFormat) {

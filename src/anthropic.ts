@@ -22,7 +22,7 @@ export const computePromptStreamAnthropic = async (modelName : string, apiKey : 
 			}
 		],
 		//Explicitly don't limit max_tokens.
-		max_tokens: modelInfo.maxTokens,
+		max_tokens: modelInfo.maxOutputTokens,
 		stream: true
 	};
 
@@ -47,7 +47,7 @@ export const computePromptAnthropic = async (modelName : string, apiKey : string
 			}
 		],
 		//Explicitly don't limit max_tokens.
-		max_tokens: modelInfo.maxTokens
+		max_tokens: modelInfo.maxOutputTokens
 	};
 
 	const response = await anthropic.beta.messages.create(config);

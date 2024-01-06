@@ -176,7 +176,8 @@ export type PromptOptions = {
 export type PromptStream = Stream<OpenAI.ChatCompletionChunk> | MessageStream;
 
 export type CompletionInfo = {
-	maxTokens: number;	
+	maxInputTokens: number,
+	maxOutputTokens: number,
 	compute: (modelName : string, apiKey : string, prompt : Prompt, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<string>,
 	computeStream?: (modelName : string, apiKey : string, prompt : Prompt, modelInfo: CompletionInfo, opts : PromptOptions) => Promise<PromptStream>,
 	supportsJSONResponseFormat?: boolean,

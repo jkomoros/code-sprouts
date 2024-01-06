@@ -59,37 +59,51 @@ const BASE_ANTHROPIC_COMPLETION_INFO = {
 export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInfo } = {
 	'openai.com:gpt-3.5-turbo': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 4096
+		//TODO: figure out how input and output limits differ
+		maxInputTokens: 4096,
+		maxOutputTokens: 4096,
 	},
 	'openai.com:gpt-3.5-turbo-16k': {
 		...BASE_OPENAI_COMPLETION_INFO,
+		//TODO: figure out how input and output limits differ
 		//According to gpt-3.5-turbo-16k
-		maxTokens: 16384,
+		maxInputTokens: 16384,
+		maxOutputTokens: 16384,
 	},
 	'openai.com:gpt-4': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 8192,
+		//TODO: figure out how input and output limits differ
+		maxInputTokens: 8192,
+		maxOutputTokens: 8192,
 		supportsFunctionCalling: true
 	},
 	'openai.com:gpt-4-32k': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 32768,
+		//TODO: figure out how input and output limits differ
+		maxInputTokens: 32768,
+		maxOutputTokens: 32768,
 		supportsFunctionCalling: true
 	},
 	'openai.com:gpt-4-1106-preview': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 4096,
+		//TODO: figure out how input and output limits differ
+		maxInputTokens: 4096,
+		maxOutputTokens: 4096,
 		supportsJSONResponseFormat: true,
 		supportsFunctionCalling: true
 	},
 	'openai.com:gpt-4-vision-preview': {
 		...BASE_OPENAI_COMPLETION_INFO,
-		maxTokens: 4096,
+		//TODO: figure out how input and output limits differ
+		maxInputTokens: 4096,
+		maxOutputTokens: 4096,
 		supportsImages: true
 	},
 	'anthropic.com:claude-2.1': {
 		...BASE_ANTHROPIC_COMPLETION_INFO,
-		maxTokens: 4096
+		//TODO: figure out what the actual limits are
+		maxInputTokens: 100000,
+		maxOutputTokens: 4096
 	}
 };
 
@@ -185,7 +199,7 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 		case 'contextSizeAtLeast':
 			const contextSizeAtLeast = requirements.contextSizeAtLeast || -1;
 			if (contextSizeAtLeast < 0) continue;
-			if (modelInfo.maxTokens < contextSizeAtLeast) return false;
+			if (modelInfo.maxInputTokens < contextSizeAtLeast) return false;
 			break;
 		case 'modelProvider':
 			let modelProvider = requirements.modelProvider;
