@@ -28,20 +28,25 @@ import {
 } from './button-shared-styles.js';
 
 import {
+	forceClosedAPIKeysDialog,
 	setAPIKey,
 } from '../actions/data.js';
 
 import {
+	selectAPIKeys,
 	selectAPIKeysDialogOpen,
-	selectMobile,
-	selectOpenAIAPIKey,
+	selectMobile
 } from '../selectors.js';
+
+import {
+	APIKeys
+} from '../../src/types.js';
 
 @customElement('api-key-dialog')
 export class APIKeyDialog extends connect(store)(DialogElement) {
 	
 	@state()
-		_apiKey : string = '';
+		_apiKeys : APIKeys = {};
 
 	static override get styles() {
 		return [
@@ -71,14 +76,13 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	}
 
 	override stateChanged(state : RootState) {
-		this._apiKey = selectOpenAIAPIKey(state);
 		this.open = selectAPIKeysDialogOpen(state);
+		this._apiKeys = selectAPIKeys(state);
 		this.mobile = selectMobile(state);
 	}
 
 
 	override innerRender() : TemplateResult {
-		if (this._apiKey) return html`You have provided your API key.`;
 		return html`
 			<h3>Welcome</h3>
 			<p>Code Sprouts allows you to run simple GPT-based bots created by yourself or others. You can learn more about what it can do at the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#code-sprouts' target='_blank'>README ${OPEN_IN_NEW}</a></p>
@@ -95,8 +99,9 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	}
 
 	override _shouldClose() {
+		store.dispatch(forceClosedAPIKeysDialog());
 		//TODO: allow the dialog to be required and not show any affordances to close.
-		alert('You must provide an API key to use this application');
+
 	}
 
 	private _handleSubmitClicked() {

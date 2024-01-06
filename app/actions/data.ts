@@ -345,13 +345,13 @@ export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, ge
 
 };
 
-export const forceOpenAPIKeysDialog = () => {
+export const forceOpenAPIKeysDialog = () : SomeAction => {
 	return {
 		type: FORCE_OPEN_API_KEYS_DIALOG
 	};
 };
 
-export const forceClosedAPIKeysDialog = () => {
+export const forceClosedAPIKeysDialog = () : SomeAction => {
 	return {
 		type: FORCE_CLOSE_API_KEYS_DIALOG
 	};
