@@ -160,7 +160,8 @@ export type PromptOptions = {
 	modelRequirements? : {
 		jsonResponse? : boolean,
 		imageInput?: boolean
-		contextSizeAtLeast? : number
+		contextSizeAtLeast? : number,
+		modelProvider? : ModelProvider | ModelProvider[]
 	},
 	debugLogger? : Logger
 };

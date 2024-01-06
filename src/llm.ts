@@ -187,6 +187,13 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 			if (contextSizeAtLeast < 0) continue;
 			if (modelInfo.maxTokens < contextSizeAtLeast) return false;
 			break;
+		case 'modelProvider':
+			let modelProvider = requirements.modelProvider;
+			if (!modelProvider) continue;
+			if (!Array.isArray(modelProvider)) modelProvider = [modelProvider];
+			const [provider] = extractModel(model);
+			if (!modelProvider.includes(provider)) return false;
+			break;
 		default:
 			assertUnreachable(key);
 		}
