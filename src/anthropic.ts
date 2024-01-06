@@ -3,8 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import {
 	CompletionInfo,
 	Prompt,
-	PromptOptions,
-	PromptStream
+	PromptOptions
 } from './types.js';
 
 import {
@@ -29,9 +28,7 @@ export const computePromptStreamAnthropic = async (modelName : string, apiKey : 
 
 	const stream = await anthropic.beta.messages.stream(config);
 
-	//TODO: this is a gargantuan hack to ge tthis to compile. This will need a bridge to convert to the same type.
-	//eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (stream as any) as PromptStream;
+	return stream;
 };
 
 export const computePromptAnthropic = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, _opts : PromptOptions) : Promise<string> => {

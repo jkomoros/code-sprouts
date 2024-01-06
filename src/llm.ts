@@ -1,3 +1,4 @@
+
 import {
 	computePromptAnthropic,
 	computePromptStreamAnthropic, 
@@ -30,6 +31,14 @@ import {
 	assertUnreachable,
 	mergeObjects
 } from './util.js';
+
+import {
+	ChatCompletionChunk
+} from 'openai/resources/index.js';
+
+import {
+	MessageStreamEvent
+} from '@anthropic-ai/sdk/resources/beta/messages.js';
 
 export const extractModel = (model : CompletionModelID) : [name : ModelProvider, modelName : string] => {
 	const parts = model.split(':');
@@ -296,3 +305,15 @@ export class AIProvider {
 		return computeTokenCount(prompt, model);
 	}
 }
+
+export const extractStreamChunk = (chunk : ChatCompletionChunk | MessageStreamEvent) : string => {
+	if (!('choices' in chunk)) {
+		//TODO: support anthropic
+		throw new Error('Anthropic chunk type not supported yet');
+	}
+	if (chunk.choices.length == 0) throw new Error('No choices');
+	const choice = chunk.choices[0];
+	if (choice.finish_reason && choice.finish_reason != 'stop') throw new Error(`Unexpected chunk stop reason: ${choice.finish_reason}`);
+	const content = choice.delta.content || '';
+	return content;
+};

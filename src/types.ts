@@ -21,6 +21,7 @@ import {
 	SPROUT_SCHEMA_PATH,
 	SPROUT_SUBINSTUCTIONS_DIR
 } from './constants.js';
+import { MessageStream } from '@anthropic-ai/sdk/lib/MessageStream.js';
 
 export const pathSchema = z.string();
 
@@ -170,7 +171,7 @@ export type PromptOptions = {
 };
 
 //TODO: make this a generic type, not relying on OpenAI's structure
-export type PromptStream = Stream<OpenAI.ChatCompletionChunk>;
+export type PromptStream = Stream<OpenAI.ChatCompletionChunk> | MessageStream;
 
 export type CompletionInfo = {
 	maxTokens: number;	
