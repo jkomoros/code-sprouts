@@ -28,19 +28,42 @@ import {
 } from './button-shared-styles.js';
 
 import {
-	setOpenAIAPIKey,
+	forceClosedAPIKeysDialog,
+	setAPIKeys,
 } from '../actions/data.js';
 
 import {
-	selectMobile,
-	selectOpenAIAPIKey,
+	selectAPIKeys,
+	selectAPIKeysDialogOpen,
+	selectMobile
 } from '../selectors.js';
+
+import {
+	APIKeys,
+	modelProvider,
+	ModelProvider
+} from '../../src/types.js';
+
+import {
+	TypedObject
+} from '../../src/typed-object.js';
+
+const KEY_NAMES : Record<ModelProvider, {keyName: string, include: boolean}> = {
+	'openai.com': {
+		keyName: 'OPENAI_API_KEY',
+		include: true
+	},
+	'anthropic.com': {
+		keyName: 'ANTHROPIC_API_KEY',
+		include: false,
+	}
+};
 
 @customElement('api-key-dialog')
 export class APIKeyDialog extends connect(store)(DialogElement) {
 	
 	@state()
-		_apiKey : string = '';
+		_apiKeys : APIKeys = {};
 
 	static override get styles() {
 		return [
@@ -70,40 +93,70 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	}
 
 	override stateChanged(state : RootState) {
-		this._apiKey = selectOpenAIAPIKey(state);
-		this.open = this._apiKey == '';
+		this.open = selectAPIKeysDialogOpen(state);
+		this._apiKeys = selectAPIKeys(state);
 		this.mobile = selectMobile(state);
 	}
 
 
 	override innerRender() : TemplateResult {
-		if (this._apiKey) return html`You have provided your API key.`;
+
+		const defaultProviders = TypedObject.keys(KEY_NAMES).filter(key => KEY_NAMES[key].include).slice(0, 1);
+		const otherProviders = TypedObject.keys(KEY_NAMES).filter(key => KEY_NAMES[key].include).slice(1);
 		return html`
 			<h3>Welcome</h3>
 			<p>Code Sprouts allows you to run simple GPT-based bots created by yourself or others. You can learn more about what it can do at the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#code-sprouts' target='_blank'>README ${OPEN_IN_NEW}</a></p>
-			<p>This application requires your <strong>OPENAI_API_KEY</strong> to run.</p>
+			<p>This application requires at least one API key to a supported LLM provider to run.</p>
 			<p>This will be stored in your browser's local storage and never transmitted anywhere but directly to openai.com.</p>
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
 			<p>If you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at <a href='https://github.com/jkomoros/code-sprouts' target="_blank">https://github.com/jkomoros/code-sprouts ${OPEN_IN_NEW}</a></p>
-			<label>OPENAI_API_KEY</label>
-			<input
-				type='text'
-				autofocus
-			/>
+			<h4>Provide at least one of the following:</h4>
+			${defaultProviders.map(provider => html`
+					<label for=${provider}>${KEY_NAMES[provider].keyName}</label>
+					<input
+						type='text'
+						id=${provider}
+						data-provider=${provider}
+						.value=${this._apiKeys[provider] || ''}
+					/>
+			`)}
+			${otherProviders.length ? html`
+				<details>
+					<summary>Other providers</summary>
+					${otherProviders.map(provider => html`
+						<label for=${provider}>${KEY_NAMES[provider].keyName}</label>
+						<input
+							type='text'
+							id=${provider}
+							data-provider=${provider}
+							.value=${this._apiKeys[provider] || ''}
+						/>
+				`)}
+				</details>
+			`: html``}
 		`;
 	}
 
 	override _shouldClose() {
+		store.dispatch(forceClosedAPIKeysDialog());
 		//TODO: allow the dialog to be required and not show any affordances to close.
-		alert('You must provide an API key to use this application');
+
 	}
 
 	private _handleSubmitClicked() {
-		const ele = this.shadowRoot!.querySelector('input') as HTMLInputElement;
-		if (!ele) return;
-		const apiKey = ele.value;
-		if (!apiKey) alert('You must provide an API key');
-		store.dispatch(setOpenAIAPIKey(apiKey));
+		const eles = this.shadowRoot?.querySelectorAll('input') as NodeListOf<HTMLInputElement>;
+		if (![...eles].some(ele => ele.value)) {
+			alert('You must provide at least one API key');
+			return;
+		}
+		const keys : APIKeys = {};
+		for (const ele of eles) {
+			const provider = modelProvider.parse(ele.dataset.provider);
+			const key = ele.value;
+			keys[provider] = key;
+		}
+		store.dispatch(setAPIKeys(keys));
+		this._shouldClose();
 	}
 
 	override buttonsRender() : TemplateResult {

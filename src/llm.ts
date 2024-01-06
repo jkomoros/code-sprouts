@@ -1,14 +1,24 @@
+
+import {
+	computePromptAnthropic,
+	computePromptStreamAnthropic, 
+	computeTokenCountAnthropic
+} from './anthropic.js';
+
 import {
 	computePromptOpenAI,
 	computePromptStreamOpenAI,
 	computeTokenCountOpenAI
 } from './openai.js';
-import { TypedObject } from './typed-object.js';
+
+import {
+	TypedObject
+} from './typed-object.js';
 
 import {
 	CompletionInfo,
 	CompletionModelID,
-	Environment,
+	APIKeys,
 	ModelProvider,
 	Prompt,
 	PromptComponentImage,
@@ -18,8 +28,17 @@ import {
 } from './types.js';
 
 import {
-	assertUnreachable, mergeObjects
+	assertUnreachable,
+	mergeObjects
 } from './util.js';
+
+import {
+	ChatCompletionChunk
+} from 'openai/resources/index.js';
+
+import {
+	MessageStreamEvent
+} from '@anthropic-ai/sdk/resources/beta/messages.js';
 
 export const extractModel = (model : CompletionModelID) : [name : ModelProvider, modelName : string] => {
 	const parts = model.split(':');
@@ -30,6 +49,11 @@ export const extractModel = (model : CompletionModelID) : [name : ModelProvider,
 const BASE_OPENAI_COMPLETION_INFO = {
 	compute: computePromptOpenAI,
 	computeStream: computePromptStreamOpenAI
+};
+
+const BASE_ANTHROPIC_COMPLETION_INFO = {
+	compute: computePromptAnthropic,
+	computeStream: computePromptStreamAnthropic
 };
 
 export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInfo } = {
@@ -62,6 +86,10 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 		...BASE_OPENAI_COMPLETION_INFO,
 		maxTokens: 4096,
 		supportsImages: true
+	},
+	'anthropic.com:claude-2.1': {
+		...BASE_ANTHROPIC_COMPLETION_INFO,
+		maxTokens: 4096
 	}
 };
 
@@ -78,22 +106,23 @@ export const DEFAULT_MODEL_STACK : CompletionModelID[] = [
 
 type ProviderInfo = {
 	defaultCompletionModel: CompletionModelID,
-	apiKeyVar : keyof Environment
 }
 
 export const INFO_BY_PROVIDER : {[name in ModelProvider]: ProviderInfo} = {
 	'openai.com': {
 		defaultCompletionModel: 'openai.com:gpt-3.5-turbo',
-		apiKeyVar: 'openai_api_key'
+	},
+	'anthropic.com': {
+		defaultCompletionModel: 'anthropic.com:claude-2.1',
 	}
 };
 
-export const computePrompt = async (prompt : Prompt, model: CompletionModelID, env : Environment, opts : PromptOptions = {}) : Promise<string> => {
+export const computePrompt = async (prompt : Prompt, model: CompletionModelID, keys : APIKeys, opts : PromptOptions = {}) : Promise<string> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
 
-	const apiKey = env[INFO_BY_PROVIDER[provider].apiKeyVar];
+	const apiKey = keys[provider];
 	if (!apiKey) throw new Error ('Unset API key');
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
@@ -103,12 +132,12 @@ export const computePrompt = async (prompt : Prompt, model: CompletionModelID, e
 	return modelInfo.compute(modelName, apiKey, prompt, modelInfo, opts);
 };
 
-export const computeStream = async (prompt : Prompt, model: CompletionModelID, env : Environment, opts: PromptOptions = {}) : Promise<PromptStream> => {
+export const computeStream = async (prompt : Prompt, model: CompletionModelID, keys : APIKeys, opts: PromptOptions = {}) : Promise<PromptStream> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
 
-	const apiKey = env[INFO_BY_PROVIDER[provider].apiKeyVar];
+	const apiKey = keys[provider];
 	if (!apiKey) throw new Error ('Unset API key');
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
@@ -128,6 +157,8 @@ export const computeTokenCount = async (text : Prompt, model : CompletionModelID
 	switch(provider) {
 	case 'openai.com':
 		return computeTokenCountOpenAI(modelName, text);
+	case 'anthropic.com':
+		return computeTokenCountAnthropic(modelName, text);
 	default:
 		assertUnreachable(provider);
 	}
@@ -155,6 +186,13 @@ const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : bo
 			const contextSizeAtLeast = requirements.contextSizeAtLeast || -1;
 			if (contextSizeAtLeast < 0) continue;
 			if (modelInfo.maxTokens < contextSizeAtLeast) return false;
+			break;
+		case 'modelProvider':
+			let modelProvider = requirements.modelProvider;
+			if (!modelProvider) continue;
+			if (!Array.isArray(modelProvider)) modelProvider = [modelProvider];
+			const [provider] = extractModel(model);
+			if (!modelProvider.includes(provider)) return false;
 			break;
 		default:
 			assertUnreachable(key);
@@ -213,14 +251,14 @@ export const debugTextForPrompt = (prompt : Prompt) : string => {
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
 	private _models : CompletionModelID[];
-	private _env : Environment;
+	private _keys : APIKeys;
 	private _opts: PromptOptions;
 
-	constructor(env : Environment = {}, model : CompletionModelID | CompletionModelID[] = DEFAULT_MODEL_STACK, opts : PromptOptions = {}) {
+	constructor(keys : APIKeys = {}, model : CompletionModelID | CompletionModelID[] = DEFAULT_MODEL_STACK, opts : PromptOptions = {}) {
 		if (typeof model == 'string') model = [model];
 		if (model.length == 0) throw new Error('At least one model must be provided');
 		this._models = model;
-		this._env = env;
+		this._keys = keys;
 		this._opts = opts;
 	}
 
@@ -235,7 +273,7 @@ export class AIProvider {
 		throw new Error('No model matches requirements');
 	}
 
-	private async extendPromptOptionsWithTokenCount(prompt: Prompt, input : PromptOptions) : Promise<PromptOptions> {
+	private async extendPromptOptionsWithExtras(prompt: Prompt, input : PromptOptions) : Promise<PromptOptions> {
 		//TODO: once there are multiple providers, we don't know which tokenCount to use for them if the model isn't provided.
 		const tokenCount = await this.tokenCount(prompt, input);
 		const result = {
@@ -246,23 +284,37 @@ export class AIProvider {
 			...result.modelRequirements,
 			contextSizeAtLeast: tokenCount	
 		};
+		//Set a constraint on the model for the providers we have keys for.
+		const providersWithAPIKeys = TypedObject.keys(this._keys).filter(key => this._keys[key]);
+		//Only set a constraint if we only have a subset of keys available.
+		if (providersWithAPIKeys.length != modelProvider.options.length) {
+
+			//We want to filter down the implicit or explciit set of providers to only the ones we have keys for.
+			//If it's not explicitly set, then that implicitly means "all of them match".
+			let baseProviders = result.modelRequirements.modelProvider || modelProvider.options;
+			if (!Array.isArray(baseProviders)) baseProviders = [baseProviders];
+			const filteredProviders = baseProviders.filter(provider => providersWithAPIKeys.includes(provider));
+
+			//This list might be [] if there are no keys, which is fine, because then there are no models that should match.
+			result.modelRequirements.modelProvider = filteredProviders;
+		}
 		return result;
 	}
 
 	async prompt(prompt: Prompt, opts : PromptOptions = {}) : Promise<string> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
+		opts = await this.extendPromptOptionsWithExtras(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computePrompt(prompt, model, this._env, opts);
+		return computePrompt(prompt, model, this._keys, opts);
 	}
 
 	async promptStream(prompt : Prompt, opts: PromptOptions = {}) : Promise<PromptStream> {
 		opts = mergeObjects(this._opts, opts);
-		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
+		opts = await this.extendPromptOptionsWithExtras(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computeStream(prompt, model, this._env, opts);
+		return computeStream(prompt, model, this._keys, opts);
 	}
 
 	async tokenCount(prompt : Prompt, opts : PromptOptions = {}) : Promise<number> {
@@ -271,3 +323,15 @@ export class AIProvider {
 		return computeTokenCount(prompt, model);
 	}
 }
+
+export const extractStreamChunk = (chunk : ChatCompletionChunk | MessageStreamEvent) : string => {
+	if (!('choices' in chunk)) {
+		//TODO: support anthropic
+		throw new Error('Anthropic chunk type not supported yet');
+	}
+	if (chunk.choices.length == 0) throw new Error('No choices');
+	const choice = chunk.choices[0];
+	if (choice.finish_reason && choice.finish_reason != 'stop') throw new Error(`Unexpected chunk stop reason: ${choice.finish_reason}`);
+	const content = choice.delta.content || '';
+	return content;
+};

@@ -22,7 +22,6 @@ import {
 	selectCurrentSproutName,
 	selectDraftMessage,
 	selectHashForCurrentState,
-	selectOpenAIAPIKey,
 	selectPageExtra,
 	selectSproutData,
 	selectSproutStreaming,
@@ -30,6 +29,7 @@ import {
 	selectIsEditing,
 	selectDialogOpen,
 	selectMobile,
+	selectAPIKeys,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -57,9 +57,10 @@ import {
 	provideUserResponse,
 	selectSprout,
 	openEditor,
-	setOpenAIAPIKey,
+	setAPIKeys,
 	updateDraftMessage,
-	updateWithMainPageExtra
+	updateWithMainPageExtra,
+	forceOpenAPIKeysDialog
 } from '../actions/data.js';
 
 import dataManager from '../data_manager.js';
@@ -83,7 +84,8 @@ import {
 	CANCEL_ICON,
 	LOCK_ICON,
 	PREVIEW_ICON,
-	CLOUD_DOWNLOAD_ICON
+	CLOUD_DOWNLOAD_ICON,
+	SETTINGS_ICON
 } from './my-icons.js';
 
 import {
@@ -102,6 +104,8 @@ import {
 	SproutConfig,
 	Conversation,
 	ConversationMessage,
+	APIKeys,
+	modelProvider,
 } from '../../src/types.js';
 
 import {
@@ -121,6 +125,7 @@ import {
 
 import './sprout-editor.js';
 import './api-key-dialog.js';
+import { TypedObject } from '../../src/typed-object.js';
 
 const sendShortcut : KeyboardAction = {
 	shortcut: {
@@ -166,7 +171,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		_hashForCurrentState = '';
 
 	@state()
-		_openAIAPIKey = '';
+		_apiKeys : APIKeys = {};
 
 	@state()
 		_sprouts : SproutDataMap = {};
@@ -483,6 +488,12 @@ class SproutView extends connect(store)(PageViewElement) {
 								</button>
 								` :
 		html``}
+							<!-- TODO: figure out a better place to put this ubtton that's less distracting -->
+							<button
+								class='small'
+								@click=${this._handleOpenSettingsClicked}
+								title='Manage API Keys'
+							>${SETTINGS_ICON}</button>
 							</div>
 						</div>
 						<div class='title'>
@@ -580,7 +591,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	override stateChanged(state : RootState) {
 		this._pageExtra = selectPageExtra(state);
 		this._hashForCurrentState = selectHashForCurrentState(state);
-		this._openAIAPIKey = selectOpenAIAPIKey(state);
+		this._apiKeys = selectAPIKeys(state);
 		this._sprouts = selectSproutData(state);
 		this._currentSproutName = selectCurrentSproutName(state);
 		this._sproutStreaming = selectSproutStreaming(state);
@@ -605,28 +616,31 @@ class SproutView extends connect(store)(PageViewElement) {
 	private async firstRunDispatch() {
 		store.dispatch(addDefaultSprouts());
 		store.dispatch(canonicalizePath());
-		const key = await dataManager.retrieveAPIKey('openai.com');
-		if (key) {
-			store.dispatch(setOpenAIAPIKey(key));
+		//iterate for each legal value in the ZodEnum modelProvider
+		const keys : APIKeys = {};
+		for (const provider of modelProvider.options) {
+			const key = await dataManager.retrieveAPIKey(provider);
+			if (key) keys[provider] = key;
 		}
+		store.dispatch(setAPIKeys(keys));
 	}
 
-	private sproutChanged(lastSprout? : Sprout | null) {
-		if (!this._currentSprout) return;
+	private sproutChanged(newSprout : Sprout | null, lastSprout : Sprout | null) {
+		if (!newSprout) return;
 		this._currentSproutAllowsImages = false;
-		this._currentSprout.allowImages().then(allowImages => {
+		newSprout.allowImages().then(allowImages => {
 			this._currentSproutAllowsImages = allowImages;
 		});
 		this._currentSproutConfig = null;
-		this._currentSprout.config().then(config => {
+		newSprout.config().then(config => {
 			this._currentSproutConfig = config;
 		});
 		this._currentSproutManagesState = false;
-		this._currentSprout.managesState().then(managesState => {
+		newSprout.managesState().then(managesState => {
 			this._currentSproutManagesState = managesState;
 		});
 		if (lastSprout) signaller.finish(lastSprout);
-		this._currentSprout.run(signaller);
+		newSprout.run(signaller);
 	}
 
 	override updated(changedProps : PropertyValues<this>) {
@@ -638,15 +652,20 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
 			const lastSprout = changedProps.get('_currentSprout');
-			//Don't call store.dispatch things in the update.
-			setTimeout(() => this.sproutChanged(lastSprout), 0);
+			//Don't call store.dispatch things in the update. We pass the
+			//currentSprout as well as lastSprout, because if there are lots of
+			//successive changes to the sprout, before the next timer tick, the
+			//currentSprout might be a different value by the time it actualy
+			//runs.
+			setTimeout(() => this.sproutChanged(this._currentSprout, lastSprout || null), 0);
 		}
 		if (changedProps.has('_sproutStreaming') && !this._sproutStreaming) {
 			this._focusTextArea();
 		}
-		if (changedProps.has('_openAIAPIKey')) {
-			if (this._openAIAPIKey) {
-				dataManager.storeAPIKey('openai.com', this._openAIAPIKey);
+		if (changedProps.has('_apiKeys')) {
+			for (const [provider, key] of TypedObject.entries(this._apiKeys)) {
+				if (!key) continue;
+				dataManager.storeAPIKey(provider, key);
 			}
 		}
 	}
@@ -706,6 +725,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		//Don't steal focus when editing is ahppening.
 		if (this._editing) return;
 		focusElementIfNoOtherFocus(textarea);
+	}
+
+	private _handleOpenSettingsClicked() {
+		store.dispatch(forceOpenAPIKeysDialog());
 	}
 
 	private _handleKeyDown(e : KeyboardEvent) {

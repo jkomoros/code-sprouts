@@ -6,7 +6,6 @@ import {
 	jsonPatchRFC6902Schema
 } from './types_json_patch.js';
 
-
 import {
 	absoluteRegExp
 } from './util.js';
@@ -14,7 +13,15 @@ import {
 import OpenAI from 'openai';
 
 import { Stream } from 'openai/streaming.js';
-import { SPROUT_COMPILED_PATH, SPROUT_CONFIG_PATH, SPROUT_INSTRUCTIONS_PATH, SPROUT_SCHEMA_PATH, SPROUT_SUBINSTUCTIONS_DIR } from './constants.js';
+
+import {
+	SPROUT_COMPILED_PATH,
+	SPROUT_CONFIG_PATH,
+	SPROUT_INSTRUCTIONS_PATH,
+	SPROUT_SCHEMA_PATH,
+	SPROUT_SUBINSTUCTIONS_DIR
+} from './constants.js';
+import { MessageStream } from '@anthropic-ai/sdk/lib/MessageStream.js';
 
 export const pathSchema = z.string();
 
@@ -50,12 +57,6 @@ export const sproutConfigSchema = z.object({
 });
 
 export type SproutConfig = z.infer<typeof sproutConfigSchema>;
-
-const environmentSchema = z.object({
-	openai_api_key : z.string().optional()
-});
-
-export type Environment = z.infer<typeof environmentSchema>;
 
 export const subInstructionNameSchema = z.string().regex(absoluteRegExp(DEFAULT_NAME_REGEXP));
 
@@ -137,16 +138,26 @@ export const completionModelID = z.enum([
 	'openai.com:gpt-4',
 	'openai.com:gpt-4-32k',
 	'openai.com:gpt-4-1106-preview',
-	'openai.com:gpt-4-vision-preview'
+	'openai.com:gpt-4-vision-preview',
+	'anthropic.com:claude-2.1'
 ]);
 
 export type CompletionModelID = z.infer<typeof completionModelID>;
 
+//When adding an item here, also add to apiKeysSchema
 export const modelProvider = z.enum([
-	'openai.com'
+	'openai.com',
+	'anthropic.com'
 ]);
 
 export type ModelProvider = z.infer<typeof modelProvider>;
+
+export const apiKeysSchema = z.object({
+	'openai.com': z.string().optional(),
+	'anthropic.com': z.string().optional()
+});
+
+export type APIKeys = z.infer<typeof apiKeysSchema>;
 
 export type PromptOptions = {
 	//If provided, will use this model (assuming it matches requirements)
@@ -155,13 +166,14 @@ export type PromptOptions = {
 	modelRequirements? : {
 		jsonResponse? : boolean,
 		imageInput?: boolean
-		contextSizeAtLeast? : number
+		contextSizeAtLeast? : number,
+		modelProvider? : ModelProvider | ModelProvider[]
 	},
 	debugLogger? : Logger
 };
 
 //TODO: make this a generic type, not relying on OpenAI's structure
-export type PromptStream = Stream<OpenAI.ChatCompletionChunk>;
+export type PromptStream = Stream<OpenAI.ChatCompletionChunk> | MessageStream;
 
 export type CompletionInfo = {
 	maxTokens: number;	

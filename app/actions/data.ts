@@ -3,10 +3,12 @@ import { ThunkSomeAction } from '../store.js';
 import {
 	CLOSE_EDITOR,
 	OPEN_EDITOR,
-	SET_OPENAI_API_KEY,
+	SET_API_KEYS,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
 	START_STREAMING_SPROUT,
+	FORCE_CLOSE_API_KEYS_DIALOG,
+	FORCE_OPEN_API_KEYS_DIALOG,
 	SomeAction
 } from '../actions.js';
 
@@ -17,6 +19,7 @@ import {
 
 import {
 	selectAIProvider,
+	selectAPIKeys,
 	selectAttachedImage,
 	selectChangesMade,
 	selectCurrentSprout,
@@ -40,6 +43,7 @@ import {
 } from '../signaller.js';
 
 import {
+	APIKeys,
 	DirectoryInfo,
 	ImageURL,
 	Path,
@@ -66,6 +70,10 @@ import {
 	strToU8,
 	zipSync
 } from 'fflate';
+
+import {
+	TypedObject
+} from '../../src/typed-object.js';
 
 import fileSaver from 'file-saver';
 
@@ -111,10 +119,20 @@ export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) 
 	if (!skipCanonicalize) dispatch(canonicalizePath());
 };
 
-export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) => {
+export const setAPIKeys = (keys : APIKeys) : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const existing = selectAPIKeys(state);
+	let changed = false;
+	for (const [provider, key] of TypedObject.entries(keys)) {
+		if (existing[provider] !== key) {
+			changed = true;
+			break;
+		}
+	}
+	if (!changed) return;
 	dispatch({
-		type: SET_OPENAI_API_KEY,
-		key
+		type: SET_API_KEYS,
+		keys
 	});
 };
 
@@ -339,4 +357,16 @@ export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, ge
 	fileSaver.saveAs(blob, `${lastNamePart}.zip`);
 
 
+};
+
+export const forceOpenAPIKeysDialog = () : SomeAction => {
+	return {
+		type: FORCE_OPEN_API_KEYS_DIALOG
+	};
+};
+
+export const forceClosedAPIKeysDialog = () : SomeAction => {
+	return {
+		type: FORCE_CLOSE_API_KEYS_DIALOG
+	};
 };

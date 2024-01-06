@@ -31,7 +31,7 @@ const main = async () : Promise<void> => {
 	const openAIAPIKey = process.env.OPENAI_API_KEY;
 	if (!openAIAPIKey) throw new Error('OPENAI_API_KEY environment variable must be set (.env is OK).');
 	const ai = new AIProvider({
-		openai_api_key: openAIAPIKey
+		'openai.com': openAIAPIKey
 	});
 	for (const sproutPath of await nodeFetcher.listSprouts()) {
 		compileSprout(sproutPath, ai);

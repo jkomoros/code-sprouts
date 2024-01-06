@@ -1,4 +1,5 @@
 import {
+	APIKeys,
 	ImageURL,
 	PackagedSprout,
 	SproutName,
@@ -19,7 +20,8 @@ export type AppState = {
 };
 
 export type DataState = {
-	openAIAPIKey : string,
+	apiKeys : Required<APIKeys>;
+	apiKeysEditorForcedOpen : boolean,
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
 	sproutStreaming: boolean,
@@ -28,7 +30,7 @@ export type DataState = {
 	streamCounter: number,
 	draftMessage: string,
 	attachedImage: ImageURL | null,
-	editorOpen: boolean
+	editorOpen: boolean,
 	editing: boolean,
 	changesMade : boolean,
 	sproutSnapshot : UncompiledPackagedSprout | null,

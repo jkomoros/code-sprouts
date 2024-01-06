@@ -9,6 +9,7 @@ import {
 
 import {
 	imageURLSchema,
+	apiKeysSchema,
 	packagedSproutSchema,
 	promptSchema,
 	sproutNameSchema,
@@ -23,7 +24,7 @@ export const UPDATE_MOBILE = 'UPDATE_MOBILE';
 
 export const ADD_SPROUTS = 'ADD_SPROUTS';
 export const SELECT_SPROUT = 'SELECT_SPROUT';
-export const SET_OPENAI_API_KEY = 'SET_OPENAI_API_KEY';
+export const SET_API_KEYS = 'SET_API_KEYS';
 export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
 export const STREAM_INCREMENTAL_MESSAGE = 'STREAM_INCREMENTAL_MESSAGE';
 export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
@@ -35,6 +36,10 @@ export const CLOSE_EDITOR = 'CLOSE_EDITOR';
 export const START_EDITING = 'START_EDITING';
 export const EDITING_MODIFY_SPROUT = 'EDITING_MODIFY_SPROUT';
 export const WRITE_SPROUT = 'WRITE_SPROUT';
+export const FORCE_OPEN_API_KEYS_DIALOG = 'FORCE_OPEN_API_KEYS_DIALOG';
+//This is actually poorly named, because it doesn't force the editor to close,
+//it just lowers the forcedOpen flag.
+export const FORCE_CLOSE_API_KEYS_DIALOG = 'FORCE_CLOSE_API_KEYS_DIALOG';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -69,9 +74,9 @@ const actionSelectSprout = z.object({
 	sprout: sproutLocationSchema
 }).strict();
 
-const actionSetOpenAPIKey = z.object({
-	type: z.literal(SET_OPENAI_API_KEY),
-	key: z.string()
+const actionSetAPIKeys = z.object({
+	type: z.literal(SET_API_KEYS),
+	keys: apiKeysSchema
 }).strict();
 
 const actionStartStreamingSprout = z.object({
@@ -126,6 +131,14 @@ const actionWriteSprout = z.object({
 	sprout: packagedSproutSchema
 }).strict();
 
+const actionForceOpenAPIKeysDialog = z.object({
+	type: z.literal(FORCE_OPEN_API_KEYS_DIALOG)
+}).strict();
+
+const actionForceCloseAPIKeysDialog = z.object({
+	type: z.literal(FORCE_CLOSE_API_KEYS_DIALOG)
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -133,7 +146,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionUpdateMobile,
 	actionAddSprouts,
 	actionSelectSprout,
-	actionSetOpenAPIKey,
+	actionSetAPIKeys,
 	actionStartStreamingSprout,
 	actionStreamIncrementalMessage,
 	actionSproutStoppedStreaming,
@@ -144,7 +157,9 @@ const someAction = z.discriminatedUnion('type', [
 	actionCloseEditor,
 	actionStartEditing,
 	actionEditingModifySprout,
-	actionWriteSprout
+	actionWriteSprout,
+	actionForceCloseAPIKeysDialog,
+	actionForceOpenAPIKeysDialog
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;
