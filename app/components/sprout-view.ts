@@ -699,18 +699,20 @@ class SproutView extends connect(store)(PageViewElement) {
 					<span class='speaker' title=${cancelled ? 'Response cancelled by user' : speaker}>${speaker}</span>
 					<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span>
 					<div class='flex'></div>
-					${showState && speakerType == 'sprout' 
+					${speakerType == 'sprout' 
 		? html`<details>
 						<summary>
-							State
+							Advanced
 						</summary>
 						<div>
 							<label>Model</label> <span>${turn.model}</span>
 						</div>
 						<div>
-						${turn.state ? 
-		html`<pre>${JSON.stringify(turn.state, null, '\t')}</pre>` :
-		html`<em class='error'>Calculating state<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span></em>`
+						${showState ?
+		turn.state ? 
+			html`<pre>${JSON.stringify(turn.state, null, '\t')}</pre>` :
+			html`<em class='error'>Calculating state<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span></em>`
+		: ''
 }		
 						</div>
 					</details>` : ''
