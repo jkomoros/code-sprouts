@@ -704,10 +704,15 @@ class SproutView extends connect(store)(PageViewElement) {
 						<summary>
 							State
 						</summary>
+						<div>
+							<label>Model</label> <span>${turn.model}</span>
+						</div>
+						<div>
 						${turn.state ? 
 		html`<pre>${JSON.stringify(turn.state, null, '\t')}</pre>` :
 		html`<em class='error'>Calculating state<span class='loading ${showLoading ? '' : 'disabled'}'>${SYNC_ICON}</span></em>`
 }		
+						</div>
 					</details>` : ''
 }
 				</div>
