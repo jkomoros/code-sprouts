@@ -51,6 +51,10 @@ export abstract class ConversationSignaller {
 			info.resolveStopStreamSignal = resolve;
 		});
 		info.stopStreamSignal = stopStreamSignal;
+		//It's possible that the whole sprout was finished before the first
+		//stream started. If so, return immediately. We still make the signal so
+		//it will immediately realize it's done.
+		if (info.done) this.stopStreaming(sprout);
 	}
 
 	//Async methods
