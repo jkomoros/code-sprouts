@@ -7,7 +7,8 @@ import {
 import {
 	writeFileSync,
 	readdirSync,
-	readFileSync
+	readFileSync,
+	existsSync
 } from 'fs';
 
 import {
@@ -33,9 +34,11 @@ const generateDirectoryListing = (path: string): void => {
 		files
 	};
 	const json = JSON.stringify(data, null, '\t');
-	const existing = readFileSync(outputPath).toString();
-	if (existing == json) {
-		return;
+	if (existsSync(outputPath)) {
+		const existing = readFileSync(outputPath).toString();
+		if (existing == json) {
+			return;
+		}
 	}
 	writeFileSync(outputPath, JSON.stringify(data, null, '\t'));
 	
