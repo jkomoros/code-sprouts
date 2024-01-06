@@ -59,7 +59,8 @@ import {
 	openEditor,
 	setAPIKey,
 	updateDraftMessage,
-	updateWithMainPageExtra
+	updateWithMainPageExtra,
+	forceOpenAPIKeysDialog
 } from '../actions/data.js';
 
 import dataManager from '../data_manager.js';
@@ -83,7 +84,8 @@ import {
 	CANCEL_ICON,
 	LOCK_ICON,
 	PREVIEW_ICON,
-	CLOUD_DOWNLOAD_ICON
+	CLOUD_DOWNLOAD_ICON,
+	SETTINGS_ICON
 } from './my-icons.js';
 
 import {
@@ -486,6 +488,12 @@ class SproutView extends connect(store)(PageViewElement) {
 								</button>
 								` :
 		html``}
+							<!-- TODO: figure out a better place to put this ubtton that's less distracting -->
+							<button
+								class='small'
+								@click=${this._handleOpenSettingsClicked}
+								title='Manage API Keys'
+							>${SETTINGS_ICON}</button>
 							</div>
 						</div>
 						<div class='title'>
@@ -716,6 +724,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		//Don't steal focus when editing is ahppening.
 		if (this._editing) return;
 		focusElementIfNoOtherFocus(textarea);
+	}
+
+	private _handleOpenSettingsClicked() {
+		store.dispatch(forceOpenAPIKeysDialog());
 	}
 
 	private _handleKeyDown(e : KeyboardEvent) {
