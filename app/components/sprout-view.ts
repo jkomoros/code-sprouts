@@ -659,12 +659,9 @@ class SproutView extends connect(store)(PageViewElement) {
 			this._focusTextArea();
 		}
 		if (changedProps.has('_apiKeys')) {
-			//This will have a few extra sets as multiple are set, but it will
-			//settle because the action creator checks for equality. Previously
-			//in bac7ad3 before the equality check this led to an infinite loop.
 			for (const [provider, key] of TypedObject.entries(this._apiKeys)) {
 				if (!key) continue;
-				store.dispatch(setAPIKey(provider, key));
+				dataManager.storeAPIKey(provider, key);
 			}
 		}
 	}
