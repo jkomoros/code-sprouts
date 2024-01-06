@@ -19,6 +19,7 @@ import {
 
 import {
 	selectAIProvider,
+	selectAPIKeys,
 	selectAttachedImage,
 	selectChangesMade,
 	selectCurrentSprout,
@@ -114,7 +115,10 @@ export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) 
 	if (!skipCanonicalize) dispatch(canonicalizePath());
 };
 
-export const setAPIKey = (provider: ModelProvider, key : string) : ThunkSomeAction => (dispatch) => {
+export const setAPIKey = (provider: ModelProvider, key : string) : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const apiKeys = selectAPIKeys(state);
+	if (apiKeys[provider] === key) return;
 	dispatch({
 		type: SET_API_KEY,
 		provider,
