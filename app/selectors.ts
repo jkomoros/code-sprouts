@@ -55,7 +55,7 @@ export const selectAnthropicAPIKey = createSelector(
 
 const selectAPIKeysDialogAutoOpen = createSelector(
 	selectAPIKeys,
-	(keys) => Object.values(keys).some(str => Boolean(str))
+	(keys) => !Object.values(keys).some(str => Boolean(str))
 );
 
 export const selectAPIKeysDialogOpen = createSelector(
