@@ -288,9 +288,15 @@ export class AIProvider {
 		const providersWithAPIKeys = TypedObject.keys(this._keys).filter(key => this._keys[key]);
 		//Only set a constraint if we only have a subset of keys available.
 		if (providersWithAPIKeys.length != modelProvider.options.length) {
-			//TODO: if modelProvider is already set and it's a strict subset, use that instead.
+
+			//We want to filter down the implicit or explciit set of providers to only the ones we have keys for.
+			//If it's not explicitly set, then that implicitly means "all of them match".
+			let baseProviders = result.modelRequirements.modelProvider || modelProvider.options;
+			if (!Array.isArray(baseProviders)) baseProviders = [baseProviders];
+			const filteredProviders = baseProviders.filter(provider => providersWithAPIKeys.includes(provider));
+
 			//This list might be [] if there are no keys, which is fine, because then there are no models that should match.
-			result.modelRequirements.modelProvider = providersWithAPIKeys;
+			result.modelRequirements.modelProvider = filteredProviders;
 		}
 		return result;
 	}
