@@ -23,7 +23,6 @@
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.12.0",
-        "@anthropic-ai/tokenizer": "^0.0.4",
         "chokidar": "^3.5.3",
         "dompurify": "^3.0.6",
         "dotenv": "^16.3.1",

@@ -1,10 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 
 import {
-	countTokens
-} from '@anthropic-ai/tokenizer';
-
-import {
 	CompletionInfo,
 	Prompt,
 	PromptOptions,
@@ -69,5 +65,9 @@ export const computePromptAnthropic = async (modelName : string, apiKey : string
 };
 
 export const computeTokenCountAnthropic = async (_modelName : string,  prompt : Prompt) : Promise<number> => {
-	return countTokens(textForPrompt(prompt));
+	//TODO: this is not correct, but the tokenzier does not work in the browser yet: 
+	//https://github.com/anthropics/anthropic-tokenizer-typescript/issues/7
+	
+	//Anthropic's input token window is so high that it doesn't really matter in practice.
+	return textForPrompt(prompt).split(' ').length;
 };
