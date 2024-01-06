@@ -130,6 +130,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 			const key = ele.value;
 			store.dispatch(setAPIKey(provider, key));
 		}
+		this._shouldClose();
 	}
 
 	override buttonsRender() : TemplateResult {
