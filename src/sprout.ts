@@ -152,6 +152,7 @@ export class Sprout {
 	private _id : string;
 	private _conversation : Conversation;
 	private _fetcher : FetcherWithoutListSprouts;
+	private _running : boolean;
 
 	static setFetcher(input : Fetcher) : void {
 		_fetcher = input;
@@ -178,6 +179,7 @@ export class Sprout {
 		this._id = randomString(8);
 		this._conversation = [];
 		this._fetcher = packagedSprout ? overlayFetcher(_fetcher, path, packagedSprout)  : _fetcher;
+		this._running = false;
 	}
 
 	//A random ID for this sprout. Convenient to debug sprout identity issues.
@@ -775,6 +777,13 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 
 	async run(signaller : ConversationSignaller) : Promise<void> {
 
+		if (this._running) {
+			if (this._debugLogger) this._debugLogger(`Sprout ${this.name}:${this.id} is already running, so not starting again`);
+			return;
+		}
+
+		this._running = true;
+
 		await this.validate();
 
 		while(!signaller.done(this)) {
@@ -814,6 +823,8 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			if (!response) break;
 			this.provideUserResponse(response || '');
 		}
+
+		this._running = false;
 	}
 }
 
