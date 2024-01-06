@@ -9,7 +9,7 @@ import {
 
 import {
 	imageURLSchema,
-	modelProvider,
+	apiKeysSchema,
 	packagedSproutSchema,
 	promptSchema,
 	sproutNameSchema,
@@ -24,7 +24,7 @@ export const UPDATE_MOBILE = 'UPDATE_MOBILE';
 
 export const ADD_SPROUTS = 'ADD_SPROUTS';
 export const SELECT_SPROUT = 'SELECT_SPROUT';
-export const SET_API_KEY = 'SET_API_KEY';
+export const SET_API_KEYS = 'SET_API_KEYS';
 export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
 export const STREAM_INCREMENTAL_MESSAGE = 'STREAM_INCREMENTAL_MESSAGE';
 export const SPROUT_PROVIDED_USER_RESPONSE = 'SPROUT_PROVIDED_USER_RESPONSE';
@@ -74,10 +74,9 @@ const actionSelectSprout = z.object({
 	sprout: sproutLocationSchema
 }).strict();
 
-const actionSetAPIKey = z.object({
-	type: z.literal(SET_API_KEY),
-	provider: modelProvider,
-	key: z.string()
+const actionSetAPIKeys = z.object({
+	type: z.literal(SET_API_KEYS),
+	keys: apiKeysSchema
 }).strict();
 
 const actionStartStreamingSprout = z.object({
@@ -147,7 +146,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionUpdateMobile,
 	actionAddSprouts,
 	actionSelectSprout,
-	actionSetAPIKey,
+	actionSetAPIKeys,
 	actionStartStreamingSprout,
 	actionStreamIncrementalMessage,
 	actionSproutStoppedStreaming,

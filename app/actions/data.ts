@@ -3,7 +3,7 @@ import { ThunkSomeAction } from '../store.js';
 import {
 	CLOSE_EDITOR,
 	OPEN_EDITOR,
-	SET_API_KEY,
+	SET_API_KEYS,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
 	START_STREAMING_SPROUT,
@@ -43,9 +43,9 @@ import {
 } from '../signaller.js';
 
 import {
+	APIKeys,
 	DirectoryInfo,
 	ImageURL,
-	ModelProvider,
 	Path,
 	Prompt,
 	SproutName,
@@ -70,6 +70,10 @@ import {
 	strToU8,
 	zipSync
 } from 'fflate';
+
+import {
+	TypedObject
+} from '../../src/typed-object.js';
 
 import fileSaver from 'file-saver';
 
@@ -115,14 +119,20 @@ export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) 
 	if (!skipCanonicalize) dispatch(canonicalizePath());
 };
 
-export const setAPIKey = (provider: ModelProvider, key : string) : ThunkSomeAction => (dispatch, getState) => {
+export const setAPIKeys = (keys : APIKeys) : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
-	const apiKeys = selectAPIKeys(state);
-	if (apiKeys[provider] === key) return;
+	const existing = selectAPIKeys(state);
+	let changed = false;
+	for (const [provider, key] of TypedObject.entries(keys)) {
+		if (existing[provider] !== key) {
+			changed = true;
+			break;
+		}
+	}
+	if (!changed) return;
 	dispatch({
-		type: SET_API_KEY,
-		provider,
-		key
+		type: SET_API_KEYS,
+		keys
 	});
 };
 

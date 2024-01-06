@@ -58,8 +58,6 @@ export const sproutConfigSchema = z.object({
 
 export type SproutConfig = z.infer<typeof sproutConfigSchema>;
 
-export type APIKeys = Partial<Record<ModelProvider, string>>;
-
 export const subInstructionNameSchema = z.string().regex(absoluteRegExp(DEFAULT_NAME_REGEXP));
 
 export type SubInstructionsName = z.infer<typeof subInstructionNameSchema>;
@@ -146,12 +144,20 @@ export const completionModelID = z.enum([
 
 export type CompletionModelID = z.infer<typeof completionModelID>;
 
+//When adding an item here, also add to apiKeysSchema
 export const modelProvider = z.enum([
 	'openai.com',
 	'anthropic.com'
 ]);
 
 export type ModelProvider = z.infer<typeof modelProvider>;
+
+export const apiKeysSchema = z.object({
+	'openai.com': z.string().optional(),
+	'anthropic.com': z.string().optional()
+});
+
+export type APIKeys = z.infer<typeof apiKeysSchema>;
 
 export type PromptOptions = {
 	//If provided, will use this model (assuming it matches requirements)

@@ -7,7 +7,7 @@ import {
 	FORCE_OPEN_API_KEYS_DIALOG,
 	OPEN_EDITOR,
 	SELECT_SPROUT,
-	SET_API_KEY,
+	SET_API_KEYS,
 	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
@@ -44,12 +44,12 @@ const INITIAL_STATE : DataState = {
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
 
 	switch (action.type) {
-	case SET_API_KEY:
+	case SET_API_KEYS:
 		return {
 			...state,
 			apiKeys: {
 				...state.apiKeys,
-				[action.provider]: action.key
+				...action.keys
 			}
 		};
 	case ADD_SPROUTS:

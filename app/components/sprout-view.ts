@@ -57,7 +57,7 @@ import {
 	provideUserResponse,
 	selectSprout,
 	openEditor,
-	setAPIKey,
+	setAPIKeys,
 	updateDraftMessage,
 	updateWithMainPageExtra,
 	forceOpenAPIKeysDialog
@@ -617,12 +617,12 @@ class SproutView extends connect(store)(PageViewElement) {
 		store.dispatch(addDefaultSprouts());
 		store.dispatch(canonicalizePath());
 		//iterate for each legal value in the ZodEnum modelProvider
+		const keys : APIKeys = {};
 		for (const provider of modelProvider.options) {
 			const key = await dataManager.retrieveAPIKey(provider);
-			if (key) {
-				store.dispatch(setAPIKey(provider, key));
-			}
+			if (key) keys[provider] = key;
 		}
+		store.dispatch(setAPIKeys(keys));
 	}
 
 	private sproutChanged(newSprout : Sprout | null, lastSprout : Sprout | null) {

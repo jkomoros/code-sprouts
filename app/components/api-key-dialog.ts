@@ -29,7 +29,7 @@ import {
 
 import {
 	forceClosedAPIKeysDialog,
-	setAPIKey,
+	setAPIKeys,
 } from '../actions/data.js';
 
 import {
@@ -125,11 +125,13 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 			alert('You must provide at least one API key');
 			return;
 		}
+		const keys : APIKeys = {};
 		for (const ele of eles) {
 			const provider = modelProvider.parse(ele.dataset.provider);
 			const key = ele.value;
-			store.dispatch(setAPIKey(provider, key));
+			keys[provider] = key;
 		}
+		store.dispatch(setAPIKeys(keys));
 		this._shouldClose();
 	}
 
