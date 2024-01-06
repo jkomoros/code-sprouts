@@ -1,5 +1,6 @@
 import {
 	ImageURL,
+	ModelProvider,
 	PackagedSprout,
 	SproutName,
 	UncompiledPackagedSprout
@@ -19,7 +20,7 @@ export type AppState = {
 };
 
 export type DataState = {
-	openAIAPIKey : string,
+	apiKeys : Record<ModelProvider, string>,
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
 	sproutStreaming: boolean,

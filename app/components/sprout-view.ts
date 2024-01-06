@@ -57,7 +57,7 @@ import {
 	provideUserResponse,
 	selectSprout,
 	openEditor,
-	setOpenAIAPIKey,
+	setAPIKey,
 	updateDraftMessage,
 	updateWithMainPageExtra
 } from '../actions/data.js';
@@ -607,7 +607,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		store.dispatch(canonicalizePath());
 		const key = await dataManager.retrieveAPIKey('openai.com');
 		if (key) {
-			store.dispatch(setOpenAIAPIKey(key));
+			store.dispatch(setAPIKey('openai.com', key));
 		}
 	}
 

@@ -5,7 +5,7 @@ import {
 	EDITING_MODIFY_SPROUT,
 	OPEN_EDITOR,
 	SELECT_SPROUT,
-	SET_OPENAI_API_KEY,
+	SET_API_KEY,
 	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
@@ -21,7 +21,10 @@ import {
 } from '../types_store.js';
 
 const INITIAL_STATE : DataState = {
-	openAIAPIKey: '',
+	apiKeys: {
+		'openai.com': '',
+		'anthropic.com': ''
+	},
 	sprouts: {},
 	currentSproutName: null,
 	sproutStreaming: false,
@@ -38,10 +41,13 @@ const INITIAL_STATE : DataState = {
 const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataState => {
 
 	switch (action.type) {
-	case SET_OPENAI_API_KEY:
+	case SET_API_KEY:
 		return {
 			...state,
-			openAIAPIKey: action.key
+			apiKeys: {
+				...state.apiKeys,
+				[action.provider]: action.key
+			}
 		};
 	case ADD_SPROUTS:
 		return {

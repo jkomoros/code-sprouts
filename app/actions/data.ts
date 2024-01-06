@@ -3,7 +3,7 @@ import { ThunkSomeAction } from '../store.js';
 import {
 	CLOSE_EDITOR,
 	OPEN_EDITOR,
-	SET_OPENAI_API_KEY,
+	SET_API_KEY,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
 	START_STREAMING_SPROUT,
@@ -42,6 +42,7 @@ import {
 import {
 	DirectoryInfo,
 	ImageURL,
+	ModelProvider,
 	Path,
 	Prompt,
 	SproutName,
@@ -111,9 +112,10 @@ export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) 
 	if (!skipCanonicalize) dispatch(canonicalizePath());
 };
 
-export const setOpenAIAPIKey = (key : string) : ThunkSomeAction => (dispatch) => {
+export const setAPIKey = (provider: ModelProvider, key : string) : ThunkSomeAction => (dispatch) => {
 	dispatch({
-		type: SET_OPENAI_API_KEY,
+		type: SET_API_KEY,
+		provider,
 		key
 	});
 };

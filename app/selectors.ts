@@ -29,7 +29,8 @@ export const selectSproutStreaming = (state : RootState) => state.data ? state.d
 export const selectStreamCounter = (state : RootState) => state.data ? state.data.streamCounter : 0;
 export const selectDraftMessage = (state : RootState) => state.data ? state.data.draftMessage : '';
 export const selectAttachedImage = (state : RootState) => state.data ? state.data.attachedImage : null;
-export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.openAIAPIKey : '';
+export const selectOpenAIAPIKey = (state : RootState) => state.data ? state.data.apiKeys['openai.com'] : '';
+export const selectAnthropicAPIKey = (state : RootState) => state.data ? state.data.apiKeys['anthropic.com'] : '';
 export const selectEditorOpen = (state : RootState) => state.data ? state.data.editorOpen : false;
 export const selectIsEditing = (state : RootState) => state.data ? state.data.editing : false;
 export const selectChangesMade = (state : RootState) => state.data ? state.data.changesMade : false;

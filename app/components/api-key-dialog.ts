@@ -28,7 +28,7 @@ import {
 } from './button-shared-styles.js';
 
 import {
-	setOpenAIAPIKey,
+	setAPIKey,
 } from '../actions/data.js';
 
 import {
@@ -103,7 +103,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 		if (!ele) return;
 		const apiKey = ele.value;
 		if (!apiKey) alert('You must provide an API key');
-		store.dispatch(setOpenAIAPIKey(apiKey));
+		store.dispatch(setAPIKey('openai.com', apiKey));
 	}
 
 	override buttonsRender() : TemplateResult {
