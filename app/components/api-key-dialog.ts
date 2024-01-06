@@ -119,7 +119,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 			${defaultProviders.map(provider => html`
 					<label for=${provider}>${KEY_NAMES[provider].keyName}</label>
 					<input
-						type='text'
+						type='password'
 						id=${provider}
 						data-provider=${provider}
 						.value=${this._apiKeys[provider] || ''}
@@ -131,7 +131,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 					${otherProviders.map(provider => html`
 						<label for=${provider}>${KEY_NAMES[provider].keyName}</label>
 						<input
-							type='text'
+							type='password'
 							id=${provider}
 							data-provider=${provider}
 							.value=${this._apiKeys[provider] || ''}
