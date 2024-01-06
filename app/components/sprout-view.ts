@@ -625,22 +625,22 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 	}
 
-	private sproutChanged(lastSprout? : Sprout | null) {
-		if (!this._currentSprout) return;
+	private sproutChanged(newSprout : Sprout | null, lastSprout : Sprout | null) {
+		if (!newSprout) return;
 		this._currentSproutAllowsImages = false;
-		this._currentSprout.allowImages().then(allowImages => {
+		newSprout.allowImages().then(allowImages => {
 			this._currentSproutAllowsImages = allowImages;
 		});
 		this._currentSproutConfig = null;
-		this._currentSprout.config().then(config => {
+		newSprout.config().then(config => {
 			this._currentSproutConfig = config;
 		});
 		this._currentSproutManagesState = false;
-		this._currentSprout.managesState().then(managesState => {
+		newSprout.managesState().then(managesState => {
 			this._currentSproutManagesState = managesState;
 		});
 		if (lastSprout) signaller.finish(lastSprout);
-		this._currentSprout.run(signaller);
+		newSprout.run(signaller);
 	}
 
 	override updated(changedProps : PropertyValues<this>) {
@@ -652,8 +652,12 @@ class SproutView extends connect(store)(PageViewElement) {
 		}
 		if (changedProps.has('_currentSprout') && this._currentSprout) {
 			const lastSprout = changedProps.get('_currentSprout');
-			//Don't call store.dispatch things in the update.
-			setTimeout(() => this.sproutChanged(lastSprout), 0);
+			//Don't call store.dispatch things in the update. We pass the
+			//currentSprout as well as lastSprout, because if there are lots of
+			//successive changes to the sprout, before the next timer tick, the
+			//currentSprout might be a different value by the time it actualy
+			//runs.
+			setTimeout(() => this.sproutChanged(this._currentSprout, lastSprout || null), 0);
 		}
 		if (changedProps.has('_sproutStreaming') && !this._sproutStreaming) {
 			this._focusTextArea();
