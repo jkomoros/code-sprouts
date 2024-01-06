@@ -22,7 +22,6 @@ import {
 	selectCurrentSproutName,
 	selectDraftMessage,
 	selectHashForCurrentState,
-	selectOpenAIAPIKey,
 	selectPageExtra,
 	selectSproutData,
 	selectSproutStreaming,
@@ -30,6 +29,7 @@ import {
 	selectIsEditing,
 	selectDialogOpen,
 	selectMobile,
+	selectAPIKeys,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -102,6 +102,8 @@ import {
 	SproutConfig,
 	Conversation,
 	ConversationMessage,
+	APIKeys,
+	modelProvider,
 } from '../../src/types.js';
 
 import {
@@ -121,6 +123,7 @@ import {
 
 import './sprout-editor.js';
 import './api-key-dialog.js';
+import { TypedObject } from '../../src/typed-object.js';
 
 const sendShortcut : KeyboardAction = {
 	shortcut: {
@@ -166,7 +169,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		_hashForCurrentState = '';
 
 	@state()
-		_openAIAPIKey = '';
+		_apiKeys : APIKeys = {};
 
 	@state()
 		_sprouts : SproutDataMap = {};
@@ -580,7 +583,7 @@ class SproutView extends connect(store)(PageViewElement) {
 	override stateChanged(state : RootState) {
 		this._pageExtra = selectPageExtra(state);
 		this._hashForCurrentState = selectHashForCurrentState(state);
-		this._openAIAPIKey = selectOpenAIAPIKey(state);
+		this._apiKeys = selectAPIKeys(state);
 		this._sprouts = selectSproutData(state);
 		this._currentSproutName = selectCurrentSproutName(state);
 		this._sproutStreaming = selectSproutStreaming(state);
@@ -605,9 +608,12 @@ class SproutView extends connect(store)(PageViewElement) {
 	private async firstRunDispatch() {
 		store.dispatch(addDefaultSprouts());
 		store.dispatch(canonicalizePath());
-		const key = await dataManager.retrieveAPIKey('openai.com');
-		if (key) {
-			store.dispatch(setAPIKey('openai.com', key));
+		//iterate for each legal value in the ZodEnum modelProvider
+		for (const provider of modelProvider.options) {
+			const key = await dataManager.retrieveAPIKey(provider);
+			if (key) {
+				store.dispatch(setAPIKey(provider, key));
+			}
 		}
 	}
 
@@ -644,9 +650,10 @@ class SproutView extends connect(store)(PageViewElement) {
 		if (changedProps.has('_sproutStreaming') && !this._sproutStreaming) {
 			this._focusTextArea();
 		}
-		if (changedProps.has('_openAIAPIKey')) {
-			if (this._openAIAPIKey) {
-				dataManager.storeAPIKey('openai.com', this._openAIAPIKey);
+		if (changedProps.has('_apiKeys')) {
+			for (const [provider, key] of TypedObject.entries(this._apiKeys)) {
+				if (!key) continue;
+				store.dispatch(setAPIKey(provider, key));
 			}
 		}
 	}
