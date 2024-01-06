@@ -7,6 +7,8 @@ import {
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
 	START_STREAMING_SPROUT,
+	FORCE_CLOSE_API_KEYS_DIALOG,
+	FORCE_OPEN_API_KEYS_DIALOG,
 	SomeAction
 } from '../actions.js';
 
@@ -341,4 +343,16 @@ export const downloadCurrentSprout = () : ThunkSomeAction => async (dispatch, ge
 	fileSaver.saveAs(blob, `${lastNamePart}.zip`);
 
 
+};
+
+export const forceOpenAPIKeysDialog = () => {
+	return {
+		type: FORCE_OPEN_API_KEYS_DIALOG
+	};
+};
+
+export const forceClosedAPIKeysDialog = () => {
+	return {
+		type: FORCE_CLOSE_API_KEYS_DIALOG
+	};
 };

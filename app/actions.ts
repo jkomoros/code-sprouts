@@ -36,6 +36,10 @@ export const CLOSE_EDITOR = 'CLOSE_EDITOR';
 export const START_EDITING = 'START_EDITING';
 export const EDITING_MODIFY_SPROUT = 'EDITING_MODIFY_SPROUT';
 export const WRITE_SPROUT = 'WRITE_SPROUT';
+export const FORCE_OPEN_API_KEYS_DIALOG = 'FORCE_OPEN_API_KEYS_DIALOG';
+//This is actually poorly named, because it doesn't force the editor to close,
+//it just lowers the forcedOpen flag.
+export const FORCE_CLOSE_API_KEYS_DIALOG = 'FORCE_CLOSE_API_KEYS_DIALOG';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -128,6 +132,14 @@ const actionWriteSprout = z.object({
 	sprout: packagedSproutSchema
 }).strict();
 
+const actionForceOpenAPIKeysDialog = z.object({
+	type: z.literal(FORCE_OPEN_API_KEYS_DIALOG)
+}).strict();
+
+const actionForceCloseAPIKeysDialog = z.object({
+	type: z.literal(FORCE_CLOSE_API_KEYS_DIALOG)
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -146,7 +158,9 @@ const someAction = z.discriminatedUnion('type', [
 	actionCloseEditor,
 	actionStartEditing,
 	actionEditingModifySprout,
-	actionWriteSprout
+	actionWriteSprout,
+	actionForceCloseAPIKeysDialog,
+	actionForceOpenAPIKeysDialog
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

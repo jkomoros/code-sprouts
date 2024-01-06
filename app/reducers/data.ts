@@ -3,6 +3,8 @@ import {
 	ATTACH_IMAGE,
 	CLOSE_EDITOR,
 	EDITING_MODIFY_SPROUT,
+	FORCE_CLOSE_API_KEYS_DIALOG,
+	FORCE_OPEN_API_KEYS_DIALOG,
 	OPEN_EDITOR,
 	SELECT_SPROUT,
 	SET_API_KEY,
@@ -25,6 +27,7 @@ const INITIAL_STATE : DataState = {
 		'openai.com': '',
 		'anthropic.com': ''
 	},
+	apiKeysEditorForcedOpen: false,
 	sprouts: {},
 	currentSproutName: null,
 	sproutStreaming: false,
@@ -127,6 +130,16 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				...state.writtenSprouts,
 				[action.name]: action.sprout
 			}
+		};
+	case FORCE_OPEN_API_KEYS_DIALOG:
+		return {
+			...state,
+			apiKeysEditorForcedOpen: true
+		};
+	case FORCE_CLOSE_API_KEYS_DIALOG:
+		return {
+			...state,
+			apiKeysEditorForcedOpen: false
 		};
 	default:
 		return state;

@@ -39,6 +39,7 @@ export const selectIsEditing = (state : RootState) => state.data ? state.data.ed
 export const selectChangesMade = (state : RootState) => state.data ? state.data.changesMade : false;
 export const selectSproutSnapshot = (state : RootState) => state.data ? state.data.sproutSnapshot : null;
 export const selectWrittenSprouts = (state : RootState) => state.data ? state.data.writtenSprouts : {};
+const selectAPIKeysEditorForcedOpen = (state : RootState) => state.data ? state.data.apiKeysEditorForcedOpen : false;
 
 export const selectHashForCurrentState = (_state : RootState) => '';
 
@@ -59,7 +60,8 @@ const selectAPIKeysDialogAutoOpen = createSelector(
 
 export const selectAPIKeysDialogOpen = createSelector(
 	selectAPIKeysDialogAutoOpen,
-	(autoOpen) => autoOpen
+	selectAPIKeysEditorForcedOpen,
+	(autoOpen, forcedOpen) => autoOpen || forcedOpen
 );
 
 //This will be a convenient place to extend later.
