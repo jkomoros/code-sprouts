@@ -1,6 +1,6 @@
 import {
+	APIKeys,
 	ImageURL,
-	ModelProvider,
 	PackagedSprout,
 	SproutName,
 	UncompiledPackagedSprout
@@ -20,7 +20,7 @@ export type AppState = {
 };
 
 export type DataState = {
-	apiKeys : Record<ModelProvider, string>,
+	apiKeys : Required<APIKeys>;
 	sprouts: SproutDataMap,
 	currentSproutName: SproutLocation | null,
 	sproutStreaming: boolean,

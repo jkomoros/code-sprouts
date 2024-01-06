@@ -58,12 +58,7 @@ export const sproutConfigSchema = z.object({
 
 export type SproutConfig = z.infer<typeof sproutConfigSchema>;
 
-const environmentSchema = z.object({
-	openai_api_key : z.string().optional(),
-	anthropic_api_key : z.string().optional()
-});
-
-export type Environment = z.infer<typeof environmentSchema>;
+export type APIKeys = Partial<Record<ModelProvider, string>>;
 
 export const subInstructionNameSchema = z.string().regex(absoluteRegExp(DEFAULT_NAME_REGEXP));
 

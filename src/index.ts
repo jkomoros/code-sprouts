@@ -197,7 +197,7 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	if (!sproutName) throw new Error('no sprout provided');
 
 	const ai = new AIProvider({
-		openai_api_key: OPENAI_API_KEY
+		'openai.com': OPENAI_API_KEY
 	});
 	const debugLogger = opts.verbose ? console.info : undefined;
 	const sprout = new Sprout(sproutName, {ai, debugLogger, disallowFormatting: true});

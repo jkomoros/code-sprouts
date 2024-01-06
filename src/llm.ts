@@ -18,7 +18,7 @@ import {
 import {
 	CompletionInfo,
 	CompletionModelID,
-	Environment,
+	APIKeys,
 	ModelProvider,
 	Prompt,
 	PromptComponentImage,
@@ -106,26 +106,23 @@ export const DEFAULT_MODEL_STACK : CompletionModelID[] = [
 
 type ProviderInfo = {
 	defaultCompletionModel: CompletionModelID,
-	apiKeyVar : keyof Environment
 }
 
 export const INFO_BY_PROVIDER : {[name in ModelProvider]: ProviderInfo} = {
 	'openai.com': {
 		defaultCompletionModel: 'openai.com:gpt-3.5-turbo',
-		apiKeyVar: 'openai_api_key'
 	},
 	'anthropic.com': {
 		defaultCompletionModel: 'anthropic.com:claude-2.1',
-		apiKeyVar: 'anthropic_api_key'
 	}
 };
 
-export const computePrompt = async (prompt : Prompt, model: CompletionModelID, env : Environment, opts : PromptOptions = {}) : Promise<string> => {
+export const computePrompt = async (prompt : Prompt, model: CompletionModelID, keys : APIKeys, opts : PromptOptions = {}) : Promise<string> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
 
-	const apiKey = env[INFO_BY_PROVIDER[provider].apiKeyVar];
+	const apiKey = keys[provider];
 	if (!apiKey) throw new Error ('Unset API key');
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
@@ -135,12 +132,12 @@ export const computePrompt = async (prompt : Prompt, model: CompletionModelID, e
 	return modelInfo.compute(modelName, apiKey, prompt, modelInfo, opts);
 };
 
-export const computeStream = async (prompt : Prompt, model: CompletionModelID, env : Environment, opts: PromptOptions = {}) : Promise<PromptStream> => {
+export const computeStream = async (prompt : Prompt, model: CompletionModelID, keys : APIKeys, opts: PromptOptions = {}) : Promise<PromptStream> => {
 	//Throw if the completion model is not a valid value
 
 	const [provider, modelName] = extractModel(model);
 
-	const apiKey = env[INFO_BY_PROVIDER[provider].apiKeyVar];
+	const apiKey = keys[provider];
 	if (!apiKey) throw new Error ('Unset API key');
 
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
@@ -247,14 +244,14 @@ export const debugTextForPrompt = (prompt : Prompt) : string => {
 //Wrap them in one object to pass around instead of passing around state everywhere else.
 export class AIProvider {
 	private _models : CompletionModelID[];
-	private _env : Environment;
+	private _keys : APIKeys;
 	private _opts: PromptOptions;
 
-	constructor(env : Environment = {}, model : CompletionModelID | CompletionModelID[] = DEFAULT_MODEL_STACK, opts : PromptOptions = {}) {
+	constructor(keys : APIKeys = {}, model : CompletionModelID | CompletionModelID[] = DEFAULT_MODEL_STACK, opts : PromptOptions = {}) {
 		if (typeof model == 'string') model = [model];
 		if (model.length == 0) throw new Error('At least one model must be provided');
 		this._models = model;
-		this._env = env;
+		this._keys = keys;
 		this._opts = opts;
 	}
 
@@ -288,7 +285,7 @@ export class AIProvider {
 		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computePrompt(prompt, model, this._env, opts);
+		return computePrompt(prompt, model, this._keys, opts);
 	}
 
 	async promptStream(prompt : Prompt, opts: PromptOptions = {}) : Promise<PromptStream> {
@@ -296,7 +293,7 @@ export class AIProvider {
 		opts = await this.extendPromptOptionsWithTokenCount(prompt, opts);
 		const model = this.modelForOptions(opts);
 		if (opts.debugLogger) opts.debugLogger(`Using model ${model}`);
-		return computeStream(prompt, model, this._env, opts);
+		return computeStream(prompt, model, this._keys, opts);
 	}
 
 	async tokenCount(prompt : Prompt, opts : PromptOptions = {}) : Promise<number> {
