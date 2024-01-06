@@ -224,6 +224,7 @@ const conversationMessageSproutSchema = z.object({
 		'done',
 		'cancelled'
 	]),
+	model: z.union([z.literal('unknown'), completionModelID]),
 	message: promptSchema,
 	state: sproutStateSchema.optional()
 });

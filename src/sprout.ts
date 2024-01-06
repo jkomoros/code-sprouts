@@ -669,6 +669,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		const sproutResponse : ConversationMessageSprout = {
 			speaker: 'sprout',
 			status: 'active',
+			model: 'unknown',
 			message: ''
 		};
 		this._conversation = [
@@ -699,7 +700,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 		if (!config.allowImages && promptHasImages) throw new Error('Prompt includes images but images are not allowed');
 		if (this._debugLogger) this._debugLogger(`Prompt:\n${debugTextForPrompt(prompt)}`);
 		signaller.streamWillStart(this);
-		const {stream} = await this._aiProvider.promptStream(prompt, {
+		const {stream, model} = await this._aiProvider.promptStream(prompt, {
 			jsonResponse: true,
 			debugLogger: this._debugLogger,
 			modelRequirements: {
@@ -708,6 +709,7 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 				imageInput: promptHasImages
 			}
 		});
+		sproutResponse.model = model;
 		const parser = new StreamingJSONParser();
 		const iterator = stream[Symbol.asyncIterator]();
 		//eslint-disable-next-line no-constant-condition
