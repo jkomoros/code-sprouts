@@ -728,6 +728,8 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			const chunk = iteratorResult.value;
 
 			const content = extractStreamChunk(chunk);
+			//For different providers we'll get a lot of empty chunks.
+			if (!content) continue;
 
 			const incrementalUserMessage = parser.incrementalProperty(content, (input: unknown) : string => {
 				return partialConversationTurnSchema.parse(input).messageForUser || '';
