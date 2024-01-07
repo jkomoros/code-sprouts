@@ -361,7 +361,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 	}
 
 	private _handleForkClicked() {
-		const name = prompt('What should the name of the fork be?', this._currentSproutName || '');
+		const currentName = (this._currentSproutName || '').split('/').pop();
+		const name = prompt('What should the name of the fork be?', currentName);
 		if (!name) return;
 		store.dispatch(forkCurrentSprout(name));
 	}
