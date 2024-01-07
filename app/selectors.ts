@@ -74,7 +74,12 @@ export const selectDialogOpen = createSelector(
 
 export const selectAIProvider = createSelector(
 	selectAPIKeys,
-	(keys) => Object.keys(keys).length && Object.values(keys).some(str => Boolean(str)) ? new AIProvider(keys) : null
+	selectPreferredAIProvider,
+	(keys, preferred) => {
+		if (Object.keys(keys).length === 0) return null;
+		if (!Object.values(keys).some(str => Boolean(str))) return null;
+		return new AIProvider(keys, undefined, {modelPreferences: {modelProvider: preferred}});
+	}
 );
 
 const selectWrittenSproutDataForCurrentSprout = createSelector(
