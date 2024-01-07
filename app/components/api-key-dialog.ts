@@ -30,13 +30,15 @@ import {
 import {
 	forceClosedAPIKeysDialog,
 	setAPIKeys,
+	setPreferredAIProvider,
 } from '../actions/data.js';
 
 import {
 	selectAPIKeys,
 	selectAPIKeysDialogAutoOpen,
 	selectAPIKeysDialogOpen,
-	selectMobile
+	selectMobile,
+	selectPreferredAIProvider
 } from '../selectors.js';
 
 import {
@@ -48,6 +50,10 @@ import {
 import {
 	TypedObject
 } from '../../src/typed-object.js';
+
+import {
+	eleFromEvent
+} from '../util.js';
 
 const KEY_NAMES : Record<ModelProvider, {keyName: string, include: boolean}> = {
 	'openai.com': {
@@ -65,6 +71,9 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 	
 	@state()
 		_apiKeys : APIKeys = {};
+
+	@state()
+		_preferredAIProvider : ModelProvider = 'openai.com';
 
 	@state()
 		_firstRun : boolean = false;
@@ -101,6 +110,7 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 		this._apiKeys = selectAPIKeys(state);
 		this._firstRun = selectAPIKeysDialogAutoOpen(state);
 		this.mobile = selectMobile(state);
+		this._preferredAIProvider = selectPreferredAIProvider(state);
 	}
 
 
@@ -108,6 +118,9 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 
 		const defaultProviders = TypedObject.keys(KEY_NAMES).filter(key => KEY_NAMES[key].include).slice(0, 1);
 		const otherProviders = TypedObject.keys(KEY_NAMES).filter(key => KEY_NAMES[key].include).slice(1);
+
+		const providersWithKeys = TypedObject.entries(this._apiKeys).filter(([_provider, key]) => Boolean(key)).map(([provider, _key]) => provider);
+
 		return html`
 			<h3>Welcome</h3>
 			<p>Code Sprouts allows you to run simple GPT-based bots created by yourself or others. You can learn more about what it can do at the <a href='https://github.com/jkomoros/code-sprouts?tab=readme-ov-file#code-sprouts' target='_blank'>README ${OPEN_IN_NEW}</a></p>
@@ -116,6 +129,12 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 			<p>No sprouts you load, from this domain or any other, will be able to see this key or any information from this domain.</p>
 			<p>If you would rather not trust some random webapp with your API key, you can run your own viewer by following the instructions at <a href='https://github.com/jkomoros/code-sprouts' target="_blank">https://github.com/jkomoros/code-sprouts ${OPEN_IN_NEW}</a></p>
 			<h4>Provide at least one of the following:</h4>
+			${providersWithKeys.length ? html`
+				<label>Preferred provider</label>
+				<select .value=${this._preferredAIProvider} @change=${this._handlePreferredProviderChanged}>
+					${providersWithKeys.map(provider => html`<option .value=${provider} .selected=${this._preferredAIProvider == provider}>${provider}</option>`)}
+				</select>
+			` : html``}
 			${defaultProviders.map(provider => html`
 					<label for=${provider}>${KEY_NAMES[provider].keyName}</label>
 					<input
@@ -146,6 +165,12 @@ export class APIKeyDialog extends connect(store)(DialogElement) {
 		store.dispatch(forceClosedAPIKeysDialog());
 		//TODO: allow the dialog to be required and not show any affordances to close.
 
+	}
+
+	private _handlePreferredProviderChanged(e : Event) {
+		const select = eleFromEvent(e, HTMLSelectElement);
+		const provider = modelProvider.parse(select.value);
+		store.dispatch(setPreferredAIProvider(provider));
 	}
 
 	private _handleSubmitClicked() {
