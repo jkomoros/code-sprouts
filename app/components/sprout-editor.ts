@@ -107,6 +107,11 @@ const CONFIG_FIELDS : Record<keyof SproutConfig, ConfigFieldInfo> = {
 		hidden: false,
 		optional: true,
 		description: 'Whether the bot should return markdown formatting'
+	},
+	forkedFrom: {
+		hidden: true,
+		optional: true,
+		description: 'The URL of the sprout this was forked from'
 	}
 };
 
@@ -396,7 +401,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 		switch (key) {
 		case 'formatVersion':
-			throw new Error('formatVersion may not be added');
+		case 'forkedFrom':
+			throw new Error(`${key} may not be added`);
 		case 'title':
 		case 'description':
 			config[key] = '';
@@ -446,7 +452,8 @@ export class SproutEditor extends connect(store)(DialogElement) {
 		const config = sproutConfigSchema.parse(JSON.parse(clonedSnapshot['sprout.json']));
 		switch(key) {
 		case 'formatVersion':
-			throw new Error('Cannot change version');
+		case 'forkedFrom':
+			throw new Error(`Cannot change ${key}`);
 		case 'title':
 		case 'description':
 			if (config[key] === ele.value) return;

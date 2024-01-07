@@ -211,6 +211,10 @@ If true, then the bot will alow image input.
 
 If true, then the bot will be told it may return markdown formatting
 
+#### forkedFrom (optional) : URL string
+
+If provided, describes the sprout that this was forked from.
+
 ## Deploying
 
 `npx firebase use <your-project-id>`
