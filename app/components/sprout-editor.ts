@@ -15,6 +15,7 @@ import {
 } from '../types_store.js';
 
 import {
+	ARROW_SPLIT_ICON,
 	CANCEL_ICON,
 	CHECK_CIRCLE_OUTLINE_ICON,
 	DOWNLOAD_ICON,
@@ -35,6 +36,7 @@ import {
 	closeEditor,
 	downloadCurrentSprout,
 	editingModifySprout,
+	forkCurrentSprout,
 	saveSprout,
 	startEditing
 } from '../actions/data.js';
@@ -276,6 +278,13 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				>
 					${DOWNLOAD_ICON}
 				</button>
+				<button
+					class='small'
+					@click=${this._handleForkClicked}
+					title='Fork sprout to edit your own version'
+				>
+					${ARROW_SPLIT_ICON}
+				</button>
 
 				${this._userMayEdit ? 
 		html`
@@ -349,6 +358,12 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	private _handleDownloadClicked() {
 		store.dispatch(downloadCurrentSprout());
+	}
+
+	private _handleForkClicked() {
+		const name = prompt('What should the name of the fork be?', this._currentSproutName || '');
+		if (!name) return;
+		store.dispatch(forkCurrentSprout(name));
 	}
 
 	private _handleEditingClicked() {
