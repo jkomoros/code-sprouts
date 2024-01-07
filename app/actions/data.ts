@@ -136,6 +136,15 @@ export const setAPIKeys = (keys : APIKeys) : ThunkSomeAction => (dispatch, getSt
 		type: SET_API_KEYS,
 		keys
 	});
+
+	//Ensure the preferred provider is selected if it can be.
+	const preferred = selectPreferredAIProvider(getState());
+	const newKeys = selectAPIKeys(getState());
+	if (newKeys[preferred]) return;
+	const legalProviders = TypedObject.keys(newKeys).filter(provider => Boolean(newKeys[provider]));
+	if (legalProviders.length === 0) return;
+	const newPreferred = legalProviders[0];
+	dispatch(setPreferredAIProvider(newPreferred));
 };
 
 export const startStreamingSprout = () : SomeAction => {
