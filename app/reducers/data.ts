@@ -8,6 +8,7 @@ import {
 	OPEN_EDITOR,
 	SELECT_SPROUT,
 	SET_API_KEYS,
+	SET_PREFERRED_AI_PROVIDER,
 	SPROUT_PROVIDED_USER_RESPONSE,
 	SPROUT_STOPPED_STREAMING,
 	START_EDITING,
@@ -28,6 +29,7 @@ const INITIAL_STATE : DataState = {
 		'anthropic.com': ''
 	},
 	apiKeysEditorForcedOpen: false,
+	preferredAIProvider: 'openai.com',
 	sprouts: {},
 	currentSproutName: null,
 	sproutStreaming: false,
@@ -140,6 +142,11 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 		return {
 			...state,
 			apiKeysEditorForcedOpen: false
+		};
+	case SET_PREFERRED_AI_PROVIDER:
+		return {
+			...state,
+			preferredAIProvider: action.provider
 		};
 	default:
 		return state;

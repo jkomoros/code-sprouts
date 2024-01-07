@@ -14,7 +14,8 @@ import {
 	promptSchema,
 	sproutNameSchema,
 	sproutStateSchema,
-	uncompiledPackagedSproutSchema
+	uncompiledPackagedSproutSchema,
+	modelProvider
 } from '../src/types.js';
 
 export const UPDATE_PAGE = 'UPDATE_PAGE';
@@ -40,6 +41,7 @@ export const FORCE_OPEN_API_KEYS_DIALOG = 'FORCE_OPEN_API_KEYS_DIALOG';
 //This is actually poorly named, because it doesn't force the editor to close,
 //it just lowers the forcedOpen flag.
 export const FORCE_CLOSE_API_KEYS_DIALOG = 'FORCE_CLOSE_API_KEYS_DIALOG';
+export const SET_PREFERRED_AI_PROVIDER = 'SET_PREFERRED_AI_PROVIDER';
 
 const actionUpdatePage = z.object({
 	type: z.literal(UPDATE_PAGE),
@@ -139,6 +141,11 @@ const actionForceCloseAPIKeysDialog = z.object({
 	type: z.literal(FORCE_CLOSE_API_KEYS_DIALOG)
 }).strict();
 
+const actionSetPreferredAIProvider = z.object({
+	type: z.literal(SET_PREFERRED_AI_PROVIDER),
+	provider: modelProvider
+}).strict();
+
 const someAction = z.discriminatedUnion('type', [
 	actionUpdatePage,
 	actionUpdateOffline,
@@ -159,7 +166,8 @@ const someAction = z.discriminatedUnion('type', [
 	actionEditingModifySprout,
 	actionWriteSprout,
 	actionForceCloseAPIKeysDialog,
-	actionForceOpenAPIKeysDialog
+	actionForceOpenAPIKeysDialog,
+	actionSetPreferredAIProvider
 ]);
 
 export type SomeAction = z.infer<typeof someAction>;

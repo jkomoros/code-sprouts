@@ -27,6 +27,7 @@ import {
 	selectDraftMessage,
 	selectEditorOpen,
 	selectIsEditing,
+	selectPreferredAIProvider,
 	selectSproutData,
 	selectSproutSnapshot,
 	selectSproutStreaming
@@ -46,6 +47,7 @@ import {
 	APIKeys,
 	DirectoryInfo,
 	ImageURL,
+	ModelProvider,
 	Path,
 	Prompt,
 	SproutName,
@@ -369,4 +371,14 @@ export const forceClosedAPIKeysDialog = () : SomeAction => {
 	return {
 		type: FORCE_CLOSE_API_KEYS_DIALOG
 	};
+};
+
+export const setPreferredAIProvider = (provider : ModelProvider) : ThunkSomeAction => (dispatch, getState) => {
+	const state = getState();
+	const currentProvider = selectPreferredAIProvider(state);
+	if (currentProvider === provider) return;
+	dispatch({
+		type: 'SET_PREFERRED_AI_PROVIDER',
+		provider
+	});
 };
