@@ -24,7 +24,8 @@ import {
 	PromptComponentImage,
 	PromptOptions,
 	PromptStream,
-	modelProvider
+	modelProvider,
+	ModelCharacteristics
 } from './types.js';
 
 import {
@@ -179,40 +180,49 @@ export const computeTokenCount = async (text : Prompt, model : CompletionModelID
 	return -1;
 };
 
-const modelMatches = (model : CompletionModelID, opts : PromptOptions = {}) : boolean => {
-	const requirements = opts.modelRequirements;
-	if (!requirements) return true;
+const modelMatches = (model : CompletionModelID, characteristics? : ModelCharacteristics) : boolean => {
+	const [matches, total] = modelCharacteteristicMatch(model, characteristics);
+	return matches >= total;
+};
+
+const modelCharacteteristicMatch = (model : CompletionModelID, characteristics? : ModelCharacteristics) : [matches : number, total : number] => {
+	if (!characteristics) characteristics = {};
 	const modelInfo = COMPLETIONS_BY_MODEL[model];
-	for (const key of TypedObject.keys(requirements)) {
-		if (!modelMatches) break;
+	let matches = 0;
+	let total = 0;
+	for (const key of TypedObject.keys(characteristics)) {
 		switch(key) {
 		case 'imageInput':
-			const requireImage = requirements.imageInput || false;
+			const requireImage = characteristics.imageInput || false;
 			if (!requireImage) continue;
-			if (!modelInfo.supportsImages) return false;
+			total += 1;
+			if (modelInfo.supportsImages) matches +=1;
 			break;
 		case 'jsonResponse':
-			const requireJsonResponse = requirements.jsonResponse || false;
+			const requireJsonResponse = characteristics.jsonResponse || false;
 			if (!requireJsonResponse) continue;
-			if (!modelInfo.supportsJSONResponseFormat) return false;
+			total += 1;
+			if (modelInfo.supportsJSONResponseFormat) matches += 1;
 			break;
 		case 'contextSizeAtLeast':
-			const contextSizeAtLeast = requirements.contextSizeAtLeast || -1;
+			const contextSizeAtLeast = characteristics.contextSizeAtLeast || -1;
 			if (contextSizeAtLeast < 0) continue;
-			if (modelInfo.maxInputTokens < contextSizeAtLeast) return false;
+			total += 1;
+			if (modelInfo.maxInputTokens >= contextSizeAtLeast) matches += 1;
 			break;
 		case 'modelProvider':
-			let modelProvider = requirements.modelProvider;
+			let modelProvider = characteristics.modelProvider;
 			if (!modelProvider) continue;
+			total += 1;
 			if (!Array.isArray(modelProvider)) modelProvider = [modelProvider];
 			const [provider] = extractModel(model);
-			if (!modelProvider.includes(provider)) return false;
+			if (modelProvider.includes(provider)) matches += 1;
 			break;
 		default:
 			assertUnreachable(key);
 		}
 	}
-	return true;
+	return [matches, total];
 };
 
 const IMAGE_DATA_PLACEHOLDER = '<image-data>';
@@ -276,15 +286,31 @@ export class AIProvider {
 		this._opts = opts;
 	}
 
+	//Return a model that matches the requirements, and among those that do, the one that matches the preferences the most.
 	modelForOptions(opts : PromptOptions) : CompletionModelID {
 		if (opts.model) {
 			if (!modelMatches(opts.model, opts)) throw new Error(`model ${opts.model} provided, but it does not match provided requirements`);
 			return opts.model;
 		}
+		const options : CompletionModelID[] = [];
 		for (const model of this._models) {
-			if (modelMatches(model, opts)) return model;
+			if (modelMatches(model, opts.modelRequirements)) options.push(model);
 		}
-		throw new Error('No model matches requirements');
+		if (options.length == 0) throw new Error('No model matches requirements');
+		if (!opts.modelPreferences) return options[0];
+		if (options.length == 1) return options[0];
+		let bestOption : CompletionModelID | null = null;
+		let bestOptionScore = -1;
+		for (const model of options) {
+			const [matches] = modelCharacteteristicMatch(model, opts.modelPreferences);
+			if (matches > bestOptionScore) {
+				bestOptionScore = matches;
+				bestOption = model;
+			}
+		}
+		//Tell typescript that bestOption is not null.
+		if (!bestOption) throw new Error('Unexpected no matches');
+		return bestOption;
 	}
 
 	private async extendPromptOptionsWithExtras(prompt: Prompt, input : PromptOptions) : Promise<PromptOptions> {

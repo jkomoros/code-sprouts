@@ -159,16 +159,22 @@ export const apiKeysSchema = z.object({
 
 export type APIKeys = z.infer<typeof apiKeysSchema>;
 
+export type ModelCharacteristics = {
+	jsonResponse? : boolean,
+	imageInput?: boolean
+	contextSizeAtLeast? : number,
+	modelProvider? : ModelProvider | ModelProvider[]
+};
+
 export type PromptOptions = {
 	//If provided, will use this model (assuming it matches requirements)
 	model? : CompletionModelID,
 	jsonResponse? : boolean,
-	modelRequirements? : {
-		jsonResponse? : boolean,
-		imageInput?: boolean
-		contextSizeAtLeast? : number,
-		modelProvider? : ModelProvider | ModelProvider[]
-	},
+	//If provided, the final model MUST match all of the provided characteristics.
+	modelRequirements? : ModelCharacteristics,
+	//If provided, then the final model will be selected from one that remains
+	//after the requirements are all met that has the maximum number met.
+	modelPreferences? : ModelCharacteristics,
 	debugLogger? : Logger
 };
 
