@@ -1,4 +1,6 @@
 export type State = {
+    //The names of the authors that are stylistic influences the user told us about.
+    stylisticInfluences?: string[]
     //The name of the child in the story.
     protagonistName?: string;
     //Settings for stories, things like "jungle" or "castle".
@@ -9,7 +11,7 @@ export type State = {
         name: string,
         //A short description of the character
         description: string,
-        //Whether the character has been introduced in the story yet
+        //Whether the character has been introduced in the story yet (or was provied by the user)
         established : boolean,
         //Things like 'brother' or 'friend'
         relationshipToProtagonist?: string,
