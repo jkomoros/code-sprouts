@@ -496,7 +496,7 @@ type Result = {
 		if (!this._aiProvider) throw new Error('This currently requires an AI provider');
 		const {result: summary} = await this._aiProvider.prompt(prompt, {
 			jsonResponse: true,
-			modelRequirements: {
+			modelPreferences: {
 				jsonResponse: true,
 			}
 		});
@@ -533,7 +533,7 @@ ${schemaText}
 `;
 		const {result: rawJSON} = await this._aiProvider.prompt(prompt, {
 			jsonResponse: true,
-			modelRequirements: {
+			modelPreferences: {
 				jsonResponse: true
 			}
 		});
@@ -704,9 +704,10 @@ ${includeState ? 'Provide a patch to update the state object based on the users\
 			jsonResponse: true,
 			debugLogger: this._debugLogger,
 			modelRequirements: {
-				//It's not possible to allowImages and imageInput at the same time currently, because no openai model allows both.
-				jsonResponse: !promptHasImages,
 				imageInput: promptHasImages
+			},
+			modelPreferences: {
+				jsonResponse: true
 			}
 		});
 		sproutResponse.model = model;
