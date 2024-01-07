@@ -52,12 +52,14 @@ import {
 	Prompt,
 	SproutName,
 	SproutState,
-	UncompiledPackagedSprout
+	UncompiledPackagedSprout,
+	sproutConfigSchema
 } from '../../src/types.js';
 
 import {
 	addDirectoryListings,
 	joinPath,
+	makeFinalPath,
 	normalizeSproutPath,
 	sproutBaseNameLegal
 } from '../../src/util.js';
@@ -325,6 +327,35 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 
 	const sprout = await emptySprout(name, `A sprout called ${name}`);
 	await dataManager.writeSprout(fullName, sprout);
+	dispatch(addOrSelectSprout(fullName));
+	dispatch(startEditing());
+};
+
+export const forkCurrentSprout = (newName : SproutName) : ThunkSomeAction => async (dispatch, getState) => {
+	const currentSprout = selectCurrentSprout(getState());
+	if (!currentSprout) throw new Error('No current sprout');
+
+	if (!sproutBaseNameLegal(newName)) {
+		throw new Error(`${newName} is not a legal sprout base name`);
+	}
+
+	const fullName = joinPath(fetcher.localWriteablePath, newName);
+
+	const sproutExists = await dataManager.sproutExists(fullName);
+	if (sproutExists) throw new Error(`Sprout ${fullName} already exists`);
+
+	const sproutPackage = await currentSprout.compiledPackage();
+	const pkg = {
+		...sproutPackage
+	};
+
+	const config = sproutConfigSchema.parse(JSON.parse(pkg['sprout.json']));
+
+	config.forkedFrom = makeFinalPath(currentSprout.name);
+
+	pkg['sprout.json'] = JSON.stringify(config);
+
+	await dataManager.writeSprout(fullName, pkg);
 	dispatch(addOrSelectSprout(fullName));
 	dispatch(startEditing());
 };
