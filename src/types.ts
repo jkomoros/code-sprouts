@@ -56,7 +56,7 @@ export const sproutConfigSchema = z.object({
 	formatVersion: z.literal(0).describe('The version of the library the sprout is targetting'),
 	title: z.optional(z.string().describe('The title of the sprout')),
 	description: z.optional(z.string().describe('A description of the sprout')),
-	forkedFrom: z.optional(sproutURLSchema).describe('The URL of the sprout this was forked from'),
+	forkedFrom: z.optional(z.union([sproutNameSchema, sproutURLSchema])).describe('The URL or name of the sprout this was forked from'),
 	allowImages : z.optional(z.boolean().describe('Whether the bot allows images')),
 	allowFormatting: z.optional(z.boolean().describe('Whether the bot should return markdown formatting'))
 });

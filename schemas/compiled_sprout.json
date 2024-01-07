@@ -28,6 +28,18 @@
 					"type": "string",
 					"description": "A description of the sprout"
 				},
+				"forkedFrom": {
+					"anyOf": [
+						{
+							"$ref": "#/properties/name"
+						},
+						{
+							"type": "string",
+							"format": "uri"
+						}
+					],
+					"description": "The URL or name of the sprout this was forked from"
+				},
 				"allowImages": {
 					"type": "boolean",
 					"description": "Whether the bot allows images"
