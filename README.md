@@ -22,7 +22,7 @@ The first time you run either the webapp or the CLI it will ask you to set your 
 
 Think of Code Sprouts like OpenAI's GPTs, but hosted wherever you want them to be, and with more intricate possibilities for complex logic.
 
-OpenAI's GPTs are simple pre-built configurations that provide ChatGPT with a starting prompt to tell it how to behave with the user. Users can "install" these bots by visiting ChatGPT and going to its directory. These bots allow tinkerers--even ones without a technical background--to create custom bots that reflect their expertise and goals. GPTs are great, but they are only usable within the proto-aggregator of ChatGPT. At this era of ecosystem development, it's time for open-ended tinkering across a community.
+OpenAI's GPTs are simple pre-built configurations that provide ChatGPT with a starting prompt to tell it how to behave with the user. Users can "install" these bots by visiting ChatGPT and going to its directory. These bots allow tinkerers--even ones without a technical background--to create custom bots that reflect their expertise and goals. GPTs are great, but they are only usable within the proto-aggregator of ChatGPT. At this era of ecosystem development, it's time for open-ended tinkering across the whole ecosystem.
 
 Code Sprouts are run by a viewer. This project is the canonical viewer; you can host your own instance, or use https://code-sprouts.web.app/ for convenience.
 
@@ -39,6 +39,7 @@ Code Sprouts are not exactly like GPTs. A few differences:
 - Creators can host their configuration anywhere they want, and end-users can use whatever sprout viewer they want.
 - Code Sprouts do not currently support uploading additional content to do RAG-style bots.
 - Code Sprouts allow more complex state management logic and instruction management than GPTs.
+- Code Sprouts can use other LLM providers. Anthropic support is ready to enable as soon as they [allow their SDK to run in browsers](https://github.com/anthropics/anthropic-sdk-typescript/issues/248).
 
 ## Creating a Sprout
 
