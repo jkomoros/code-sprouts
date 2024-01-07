@@ -53,6 +53,7 @@ import {
 	SproutName,
 	SproutState,
 	UncompiledPackagedSprout,
+	compiledSproutSchema,
 	sproutConfigSchema
 } from '../../src/types.js';
 
@@ -349,11 +350,18 @@ export const forkCurrentSprout = (newName : SproutName) : ThunkSomeAction => asy
 		...sproutPackage
 	};
 
-	const config = sproutConfigSchema.parse(JSON.parse(pkg['sprout.json']));
+	const forkedFrom = makeFinalPath(currentSprout.name);
 
-	config.forkedFrom = makeFinalPath(currentSprout.name);
+	//TODO: this is a total hack to set the forkedFrom field, ideally there
+	//would be a more formal way of doing this.
+	const config = sproutConfigSchema.parse(JSON.parse(pkg['sprout.json']));
+	const compiled = compiledSproutSchema.parse(JSON.parse(pkg['sprout.compiled.json']));
+
+	config.forkedFrom = forkedFrom;
+	compiled.config.forkedFrom = forkedFrom;
 
 	pkg['sprout.json'] = JSON.stringify(config);
+	pkg['sprout.compiled.json'] = JSON.stringify(compiled);
 
 	await dataManager.writeSprout(fullName, pkg);
 	dispatch(addOrSelectSprout(fullName));
