@@ -15,5 +15,4 @@ sprouts/
 #Ensure that no one checks in the secret config
 *.SECRET.*
 .env
-*.compiled.*
 directory.json

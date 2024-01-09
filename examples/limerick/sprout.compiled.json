@@ -1,0 +1,14 @@
+{
+	"formatVersion": 0,
+	"lastUpdated": "2024-01-09T14:05:38.786Z",
+	"name": "examples/limerick",
+	"config": {
+		"formatVersion": 0
+	},
+	"baseInstructions": "Your job is to write a delightful little limerick about the topic the user has provided.\n\nIf the topic is empty, ask for the topic first.",
+	"schemaText": "export type State = {\n    limerickTopic : string; \n};",
+	"subInstructions": {},
+	"starterState": {
+		"limerickTopic": ""
+	}
+}
