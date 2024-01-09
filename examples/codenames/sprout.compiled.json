@@ -1,6 +1,6 @@
 {
-	"version": 0,
-	"lastUpdated": "2024-01-05T02:24:05.378Z",
+	"formatVersion": 0,
+	"lastUpdated": "2024-01-09T14:05:38.787Z",
 	"name": "examples/codenames",
 	"config": {
 		"formatVersion": 0,
@@ -13,11 +13,11 @@
 	"schemaText": "//A card with one word printed on it.\ntype CodenameCard = string;\n//A single-word clue that a spymaster gives to their team to try to get them to guess cards. These must adhere to the rules of Codenames about clues, including that they may not be the text of any of the cards.\ntype CodenameClue = string;\n\ntype CodenameTurn = {\n  //The clue the spymaster gave\n  clue: CodenameClue,\n  //The guesses the team gave, in order. If they touch one that isn't theirs, the rest of the turn is over.\n  guess: CodenameCard[]\n}\n\ntype CardType = 'red' //Red team. On key card, is a red square with a circle.\n  | 'blue' //Blue team. On key card, is a blue square with a circle.\n  | 'assassin' //Assassin. On key card, is a black square with an x.\n  | 'bystander' //Bystander. On a key card, is an empty beige square.\n  | 'guessed' //for cards that have already been guessed by a player so far this game, and removed from play.\n  | 'unknown' //The initial state, for when the image of the cards has been scanned but not yet the key card.\n\nexport type CodenamesGame = {\n  //The team that our conversational partner is the spymaster for.\n  team: 'blue' | 'red' | 'unknown',\n //25 cards, in order form left to right, top to bottom. As the cards are guessed, they flip to 'guessed' state, removing them from play. If the game is not setup yet, this might be empty.\n  cards: {\n      [card : CodenameCard]: CardType\n  },\n  redTurns: CodenameTurn[],\n  blueTurns: CodenameTurn[]\n}",
 	"subInstructions": {
 		"clue": {
-			"summary": "Provide graded risk Codenames clues.",
+			"summary": "Provide progressively safer Codenames clues.",
 			"instructions": "When the user asks you for clues, you should give up to 5 different alternate suggestions, from more risky (more cards) to more conservative. Each one should list the word and a number. The suggestions you make should take into consideration the full state, including words to avoid, as well as prior guesses from our team.  For each, guess, have the following bullets:\n\n- [guess word], [number]\n  - [A lline for each word you are hoping will be guessed, and why]\n  - Assassin risk: [a reasoning about how any player might accidentally guess the assassin card from this clue. This is VERY IMPORTANT to think hard about.]\n  - Opposing Team Risk:  [reasoning about how any player might accidentally guess any of the opposing team's remaining cards from  this clue]\n  - Bystander Risk: [reasoning about how any player might accidentally guess any of the remaining bystander cards from this clue]\n\nCodenames is hard, so each time before you suggest clues, take a deep breath, and think step by step."
 		},
 		"setup": {
-			"summary": "Gather game state information from user.",
+			"summary": "Collect game state details for setup.",
 			"instructions": "To start, make sure the user gives enough information to fill in this state object (for example, which team they are in). You can assume that the game has just started unless the user tells you otherwise. \n\nThe user can provide the necessary information from the grid. If the user lists cells for each color, assume the grid is being filled in from left to right, top to bottom.\n\nIf the user provides an image and it's a screenshot of the online game, there should be enough information to directly transcribe the clues and the colors from the image.\n\nIf the user provides an image of a real-world board, it's more complicated. If the board is just the 5x5 grid of word cards, first transcribe them into the cards field, initialized to 'unknown'. Then play back each word you saw to the user and tell them they can correct any words you mis-transcribed. Then ask the user to provide you a summary of the key card.\n\nWhen interpreting the summary, the user will give you the card values from left to right, top to bottom. The different values are:\n- 'red' or 'r' for red\n- 'blue' or 'b' for blue\n- 'bystander' or 'y' or 'e' for bystander\n- 'assassin' or 'x' or 'a' for assassin\nThe letters or words might be separated by spaces or commas. You can tell the user how best to give you the key card configuration."
 		}
 	},

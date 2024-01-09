@@ -1,7 +1,7 @@
 {
 	"type": "object",
 	"properties": {
-		"version": {
+		"formatVersion": {
 			"type": "number",
 			"const": 0
 		},
@@ -88,7 +88,7 @@
 		}
 	},
 	"required": [
-		"version",
+		"formatVersion",
 		"lastUpdated",
 		"name",
 		"config",

@@ -366,7 +366,7 @@ export class Sprout {
 		
 		//TODO: rename this once old machinery is gone.
 
-		const version = 0 as const;
+		const formatVersion = 0 as const;
 		const lastUpdated = new Date().toISOString();
 		const name = this.name;
 
@@ -407,7 +407,7 @@ export class Sprout {
 		}
 
 		return {
-			version,
+			formatVersion,
 			lastUpdated,
 			name,
 			config,

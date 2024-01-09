@@ -104,7 +104,7 @@ export type Prompt = z.infer<typeof promptSchema>;
 
 export const compiledSproutSchema = z.object({
 	//TODO: should this be a more specific object name, to make it easier to verify it's indeded a sprout when loaded from a random place?
-	version: z.literal(0),
+	formatVersion: z.literal(0),
 	lastUpdated: z.string().datetime(),
 	name: sproutNameSchema,
 	config: sproutConfigSchema,
