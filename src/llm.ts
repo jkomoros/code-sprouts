@@ -3,13 +3,13 @@ import {
 	computePromptAnthropic,
 	computePromptStreamAnthropic, 
 	computeTokenCountAnthropic
-} from './anthropic.js';
+} from './providers/anthropic.js';
 
 import {
 	computePromptOpenAI,
 	computePromptStreamOpenAI,
 	computeTokenCountOpenAI
-} from './openai.js';
+} from './providers/openai.js';
 
 import {
 	TypedObject

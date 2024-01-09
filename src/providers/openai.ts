@@ -6,11 +6,11 @@ import {
 	CompletionInfo,
 	Prompt,
 	PromptOptions
-} from './types.js';
+} from '../types.js';
 
 import {
 	textForPrompt
-} from './llm.js';
+} from '../llm.js';
 
 import {
 	ChatCompletionContentPart

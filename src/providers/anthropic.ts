@@ -4,11 +4,11 @@ import {
 	CompletionInfo,
 	Prompt,
 	PromptOptions
-} from './types.js';
+} from '../types.js';
 
 import {
 	textForPrompt
-} from './llm.js';
+} from '../llm.js';
 
 export const computePromptStreamAnthropic = async (modelName : string, apiKey : string, prompt : Prompt, modelInfo : CompletionInfo, _opts : PromptOptions) => {
 	const anthropic = new Anthropic({apiKey});
