@@ -108,6 +108,52 @@ export const writeDirectoryInfo = async (fetcher : Fetcher, info : DirectoryInfo
 	}
 };
 
+export const deleteFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : void => {
+	const parts = path.split('/');
+	if (parts.length === 0) throw new Error('Invalid path');
+	const firstPart = parts[0];
+	if (parts.length === 1) {
+		//We're at the end of the path.
+		if (firstPart in info) {
+			delete info[firstPart];
+			return;
+		}
+		throw new Error(`File not found: ${path}`);
+	}
+	if (firstPart in info) {
+		const directory = info[firstPart];
+		if (!directory) throw new Error(`Couldn't find ${directory}`);
+		if (typeof directory == 'string') throw new Error(`${directory} is a file not a directory`);
+		return deleteFileFromDirectoryInfo(directory, parts.slice(1).join('/'));
+	}
+	throw new Error(`File not found: ${path}`);
+};
+
+export const deleteDirectoryFromDirectoryInfo = (info : DirectoryInfo, path : Path) : void => {
+	const parts = path.split('/');
+	if (parts.length === 0) throw new Error('Invalid path');
+	const firstPart = parts[0];
+	if (parts.length === 1) {
+		//We're at the end of the path.
+		if (firstPart in info) {
+			const directory = info[firstPart];
+			if (!directory) throw new Error(`Couldn't find ${directory}`);
+			if (typeof directory == 'string') throw new Error(`${directory} is a file not a directory`);
+			//this just kind of gets rid of all subdirectories and files implicitly.
+			delete info[firstPart];
+			return;
+		}
+		throw new Error(`Directory not found: ${path}`);
+	}
+	if (firstPart in info) {
+		const directory = info[firstPart];
+		if (!directory) throw new Error(`Couldn't find ${directory}`);
+		if (typeof directory == 'string') throw new Error(`${directory} is a file not a directory`);
+		return deleteDirectoryFromDirectoryInfo(directory, parts.slice(1).join('/'));
+	}
+	throw new Error(`File not found: ${path}`);
+};
+
 export const readFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : string => {
 	const parts = path.split('/');
 	if (parts.length === 0) throw new Error('Invalid path');
