@@ -41,6 +41,8 @@ export class LocalStorageFilesystem {
 		for (const dir of this.listDirectory(filename, 'directory')) {
 			this.deleteDirectory(joinPath(filename, dir));
 		}
+		const paths = this.listDirectory(filename, 'both');
+		if (paths.length > 0) throw new Error(`Directory not empty: ${filename}`);
 	}
 
 	static listDirectory(path : Path, type: FileListingType) : Path[] {
