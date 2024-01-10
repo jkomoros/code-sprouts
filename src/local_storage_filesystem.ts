@@ -4,7 +4,7 @@ import {
 } from './types.js';
 
 import {
-	assertUnreachable
+	assertUnreachable, joinPath
 } from './util.js';
 
 const LOCAL_STORAGE_FILESYSTEM_PREFIX = 'file:';
@@ -28,6 +28,15 @@ export class LocalStorageFilesystem {
 
 	static writeFile(filename : Path, data : string) : void {
 		window.localStorage.setItem(this.localStorageKeyForFile(filename), data);
+	}
+
+	static deleteDirectory(filename : Path) : void {
+		for (const file of this.listDirectory(filename, 'file')) {
+			window.localStorage.removeItem(this.localStorageKeyForFile(filename + '/' + file));
+		}
+		for (const dir of this.listDirectory(filename, 'directory')) {
+			this.deleteDirectory(joinPath(filename, dir));
+		}
 	}
 
 	static listDirectory(path : Path, type: FileListingType) : Path[] {
