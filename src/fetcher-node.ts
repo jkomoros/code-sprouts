@@ -8,7 +8,9 @@ import {
 	readFileSync,
 	existsSync,
 	readdirSync,
-	writeFileSync
+	writeFileSync,
+	unlinkSync,
+	rmdirSync
 } from 'fs';
 
 import {
@@ -91,6 +93,27 @@ class NodeFetcher {
 		}
 		return result;
 	}
+
+	mayDeletePath(_path : Path) : boolean {
+		return true;
+	}
+
+	async deleteFile(path : Path) : Promise<void> {
+		unlinkSync(path);
+	}
+
+	async deleteDirectory(path : Path) : Promise<void> {
+		for (const file of await this.listDirectory(path, 'file')) {
+			await this.deleteFile(joinPath(path, file));
+		}
+		for (const dir of await this.listDirectory(path, 'directory')) {
+			await this.deleteDirectory(joinPath(path, dir));
+		}
+		const paths = await this.listDirectory(path, 'both');
+		if (paths.length > 0) throw new Error(`Directory not empty: ${path}`);
+		rmdirSync(path);
+	}
+
 }
 
 //Type to verify we match

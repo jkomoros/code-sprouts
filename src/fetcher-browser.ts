@@ -206,6 +206,27 @@ class BrowserFetcher {
 		return false;
 	}
 
+	mayDeletePath(path: Path): boolean {
+		if (this.pathIsLocalWriteable(path)) {
+			return true;
+		}
+		return false;
+	}
+
+	async deleteFile(path: Path): Promise<void> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.deleteFile(path);
+		}
+		throw new Error('Cannot delete file in browser outside of local writeable path');
+	}
+
+	async deleteDirectory(path: Path): Promise<void> {
+		if (this.pathIsLocalWriteable(path)) {
+			return LocalStorageFilesystem.deleteDirectory(path);
+		}
+		throw new Error('Cannot delete directory in browser outside of local writeable path');
+	}
+
 	async writeFile(path: Path, data: string): Promise<void> {
 		if (this.pathIsLocalWriteable(path)) {
 			return LocalStorageFilesystem.writeFile(path, data);

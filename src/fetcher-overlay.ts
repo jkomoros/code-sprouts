@@ -7,6 +7,8 @@ import {
 } from './types.js';
 
 import {
+	deleteDirectoryFromDirectoryInfo,
+	deleteFileFromDirectoryInfo,
 	listDirectoryFromDirectoryInfo,
 	readFileFromDirectoryInfo,
 	writeFileToDirectoryInfo
@@ -76,6 +78,24 @@ class OverlayFetcher {
 		if (!this.pathIsLocalWriteable(path)) return this._fetcher.writeFile(path, data);
 		writeFileToDirectoryInfo(this._directory, this.internalPath(path), data);
 		this._hasWrites;
+		return Promise.resolve();
+	}
+
+	mayDeletePath(path : Path) : boolean {
+		return this.pathIsLocalWriteable(path) ? true : this._fetcher.mayDeletePath(path);
+	}
+
+	deleteFile(path : Path) : Promise<void> {
+		if (!this.pathIsLocalWriteable(path)) return this._fetcher.deleteFile(path);
+		deleteFileFromDirectoryInfo(this._directory, this.internalPath(path));
+		this._hasWrites;
+		return Promise.resolve();
+	}
+
+	deleteDirectory(path : Path) : Promise<void> {
+		if (!this.pathIsLocalWriteable(path)) return this._fetcher.deleteDirectory(path);
+		deleteDirectoryFromDirectoryInfo(this._directory, this.internalPath(path));
+		this._hasWrites = true;
 		return Promise.resolve();
 	}
 }
