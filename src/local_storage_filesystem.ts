@@ -30,9 +30,13 @@ export class LocalStorageFilesystem {
 		window.localStorage.setItem(this.localStorageKeyForFile(filename), data);
 	}
 
+	static deleteFile(filename : Path) : void {
+		window.localStorage.removeItem(this.localStorageKeyForFile(filename));
+	}
+
 	static deleteDirectory(filename : Path) : void {
 		for (const file of this.listDirectory(filename, 'file')) {
-			window.localStorage.removeItem(this.localStorageKeyForFile(filename + '/' + file));
+			this.deleteFile(joinPath(filename, file));
 		}
 		for (const dir of this.listDirectory(filename, 'directory')) {
 			this.deleteDirectory(joinPath(filename, dir));
