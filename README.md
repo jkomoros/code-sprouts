@@ -2,7 +2,7 @@
 <img src='images/manifest/icon-96x96.png?raw=true' align='right' />
 This is a very simple tool to help create simple interactive bots that are primarily programmed using plain language, as well as a bit of structured state management.
 
-You can see a live demo at https://code-sprouts.web.app.
+You can see a live demo at https://code-sprouts.org.
 
 In the webapp, you can select a sprout to run from the dropdown, or add a sprout. You can paste a remote URL pointing to a sprout that lives elsewhere and it will run it. At any time, you can share your URL with someone else and it will run the same sprout you're running.
 
