@@ -6,6 +6,7 @@ import {
 	FORCE_CLOSE_API_KEYS_DIALOG,
 	FORCE_OPEN_API_KEYS_DIALOG,
 	OPEN_EDITOR,
+	REMOVE_SPROUTS,
 	SELECT_SPROUT,
 	SET_API_KEYS,
 	SET_PREFERRED_AI_PROVIDER,
@@ -61,6 +62,12 @@ const data = (state : DataState = INITIAL_STATE, action : SomeAction) : DataStat
 				...state.sprouts,
 				...action.sprouts
 			}
+		};
+	case REMOVE_SPROUTS:
+		return {
+			...state,
+			sprouts: Object.fromEntries(Object.entries(state.sprouts).filter(([name, _]) => !(name in action.sprouts))),
+			writtenSprouts: Object.fromEntries(Object.entries(state.writtenSprouts).filter(([name, _]) => !(name in action.sprouts)))
 		};
 	case SELECT_SPROUT:
 		return {

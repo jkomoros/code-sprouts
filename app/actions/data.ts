@@ -15,7 +15,8 @@ import {
 	SPROUT_PROVIDED_USER_RESPONSE,
 	UPDATE_DRAFT_MESSAGE,
 	EDITING_MODIFY_SPROUT,
-	SET_PREFERRED_AI_PROVIDER
+	SET_PREFERRED_AI_PROVIDER,
+	REMOVE_SPROUTS
 } from '../actions.js';
 
 import {
@@ -102,6 +103,8 @@ export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispat
 const selectSproutIfNoneSelected = () : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 
+	//TODO: this logic actually doesn't work for when things have been removed.
+
 	const currentSprout = selectCurrentSproutName(state);
 	if (currentSprout) return;
 
@@ -118,6 +121,14 @@ export const addOrSelectSprout = (sprout : SproutLocation) : ThunkSomeAction => 
 		dispatch(addSprout(sprout));
 	}
 	dispatch(selectSprout(sprout, false));
+};
+
+export const removeSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch) => {
+	dispatch({
+		type: REMOVE_SPROUTS,
+		sprouts
+	});
+	dispatch(selectSproutIfNoneSelected());
 };
 
 export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) : ThunkSomeAction => (dispatch, getState) => {

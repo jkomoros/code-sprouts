@@ -24,6 +24,7 @@ export const UPDATE_HASH = 'UPDATE_HASH';
 export const UPDATE_MOBILE = 'UPDATE_MOBILE';
 
 export const ADD_SPROUTS = 'ADD_SPROUTS';
+export const REMOVE_SPROUTS = 'REMOVE_SPROUTS';
 export const SELECT_SPROUT = 'SELECT_SPROUT';
 export const SET_API_KEYS = 'SET_API_KEYS';
 export const START_STREAMING_SPROUT = 'START_STREAMING_SPROUT';
@@ -68,6 +69,11 @@ const actionUpdateMobile = z.object({
 
 const actionAddSprouts = z.object({
 	type: z.literal(ADD_SPROUTS),
+	sprouts: sproutDataMapSchema,
+}).strict();
+
+const actionRemoveSprouts = z.object({
+	type: z.literal(REMOVE_SPROUTS),
 	sprouts: sproutDataMapSchema,
 }).strict();
 
@@ -152,6 +158,7 @@ const someAction = z.discriminatedUnion('type', [
 	actionUpdateHash,
 	actionUpdateMobile,
 	actionAddSprouts,
+	actionRemoveSprouts,
 	actionSelectSprout,
 	actionSetAPIKeys,
 	actionStartStreamingSprout,
