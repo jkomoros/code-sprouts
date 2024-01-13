@@ -461,8 +461,8 @@ export const removeCurrentSprout = () : ThunkSomeAction => async (dispatch, getS
 	if (selectMayEditCurrentSprout(state)) {
 		if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return;
 	}
+	dispatch(closeEditor(false));
+	//TODO: make sure this redirects to a different sprout.
 	dataManager.deleteSprout(name);
 	//TODO: make sure deletions of an editable one actually works.
-	//TODO: make sure this redirects to a different sprout.
-	dispatch(closeEditor(false));
 };
