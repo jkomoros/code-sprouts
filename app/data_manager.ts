@@ -14,6 +14,7 @@ import {
 } from '../src/util.js';
 
 import {
+	REMOVE_SPROUTS,
 	WRITE_SPROUT
 } from './actions.js';
 
@@ -57,6 +58,21 @@ export class DataManager {
 			type: WRITE_SPROUT,
 			name: sproutName,
 			sprout: pkg
+		});
+	}
+
+	//This deletes the sprout, removing it from the current list, but also
+	//removing it from the filesystem if it's a writeable sprout.
+	async deleteSprout(sproutName : SproutName) : Promise<void> {
+		if (fetcher.mayWriteFile(sproutName)) {
+			//Also remove from filesystem.
+			fetcher.deleteDirectory(sproutName);
+		}
+		store.dispatch({
+			type: REMOVE_SPROUTS,
+			sprouts: {
+				[sproutName]: true
+			}
 		});
 	}
 }
