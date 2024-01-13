@@ -290,7 +290,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				<button 
 					class='small'
 					@click=${this._handleDeleteClicked}
-					title='Remove Sprout'
+					title=${this._userMayEdit ? 'Delete Sprout' : 'Remove Sprout'}
 					?disabled=${this._editing}
 				>
 					${TRASH_ICON}
