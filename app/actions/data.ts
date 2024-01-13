@@ -16,7 +16,8 @@ import {
 	UPDATE_DRAFT_MESSAGE,
 	EDITING_MODIFY_SPROUT,
 	SET_PREFERRED_AI_PROVIDER,
-	REMOVE_SPROUTS
+	REMOVE_SPROUTS,
+	SELECT_SPROUT
 } from '../actions.js';
 
 import {
@@ -106,12 +107,13 @@ const selectSproutIfNoneSelected = (illegalSprouts : SproutDataMap = {}) : Thunk
 
 	const sprouts = selectSproutData(state);
 
-	const currentSprout = selectCurrentSproutName(state);
-	if (currentSprout && sprouts[currentSprout] && !illegalSprouts[currentSprout]) return;
+	const legalSproutNames = Object.keys(sprouts).filter(sproutName => !illegalSprouts[sproutName]);
 
-	const sproutNames = Object.keys(sprouts).filter(sprout => !illegalSprouts[sprout]);
-	if (sproutNames.length === 0) return;
-	dispatch(selectSprout(sproutNames[0]));
+	const currentSprout = selectCurrentSproutName(state);
+	if (currentSprout && legalSproutNames.includes(currentSprout)) return;
+
+	if (legalSproutNames.length === 0) return;
+	dispatch(selectSprout(legalSproutNames[0]));
 };
 
 export const addOrSelectSprout = (sprout : SproutLocation) : ThunkSomeAction => (dispatch, getState) => {
@@ -140,7 +142,7 @@ export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) 
 		return;
 	}
 	dispatch({
-		type: 'SELECT_SPROUT',
+		type: SELECT_SPROUT,
 		sprout
 	});
 	if (!skipCanonicalize) dispatch(canonicalizePath());
