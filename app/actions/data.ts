@@ -451,3 +451,15 @@ export const setPreferredAIProvider = (provider : ModelProvider) : ThunkSomeActi
 		provider
 	});
 };
+
+//TODO: it's kind of confusing htat you call removeCurrentSrpout to call dataManager.deleteSprout which calls REMOVE_SPROUTS.
+export const removeCurrentSprout = () : ThunkSomeAction => async (dispatch, getState) => {
+	const state = getState();
+	const name = selectCurrentSproutName(state);
+	if (!name) throw new Error('No current sprout name');
+	//TODO: confirm if it is an item with editable local content.
+	dataManager.deleteSprout(name);
+	//TODO: make sure deletions of an editable one actually works.
+	//TODO: make sure this redirects to a different sprout.
+	dispatch(closeEditor(false));
+};

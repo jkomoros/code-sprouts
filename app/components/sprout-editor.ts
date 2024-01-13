@@ -37,6 +37,7 @@ import {
 	downloadCurrentSprout,
 	editingModifySprout,
 	forkCurrentSprout,
+	removeCurrentSprout,
 	saveSprout,
 	startEditing
 } from '../actions/data.js';
@@ -285,6 +286,14 @@ export class SproutEditor extends connect(store)(DialogElement) {
 				>
 					${ARROW_SPLIT_ICON}
 				</button>
+				<button 
+					class='small'
+					@click=${this._handleDeleteClicked}
+					title='Remove Sprout'
+				>
+					<!-- TODO: trash icon -->
+					${CANCEL_ICON}
+				</button>
 
 				${this._userMayEdit ? 
 		html`
@@ -369,6 +378,10 @@ export class SproutEditor extends connect(store)(DialogElement) {
 
 	private _handleEditingClicked() {
 		if (!this._editing) store.dispatch(startEditing());
+	}
+
+	private _handleDeleteClicked() {
+		store.dispatch(removeCurrentSprout());
 	}
 
 	private _handleInstructionsChanged(e : InputEvent) {
