@@ -90,16 +90,22 @@ import fileSaver from 'file-saver';
 
 import dataManager from '../data_manager.js';
 
-export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
+export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch) => {
 	dispatch({
 		type: ADD_SPROUTS,
 		sprouts
 	});
 
+	dispatch(selectSproutIfNoneSelected());
+};
+
+const selectSproutIfNoneSelected = () : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 
 	const currentSprout = selectCurrentSproutName(state);
 	if (currentSprout) return;
+
+	const sprouts = selectSproutData(state);
 
 	const sproutNames = Object.keys(sprouts);
 	if (sproutNames.length === 0) return;
