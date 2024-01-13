@@ -34,6 +34,7 @@ import {
 	selectDraftMessage,
 	selectEditorOpen,
 	selectIsEditing,
+	selectMayEditCurrentSprout,
 	selectPreferredAIProvider,
 	selectSproutData,
 	selectSproutSnapshot,
@@ -457,8 +458,9 @@ export const removeCurrentSprout = () : ThunkSomeAction => async (dispatch, getS
 	const state = getState();
 	const name = selectCurrentSproutName(state);
 	if (!name) throw new Error('No current sprout name');
-	//TODO: confirm if it is an item with editable local content.
-	//Both of these ^ can just use userMayEditCurrentSprout.
+	if (selectMayEditCurrentSprout(state)) {
+		if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return;
+	}
 	dataManager.deleteSprout(name);
 	//TODO: make sure deletions of an editable one actually works.
 	//TODO: make sure this redirects to a different sprout.
