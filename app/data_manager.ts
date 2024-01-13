@@ -14,9 +14,12 @@ import {
 } from '../src/util.js';
 
 import {
-	REMOVE_SPROUTS,
 	WRITE_SPROUT
 } from './actions.js';
+
+import {
+	removeSprouts
+} from './actions/data.js';
 
 import {
 	fetcher
@@ -66,12 +69,7 @@ export class DataManager {
 	async deleteSprout(sproutName : SproutName) : Promise<void> {
 		//Remove the sprout first, THEN actually delete the diretory. This
 		//avoids a "currentSprout is not defined" kind of problem.
-		store.dispatch({
-			type: REMOVE_SPROUTS,
-			sprouts: {
-				[sproutName]: true
-			}
-		});
+		store.dispatch(removeSprouts({[sproutName]: true}));
 		if (fetcher.mayWriteFile(sproutName)) {
 			//Also remove from filesystem.
 			fetcher.deleteDirectory(sproutName);
