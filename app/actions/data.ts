@@ -101,15 +101,15 @@ export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispat
 	dispatch(selectSproutIfNoneSelected());
 };
 
-const selectSproutIfNoneSelected = () : ThunkSomeAction => (dispatch, getState) => {
+const selectSproutIfNoneSelected = (illegalSprouts : SproutDataMap = {}) : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 
 	const sprouts = selectSproutData(state);
 
 	const currentSprout = selectCurrentSproutName(state);
-	if (currentSprout && sprouts[currentSprout]) return;
+	if (currentSprout && sprouts[currentSprout] && !illegalSprouts[currentSprout]) return;
 
-	const sproutNames = Object.keys(sprouts);
+	const sproutNames = Object.keys(sprouts).filter(sprout => !illegalSprouts[sprout]);
 	if (sproutNames.length === 0) return;
 	dispatch(selectSprout(sproutNames[0]));
 };
@@ -123,11 +123,11 @@ export const addOrSelectSprout = (sprout : SproutLocation) : ThunkSomeAction => 
 };
 
 export const removeSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch) => {
+	dispatch(selectSproutIfNoneSelected(sprouts));
 	dispatch({
 		type: REMOVE_SPROUTS,
 		sprouts
 	});
-	dispatch(selectSproutIfNoneSelected());
 };
 
 export const selectSprout = (sprout : SproutLocation, skipCanonicalize = false) : ThunkSomeAction => (dispatch, getState) => {
