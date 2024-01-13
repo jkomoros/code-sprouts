@@ -21,7 +21,8 @@ import {
 	DOWNLOAD_ICON,
 	EDIT_ICON,
 	OPEN_IN_NEW,
-	PLUS_ICON
+	PLUS_ICON,
+	TRASH_ICON
 } from './my-icons.js';
 
 import {
@@ -291,8 +292,7 @@ export class SproutEditor extends connect(store)(DialogElement) {
 					@click=${this._handleDeleteClicked}
 					title='Remove Sprout'
 				>
-					<!-- TODO: trash icon -->
-					${CANCEL_ICON}
+					${TRASH_ICON}
 				</button>
 
 				${this._userMayEdit ? 
