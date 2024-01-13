@@ -457,6 +457,7 @@ export const removeCurrentSprout = () : ThunkSomeAction => async (dispatch, getS
 	const state = getState();
 	const name = selectCurrentSproutName(state);
 	if (!name) throw new Error('No current sprout name');
+	//TODO: the title on the delete button should be "remove sprout" if it will just delist, and "delete sprout" if it will delete.
 	//TODO: confirm if it is an item with editable local content.
 	dataManager.deleteSprout(name);
 	//TODO: make sure deletions of an editable one actually works.
