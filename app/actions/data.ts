@@ -103,12 +103,10 @@ export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispat
 const selectSproutIfNoneSelected = () : ThunkSomeAction => (dispatch, getState) => {
 	const state = getState();
 
-	//TODO: this logic actually doesn't work for when things have been removed.
+	const sprouts = selectSproutData(state);
 
 	const currentSprout = selectCurrentSproutName(state);
-	if (currentSprout) return;
-
-	const sprouts = selectSproutData(state);
+	if (currentSprout && sprouts[currentSprout]) return;
 
 	const sproutNames = Object.keys(sprouts);
 	if (sproutNames.length === 0) return;
