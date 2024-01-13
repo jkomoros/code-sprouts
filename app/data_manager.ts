@@ -14,6 +14,10 @@ import {
 } from '../src/util.js';
 
 import {
+	WRITE_SPROUT
+} from './actions.js';
+
+import {
 	fetcher
 } from './fetcher.js';
 
@@ -50,7 +54,7 @@ export class DataManager {
 		//We can write every part because fetcher.writeFile will not update the file if the data is the same.
 		await writeDirectoryInfo(fetcher, pkg, sproutName);
 		store.dispatch({
-			type: 'WRITE_SPROUT',
+			type: WRITE_SPROUT,
 			name: sproutName,
 			sprout: pkg
 		});
