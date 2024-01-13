@@ -9,7 +9,13 @@ import {
 	START_STREAMING_SPROUT,
 	FORCE_CLOSE_API_KEYS_DIALOG,
 	FORCE_OPEN_API_KEYS_DIALOG,
-	SomeAction
+	SomeAction,
+	ADD_SPROUTS,
+	STREAM_INCREMENTAL_MESSAGE,
+	SPROUT_PROVIDED_USER_RESPONSE,
+	UPDATE_DRAFT_MESSAGE,
+	EDITING_MODIFY_SPROUT,
+	SET_PREFERRED_AI_PROVIDER
 } from '../actions.js';
 
 import {
@@ -86,7 +92,7 @@ import dataManager from '../data_manager.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch, getState) => {
 	dispatch({
-		type: 'ADD_SPROUTS',
+		type: ADD_SPROUTS,
 		sprouts
 	});
 
@@ -159,7 +165,7 @@ export const startStreamingSprout = () : SomeAction => {
 export const streamIncrementalMessage = (message : string) : ThunkSomeAction => (dispatch) => {
 	if (message == '') return;
 	dispatch({
-		type: 'STREAM_INCREMENTAL_MESSAGE'
+		type: STREAM_INCREMENTAL_MESSAGE
 	});
 };
 
@@ -193,7 +199,7 @@ export const provideUserResponse = () : ThunkSomeAction => (dispatch, getState) 
 	] : text;
 
 	dispatch({
-		type: 'SPROUT_PROVIDED_USER_RESPONSE',
+		type: SPROUT_PROVIDED_USER_RESPONSE,
 		response
 	});
 	signaller.provideUserResponse(sprout, response);
@@ -220,7 +226,7 @@ export const updateWithMainPageExtra = (pageExtra : string) : ThunkSomeAction =>
 
 export const updateDraftMessage = (message : string) : SomeAction => {
 	return {
-		type: 'UPDATE_DRAFT_MESSAGE',
+		type: UPDATE_DRAFT_MESSAGE,
 		message
 	};
 };
@@ -311,7 +317,7 @@ export const editingModifySprout = (snapshot : UncompiledPackagedSprout) : Thunk
 	const editing = selectIsEditing(state);
 	if (!editing) throw new Error('Not editing');
 	dispatch({
-		type: 'EDITING_MODIFY_SPROUT',
+		type: EDITING_MODIFY_SPROUT,
 		snapshot
 	});
 };
@@ -426,7 +432,7 @@ export const setPreferredAIProvider = (provider : ModelProvider) : ThunkSomeActi
 	const currentProvider = selectPreferredAIProvider(state);
 	if (currentProvider === provider) return;
 	dispatch({
-		type: 'SET_PREFERRED_AI_PROVIDER',
+		type: SET_PREFERRED_AI_PROVIDER,
 		provider
 	});
 };
