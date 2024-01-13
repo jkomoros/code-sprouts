@@ -462,7 +462,10 @@ export const removeCurrentSprout = () : ThunkSomeAction => async (dispatch, getS
 		if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return;
 	}
 	dispatch(closeEditor(false));
-	//TODO: make sure this redirects to a different sprout.
+	//TODO: make sure this redirects to a different sprout. I think the problem
+	//is that the redirect is handled by sprout-view, but by the time it notices
+	//that the sprout name has changed and needs new canoncalization, the now
+	//non-existent sprout is already tried to be loaded.
 	dataManager.deleteSprout(name);
 	//TODO: make sure deletions of an editable one actually works.
 };
