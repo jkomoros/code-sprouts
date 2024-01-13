@@ -21,22 +21,6 @@ import {
 	store
 } from './store.js';
 
-/*
-	TODO: create a sprout .package(compiled : boolean) method that returns a NakedPackagedSprout or NakedUncompiledPackagedSprout:
-		package<T extends boolean>(compiled: T): T extends true ? NakedPackagedSprout : NakedUncompiledPackagedSprout; 
-	TODO: When opening sprout for editing, snapshot a copy of the compiled Sprout and change it
-	TODO: a EDITING_COMMIT action that commits the changes to the sprout.
-	TODO: an EDITING_CANCEL action that discards the changes to the sprout.
-	TODO: allow adding a missing config property
-	TODO: allow removing a config property that's not required
-	TODO: allow adding a missing sub-instruction
-	TODO: sprout-editor gets editable=true if mayWriteSprout(this._currentSproutName) is true.
-	TODO: add a deleteSprout ability.
-	TODO: compilation of sprout should keep track of what values require whic hother values and which ones require AI, and then automate construction of e.g. NakedUncompiledPackagedSproutNotNeedingAI
-
-	TODO: Add a Sprout.recompileIfNecessary() that is only called if lastUpdated is above some epsilon; if not, it trusts the compiled sprout is fine.
-	TODO: Ensure that only one compilation process is running at a time.
-*/
 
 export class DataManager {
 	
