@@ -202,8 +202,6 @@ const main = async (opts : CLIOptions) : Promise<void> => {
 	const debugLogger = opts.verbose ? console.info : undefined;
 	const sprout = new Sprout(sproutName, {ai, debugLogger, disallowFormatting: true});
 	await sprout.validate();
-	//Ensure that we won't have to redo calculations in the future.
-	await sprout.compile();
 	const signaller = new NodeConversationSignaller({debug: opts.verbose});
 	await sprout.run(signaller);
 };

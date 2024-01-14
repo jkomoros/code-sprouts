@@ -340,11 +340,6 @@ export class Sprout {
 		const uncompiled = await this.fetchUncompiledPackage();
 		const result = await this._doCompile(uncompiled, compiled);
 
-		if (this._fetcher.mayWriteFile(compiledPath)) {
-			if (this._debugLogger) this._debugLogger(`Writing compiled sprout to ${compiledPath}`);
-			await this._fetcher.writeFile(compiledPath, JSON.stringify(result, null, '\t'));
-		}
-
 		this._compiledSprout = result;
 		return this._compiledSprout;
 	}
@@ -416,11 +411,6 @@ export class Sprout {
 			subInstructions,
 			starterState
 		};
-	}
-
-	//This forces a recompile.
-	async compile() : Promise<void> {
-		await this.compiledData(true);
 	}
 
 	//This remotely fetches the package to see if it needs recompilation.

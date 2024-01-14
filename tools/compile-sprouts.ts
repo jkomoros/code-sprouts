@@ -13,6 +13,18 @@ import {
 	config as dotEnvConfig
 } from 'dotenv';
 
+import {
+	writeFileSync
+} from 'fs';
+
+import {
+	join
+} from 'path';
+
+import {
+	SPROUT_COMPILED_PATH
+} from '../src/constants.js';
+
 dotEnvConfig();
 
 const compileSprout = async (sproutPath: string, aiProvider : AIProvider): Promise<void> => {
@@ -24,7 +36,9 @@ const compileSprout = async (sproutPath: string, aiProvider : AIProvider): Promi
 	}
 	console.log(`Compiling ${sproutPath}`);
 	//Since we have a writeFetcher, we can compile the sprout in place.
-	await sprout.compile();
+	const data = await sprout.compiledData(true);
+	const path = join(sproutPath, SPROUT_COMPILED_PATH);
+	writeFileSync(path, JSON.stringify(data, null, '\t'));
 };
 
 const main = async () : Promise<void> => {
