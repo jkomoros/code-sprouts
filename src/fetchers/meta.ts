@@ -3,9 +3,9 @@ import {
 	MetaFetcherType,
 	FileListingType,
 	Path
-} from './types.js';
+} from '../types.js';
 
-import browser from './fetcher-browser.js';
+import browser from './browser.js';
 
 export class MetaFetcher {
 

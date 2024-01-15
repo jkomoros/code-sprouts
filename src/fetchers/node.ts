@@ -2,7 +2,7 @@ import {
 	Fetcher,
 	FileListingType,
 	Path
-} from './types.js';
+} from '../types.js';
 
 import {
 	readFileSync,
@@ -12,16 +12,16 @@ import {
 
 import {
 	Sprout
-} from './sprout.js';
+} from '../sprout.js';
 
 import {
 	DEFAULT_SPROUT_DIRECTORIES
-} from './constants.js';
+} from '../constants.js';
 
 import {
 	assertUnreachable,
 	joinPath
-} from './util.js';
+} from '../util.js';
 
 class NodeFetcher {
 

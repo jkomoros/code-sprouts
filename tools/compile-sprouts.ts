@@ -1,5 +1,5 @@
 //A node utility that compiles any sprouts that need it.
-import nodeFetcher from '../src/fetcher-node.js';
+import nodeFetcher from '../src/fetchers/node.js';
 
 import {
 	Sprout

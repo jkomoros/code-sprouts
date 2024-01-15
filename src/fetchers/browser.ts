@@ -3,18 +3,18 @@ import {
 	FileListingType,
 	Path,
 	directoryListingFileSchema
-} from './types.js';
+} from '../types.js';
 
 import {
 	DEFAULT_SPROUT_DIRECTORIES,
 	DIRECTORY_LISTING_FILE
-} from './constants.js';
+} from '../constants.js';
 
 import {
 	assertUnreachable,
 	joinPath,
 	makeFinalPath
-} from './util.js';
+} from '../util.js';
 
 type FetchCacheKey = string;
 

@@ -42,7 +42,7 @@ import {
 	selectSproutStreaming
 } from '../selectors.js';
 
-import fetcher from '../../src/fetcher-browser.js';
+import fetcher from '../../src/fetchers/browser.js';
 
 import {
 	canonicalizePath

@@ -3,12 +3,12 @@ import {
 	Fetcher,
 	Path,
 	FileListingType
-} from './types.js';
+} from '../types.js';
 
 import {
 	listDirectoryFromDirectoryInfo,
 	readFileFromDirectoryInfo
-} from './util.js';
+} from '../util.js';
 
 export class DirectoryInfoFetcher {
 	private _pathPrefix : string;

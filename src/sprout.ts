@@ -1,4 +1,4 @@
-import fetcherImpl from './fetcher-meta.js';
+import fetcherImpl from './fetchers/meta.js';
 
 import {
 	AIProvider,
@@ -66,11 +66,11 @@ import {
 
 import {
 	MetaFetcher
-} from './fetcher-meta.js';
+} from './fetchers/meta.js';
 
 import {
 	DirectoryInfoFetcher
-} from './fetcher-directoryinfo.js';
+} from './fetchers/directoryinfo.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {

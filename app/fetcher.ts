@@ -1,6 +1,6 @@
 import {
 	LocalStorageFetcher
-} from '../src/fetcher-localstorage.js';
+} from '../src/fetchers/localstorage.js';
 
 import {
 	Sprout

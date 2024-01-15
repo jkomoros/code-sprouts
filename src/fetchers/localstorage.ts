@@ -1,13 +1,12 @@
 import {
 	LocalStorageFilesystem
-} from './local_storage_filesystem.js';
+} from '../local_storage_filesystem.js';
 
 import {
 	Fetcher,
 	FileListingType,
 	Path
-} from './types.js';
-
+} from '../types.js';
 
 export class LocalStorageFetcher {
 
