@@ -1,6 +1,6 @@
 import {
 	FilesystemFetcher
-} from '../src/fetcher-filesystem.js';
+} from '../src/fetcher-localstorage.js';
 
 import {
 	Sprout
