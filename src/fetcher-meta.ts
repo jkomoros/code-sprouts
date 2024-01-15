@@ -1,6 +1,6 @@
 import {
 	Fetcher,
-	MetaFetcher as MetaFetcherType,
+	MetaFetcherType,
 	FileListingType,
 	Path
 } from './types.js';

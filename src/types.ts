@@ -127,7 +127,7 @@ export type Fetcher = {
 	writeable(path : Path) : boolean;
 };
 
-export type MetaFetcher = Fetcher & {
+export type MetaFetcherType = Fetcher & {
 	setSubFetcher(pathPrefix : Path, fetcher : Fetcher) : void;
 	setDefaultFetcher(fetcherq : Fetcher) : void;
 }
