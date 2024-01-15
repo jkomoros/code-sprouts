@@ -1,5 +1,6 @@
 import {
 	Fetcher,
+	MetaFetcher as MetaFetcherType,
 	FileListingType,
 	Path
 } from './types.js';
@@ -75,6 +76,6 @@ class MetaFetcher {
 
 }
 
-const metaFetcher : Fetcher = new MetaFetcher(browser);
+const metaFetcher : MetaFetcherType = new MetaFetcher(browser);
 
 export default metaFetcher;
