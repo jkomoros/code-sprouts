@@ -25,7 +25,7 @@ type FetchCacheKey = string;
 //5 minutes
 const CACHE_EXPIRATION = 1000 * 60 * 5;
 
-class BrowserFetcher {
+export class BrowserFetcher {
 
 	private _localWriteablePath: Path | null = null;
 
