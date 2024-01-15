@@ -37,7 +37,7 @@ class MetaFetcher {
 		return this._default;
 	}
 
-	setFetcher(pathPrefix : Path, fetcher : Fetcher) {
+	setSubFetcher(pathPrefix : Path, fetcher : Fetcher) {
 		this._fetchers[pathPrefix] = fetcher;
 	}
 
