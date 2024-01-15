@@ -123,10 +123,8 @@ export type Fetcher = {
 	fileExists(path : Path) : Promise<boolean>;
 	//Returns items in the given directory, not including the directory itself.
 	listDirectory(path : Path, type: FileListingType) : Promise<Path[]>;
-	listSprouts(basePaths? : string[]) : Promise<Path[]>;
+	listSprouts() : Promise<Path[]>;
 };
-
-export type FetcherWithoutListSprouts = Omit<Fetcher, 'listSprouts'>;
 
 export const directoryListingFileSchema = z.object({
 	directories: z.array(sproutNameSchema),

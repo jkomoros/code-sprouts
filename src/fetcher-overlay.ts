@@ -1,7 +1,6 @@
 import {
 	DirectoryInfo,
 	Fetcher,
-	FetcherWithoutListSprouts,
 	FileListingType,
 	Path
 } from './types.js';
@@ -66,8 +65,12 @@ class OverlayFetcher {
 		const paths = listDirectoryFromDirectoryInfo(this._directory, this.internalPath(path), type);
 		return Promise.resolve(paths);
 	}
+
+	async listSprouts() : Promise<Path[]> {
+		return [];
+	}
 }
 
-export const overlayFetcher = (fetcher : Fetcher, pathPrefix : string, directory : DirectoryInfo) : FetcherWithoutListSprouts => {
+export const overlayFetcher = (fetcher : Fetcher, pathPrefix : string, directory : DirectoryInfo) : Fetcher => {
 	return new OverlayFetcher(fetcher, pathPrefix, directory);
 };

@@ -71,7 +71,8 @@ class NodeFetcher {
 		return result;
 	}
 
-	async listSprouts(basePaths : string[] = DEFAULT_SPROUT_DIRECTORIES) : Promise<Path[]> {
+	async listSprouts() : Promise<Path[]> {
+		const basePaths = DEFAULT_SPROUT_DIRECTORIES;
 		//TODO: in a browser fetch context this will have to use a prebuilt listing file.
 		const result : Path[] = [];
 		for (const folder of basePaths) {

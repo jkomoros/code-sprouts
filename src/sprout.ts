@@ -15,7 +15,6 @@ import {
 	ConversationMessageSprout,
 	DirectoryInfo,
 	Fetcher,
-	FetcherWithoutListSprouts,
 	Logger,
 	UncompiledPackagedSprout,
 	PackagedSprout,
@@ -151,7 +150,7 @@ export class Sprout {
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
-	private _fetcher : FetcherWithoutListSprouts;
+	private _fetcher : Fetcher;
 	private _running : boolean;
 
 	static setFetcher(input : Fetcher) : void {
