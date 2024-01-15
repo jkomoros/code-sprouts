@@ -128,6 +128,7 @@ export type Fetcher = {
 export type MetaFetcherType = Fetcher & {
 	setSubFetcher(pathPrefix : Path, fetcher : Fetcher) : void;
 	setDefaultFetcher(fetcherq : Fetcher) : void;
+	fetcherForPath(path : Path) : Fetcher;
 }
 
 export const directoryListingFileSchema = z.object({

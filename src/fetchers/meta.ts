@@ -17,7 +17,7 @@ export class MetaFetcher {
 		this._fetchers = {};
 	}
 
-	private fetcherForPath(path : Path) : Fetcher {
+	fetcherForPath(path : Path) : Fetcher {
 		for (const prefix of Object.keys(this._fetchers)) {
 			if (path.startsWith(prefix)) {
 				return this._fetchers[prefix];
