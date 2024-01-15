@@ -19,8 +19,12 @@ class FilesystemFetcher {
 		throw new Error('FilesystemFetcher doesn\'t support localWriteablePath');
 	}
 
-	pathIsLocalWriteable(path: string): boolean {
-		return path.startsWith(this.localWriteablePath);
+	pathIsLocalWriteable(_path: string): boolean {
+		return false;
+	}
+
+	get writeable(): boolean {
+		return true;
 	}
 
 	async fileFetch(path: string): Promise<string> {

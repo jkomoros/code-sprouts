@@ -22,6 +22,10 @@ class OverlayFetcher {
 		this._directory = directory;
 	}
 
+	get writeable() : boolean {
+		return true;
+	}
+
 	get localWriteablePath() : Path {
 		return this._pathPrefix;
 	}

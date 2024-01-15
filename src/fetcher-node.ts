@@ -37,6 +37,10 @@ class NodeFetcher {
 		return false;
 	}
 
+	get writeable() : boolean {
+		return true;
+	}
+
 	async fileFetch(path : Path) : Promise<string> {
 		//TODO: have a node and fetch-based version.
 		const f = readFileSync(path);

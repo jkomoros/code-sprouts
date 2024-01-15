@@ -106,6 +106,10 @@ export class BrowserFetcher {
 		});
 	}
 
+	get writeable() : boolean {
+		return false;
+	}
+
 	set localWriteablePath(path: Path) {
 		this._localWriteablePath = path;
 	}
