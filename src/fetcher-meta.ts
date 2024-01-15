@@ -37,6 +37,14 @@ class MetaFetcher {
 		return this._default;
 	}
 
+	setFetcher(pathPrefix : Path, fetcher : Fetcher) {
+		this._fetchers[pathPrefix] = fetcher;
+	}
+
+	setDefaultFetcher(fetcher : Fetcher) {
+		this._default = fetcher;
+	}
+
 	fileFetch(path : Path) : Promise<string> {
 		return this.fetcherForPath(path).fileFetch(path);
 	}
