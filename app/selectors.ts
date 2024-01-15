@@ -120,5 +120,5 @@ export const selectMayCreateSprout = (_state : RootState) => true;
 //In the future more logic might be here.
 export const selectMayEditCurrentSprout = createSelector(
 	selectCurrentSproutName,
-	(sproutName) => fetcher.pathIsLocalWriteable(sproutName || '')
+	(sproutName) => fetcher.writeable(sproutName || '')
 );

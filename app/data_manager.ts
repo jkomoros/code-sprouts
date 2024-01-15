@@ -53,11 +53,11 @@ export class DataManager {
 	}
 
 	async mayWriteSprout(sproutName : SproutName) : Promise<boolean> {
-		return fetcher.pathIsLocalWriteable(sproutName);
+		return fetcher.writeable(sproutName);
 	}
 
 	async writeSprout(sproutName : SproutName, pkg : PackagedSprout) : Promise<void> {
-		if (!fetcher.pathIsLocalWriteable(sproutName)) throw new Error('Cannot write sprout');
+		if (!fetcher.writeable(sproutName)) throw new Error('Cannot write sprout');
 		//We can write every part because fetcher.writeFile will not update the file if the data is the same.
 		LocalStorageFilesystem.writeDirectoryInfo(pkg, sproutName);
 		store.dispatch({
@@ -73,7 +73,7 @@ export class DataManager {
 		//Remove the sprout first, THEN actually delete the diretory. This
 		//avoids a "currentSprout is not defined" kind of problem.
 		store.dispatch(removeSprouts({[sproutName]: true}));
-		if (fetcher.pathIsLocalWriteable(sproutName)) {
+		if (fetcher.writeable(sproutName)) {
 			//Also remove from filesystem.
 			LocalStorageFilesystem.deleteDirectory(sproutName);
 		}
