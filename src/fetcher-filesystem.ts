@@ -9,7 +9,7 @@ import {
 } from './types.js';
 
 
-class FilesystemFetcher {
+export class FilesystemFetcher {
 
 	set localWriteablePath(path: string) {
 		throw new Error('FilesystemFetcher doesn\'t support localWriteablePath');

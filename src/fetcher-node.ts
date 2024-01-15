@@ -93,6 +93,7 @@ class NodeFetcher {
 //Type to verify we match
 const fetcher : Fetcher = new NodeFetcher();
 
-Sprout.setFetcher(fetcher);
+const meta = Sprout.getFetcher();
+meta.setDefaultFetcher(fetcher);
 
 export default fetcher;

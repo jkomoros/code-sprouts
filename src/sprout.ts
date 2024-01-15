@@ -1,4 +1,4 @@
-import fetcherImpl from './fetcher-browser.js';
+import fetcherImpl from './fetcher-meta.js';
 
 import {
 	AIProvider,
@@ -14,7 +14,6 @@ import {
 	Conversation,
 	ConversationMessageSprout,
 	DirectoryInfo,
-	Fetcher,
 	Logger,
 	UncompiledPackagedSprout,
 	PackagedSprout,
@@ -30,7 +29,8 @@ import {
 	compiledSproutSchema,
 	partialConversationTurnSchema,
 	sproutConfigSchema,
-	strictConversationTurnSchema
+	strictConversationTurnSchema,
+	MetaFetcherType
 } from './types.js';
 
 import {
@@ -65,8 +65,12 @@ import {
 } from './signaller.js';
 
 import {
-	overlayFetcher
-} from './fetcher-overlay.js';
+	MetaFetcher
+} from './fetcher-meta.js';
+
+import {
+	DirectoryInfoFetcher
+} from './fetcher-directoryinfo.js';
 
 //A manual conversion of types.ts:conversationTurnSchema
 const CONVERSATION_TURN_SCHEMA_FIRST_PART = `type ConversationTurn = {
@@ -132,7 +136,7 @@ const textConversation = (conversation : Conversation) : string => {
 	}).join('\n');
 };
 
-let _fetcher : Fetcher = fetcherImpl;
+let _fetcher : MetaFetcherType = fetcherImpl;
 
 export class Sprout {
 	private _path : Path;
@@ -150,14 +154,14 @@ export class Sprout {
 	private _debugLogger? : Logger;
 	private _id : string;
 	private _conversation : Conversation;
-	private _fetcher : Fetcher;
+	private _fetcher : MetaFetcherType;
 	private _running : boolean;
 
-	static setFetcher(input : Fetcher) : void {
+	static setFetcher(input : MetaFetcherType) : void {
 		_fetcher = input;
 	}
 
-	static getFetcher() : Fetcher {
+	static getFetcher() : MetaFetcherType {
 		//TODO: it's kind of weird that everyone rendeveous here, shouldn't there be another way of retrieving it?
 		return _fetcher;
 	}
@@ -177,7 +181,12 @@ export class Sprout {
 		this._disallowFormatting = Boolean(disallowFormatting);
 		this._id = randomString(8);
 		this._conversation = [];
-		this._fetcher = packagedSprout ? overlayFetcher(_fetcher, path, packagedSprout)  : _fetcher;
+		let fetcher = _fetcher;
+		if (packagedSprout) {
+			fetcher = new MetaFetcher(_fetcher);
+			fetcher.setSubFetcher(path, new DirectoryInfoFetcher(path, packagedSprout));
+		}
+		this._fetcher = fetcher;
 		this._running = false;
 	}
 

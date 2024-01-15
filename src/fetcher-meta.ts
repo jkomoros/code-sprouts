@@ -7,7 +7,7 @@ import {
 
 import browser from './fetcher-browser.js';
 
-class MetaFetcher {
+export class MetaFetcher {
 
 	private _default : Fetcher;
 	private _fetchers : Record<Path, Fetcher> = {};
