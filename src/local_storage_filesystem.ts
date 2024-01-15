@@ -1,4 +1,9 @@
 import {
+	TypedObject
+} from './typed-object.js';
+
+import {
+	DirectoryInfo,
 	FileListingType,
 	Path
 } from './types.js';
@@ -28,6 +33,17 @@ export class LocalStorageFilesystem {
 
 	static writeFile(filename : Path, data : string) : void {
 		window.localStorage.setItem(this.localStorageKeyForFile(filename), data);
+	}
+
+	static writeDirectoryInfo(info : DirectoryInfo, path : Path = '') : void {
+		for (const [filename, content] of TypedObject.entries(info)) {
+			if (typeof content == 'string') {
+				const filePath = joinPath(path, filename);
+				this.writeFile(filePath, content);
+			} else {
+				this.writeDirectoryInfo(content, joinPath(path, filename));
+			}
+		}
 	}
 
 	static deleteFile(filename : Path) : void {

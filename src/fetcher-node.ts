@@ -7,10 +7,7 @@ import {
 import {
 	readFileSync,
 	existsSync,
-	readdirSync,
-	writeFileSync,
-	unlinkSync,
-	rmdirSync
+	readdirSync
 } from 'fs';
 
 import {
@@ -50,14 +47,6 @@ class NodeFetcher {
 		return existsSync(path);
 	}
 
-	async writeFile(path : Path, data : string) : Promise<void> {
-		writeFileSync(path, data);
-	}
-
-	mayWriteFile(_path : Path) : boolean {
-		return true;
-	}
-
 	async listDirectory(path : Path, type : FileListingType) : Promise<Path[]> {
 		const result : Path[] = [];
 		//Check if directory exists
@@ -92,26 +81,6 @@ class NodeFetcher {
 			}
 		}
 		return result;
-	}
-
-	mayDeletePath(_path : Path) : boolean {
-		return true;
-	}
-
-	async deleteFile(path : Path) : Promise<void> {
-		unlinkSync(path);
-	}
-
-	async deleteDirectory(path : Path) : Promise<void> {
-		for (const file of await this.listDirectory(path, 'file')) {
-			await this.deleteFile(joinPath(path, file));
-		}
-		for (const dir of await this.listDirectory(path, 'directory')) {
-			await this.deleteDirectory(joinPath(path, dir));
-		}
-		const paths = await this.listDirectory(path, 'both');
-		if (paths.length > 0) throw new Error(`Directory not empty: ${path}`);
-		rmdirSync(path);
 	}
 
 }

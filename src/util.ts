@@ -3,15 +3,10 @@ import {
 } from './constants.js';
 
 import {
-	TypedObject
-} from './typed-object.js';
-
-import {
 	Path,
 	FinalPath,
 	DirectoryInfo,
 	DirectoryListingFile,
-	Fetcher,
 	sproutBaseNameSchema,
 	FileListingType
 } from './types.js';
@@ -95,17 +90,6 @@ export const randomString = (length : number, charSet = randomCharSet) => {
 export const trimExtraNewlines = (input : string) : string => {
 	//Process the input to replace any runs of more than two newlines with two newlines.
 	return input.replace(/\n{3,}/g, '\n\n');
-};
-
-export const writeDirectoryInfo = async (fetcher : Fetcher, info : DirectoryInfo, path : Path = '') : Promise<void> => {
-	for (const [filename, content] of TypedObject.entries(info)) {
-		if (typeof content == 'string') {
-			const filePath = joinPath(path, filename);
-			await fetcher.writeFile(filePath, content);
-		} else {
-			await writeDirectoryInfo(fetcher, content, joinPath(path, filename));
-		}
-	}
 };
 
 export const deleteFileFromDirectoryInfo = (info : DirectoryInfo, path : Path) : void => {

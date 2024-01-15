@@ -124,11 +124,6 @@ export type Fetcher = {
 	//Returns items in the given directory, not including the directory itself.
 	listDirectory(path : Path, type: FileListingType) : Promise<Path[]>;
 	listSprouts(basePaths? : string[]) : Promise<Path[]>;
-	mayWriteFile(path : Path) : boolean;
-	writeFile(path : Path, data : string) : Promise<void>;
-	mayDeletePath(path : Path) : boolean;
-	deleteFile(path : Path) : Promise<void>;
-	deleteDirectory(path : Path) : Promise<void>;
 };
 
 export type FetcherWithoutListSprouts = Omit<Fetcher, 'listSprouts'>;

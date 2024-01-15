@@ -3,14 +3,17 @@ import {
 } from '../src/constants.js';
 
 import {
+	LocalStorageFilesystem
+} from '../src/local_storage_filesystem.js';
+
+import {
 	ModelProvider,
 	PackagedSprout,
 	SproutName
 } from '../src/types.js';
 
 import {
-	joinPath,
-	writeDirectoryInfo
+	joinPath
 } from '../src/util.js';
 
 import {
@@ -54,9 +57,9 @@ export class DataManager {
 	}
 
 	async writeSprout(sproutName : SproutName, pkg : PackagedSprout) : Promise<void> {
-		if (!fetcher.mayWriteFile(sproutName)) throw new Error('Cannot write sprout');
+		if (!fetcher.pathIsLocalWriteable(sproutName)) throw new Error('Cannot write sprout');
 		//We can write every part because fetcher.writeFile will not update the file if the data is the same.
-		await writeDirectoryInfo(fetcher, pkg, sproutName);
+		LocalStorageFilesystem.writeDirectoryInfo(pkg, sproutName);
 		store.dispatch({
 			type: WRITE_SPROUT,
 			name: sproutName,
@@ -70,9 +73,9 @@ export class DataManager {
 		//Remove the sprout first, THEN actually delete the diretory. This
 		//avoids a "currentSprout is not defined" kind of problem.
 		store.dispatch(removeSprouts({[sproutName]: true}));
-		if (fetcher.mayWriteFile(sproutName)) {
+		if (fetcher.pathIsLocalWriteable(sproutName)) {
 			//Also remove from filesystem.
-			fetcher.deleteDirectory(sproutName);
+			LocalStorageFilesystem.deleteDirectory(sproutName);
 		}
 	}
 }
