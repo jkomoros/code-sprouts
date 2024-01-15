@@ -205,6 +205,17 @@ export const addDirectoryListings = (info : DirectoryInfo) : void => {
 	}
 };
 
+export const writeDirectoryToDirectoryInfo = (info : DirectoryInfo, path : Path, dir : DirectoryInfo) : void => {
+	for (const [dirPath, dirValue] of Object.entries(dir)) {
+		if (typeof dirValue == 'string') {
+			writeFileToDirectoryInfo(info, joinPath(path, dirPath), dirValue);
+		}
+		else {
+			writeDirectoryToDirectoryInfo(info, joinPath(path, dirPath), dirValue);
+		}
+	}
+};
+
 //Note: modifies directory in place. It keeps directory.json up to date.
 export const writeFileToDirectoryInfo = (info : DirectoryInfo, path : Path, data : string) : void => {
 	const parts = path.split('/');
