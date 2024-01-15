@@ -53,10 +53,24 @@ export class MetaFetcher {
 	async listSprouts() : Promise<Path[]> {
 		
 		const defaultSprouts = await this._default.listSprouts();
-		const result : Path[] = [...defaultSprouts];
+		const result : Path[] = [];
+
+		//It's possible for multiple sub-fetchers to return sprouts with the
+		//same path, not realizing they're shadowed by another. So only keep
+		//sprouts that will resolve to the fetcher that enumerated them.
+
+		for (const sprout of defaultSprouts) {
+			const sproutFetcher = this.fetcherForPath(sprout);
+			if (sproutFetcher !== this._default) continue;
+			result.push(sprout);
+		}
 		for (const fetcher of Object.values(this._fetchers)) {
 			const sprouts = await fetcher.listSprouts();
-			result.push(...sprouts);
+			for (const sprout of sprouts) {
+				const sproutFetcher = this.fetcherForPath(sprout);
+				if (sproutFetcher !== fetcher) continue;
+				result.push(sprout);
+			}
 		}
 		return result;
 	}
