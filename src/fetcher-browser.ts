@@ -16,18 +16,12 @@ import {
 	makeFinalPath
 } from './util.js';
 
-import {
-	LocalStorageFilesystem
-} from './local_storage_filesystem.js';
-
 type FetchCacheKey = string;
 
 //5 minutes
 const CACHE_EXPIRATION = 1000 * 60 * 5;
 
 export class BrowserFetcher {
-
-	private _localWriteablePath: Path | null = null;
 
 	//These are previously kicked off fetches that are still in progress, or are already done.
 	private _existingFetches: Map<FetchCacheKey, {promise?: Promise<void>, response? : Response, timestamp: Date}>;
@@ -110,23 +104,7 @@ export class BrowserFetcher {
 		return false;
 	}
 
-	set localWriteablePath(path: Path) {
-		this._localWriteablePath = path;
-	}
-
-	get localWriteablePath(): Path {
-		return this._localWriteablePath || '';
-	}
-
-	pathIsLocalWriteable(path: Path): boolean {
-		if (this._localWriteablePath === null) return false;
-		return path.startsWith(this._localWriteablePath);
-	}
-
 	async fileFetch(path: Path): Promise<string> {
-		if (this.pathIsLocalWriteable(path)) {
-			return LocalStorageFilesystem.readFile(path);
-		}
 		path = makeFinalPath(path);
 		const response = await this.fetch(path);
 		if (!response.ok) {
@@ -136,9 +114,6 @@ export class BrowserFetcher {
 	}
 
 	async fileExists(path: Path): Promise<boolean> {
-		if (this.pathIsLocalWriteable(path)) {
-			return LocalStorageFilesystem.fileExists(path);
-		}
 		path = makeFinalPath(path);
 		try {
 			const response = await this.fetch(path, { method: 'HEAD' });
@@ -149,9 +124,6 @@ export class BrowserFetcher {
 	}
 
 	async listDirectory(path: Path, type: FileListingType): Promise<Path[]> {
-		if (this.pathIsLocalWriteable(path)) {
-			return LocalStorageFilesystem.listDirectory(path, type);
-		}
 		path = makeFinalPath(path);
 		const response = await this.fetch(joinPath(path, DIRECTORY_LISTING_FILE));
 		if (!response.ok) return [];
@@ -170,17 +142,10 @@ export class BrowserFetcher {
 	}
 
 	async listSprouts(): Promise<Path[]> {
-		const basePaths = this._localWriteablePath ? [this._localWriteablePath, ...DEFAULT_SPROUT_DIRECTORIES] : DEFAULT_SPROUT_DIRECTORIES;
+		const basePaths = DEFAULT_SPROUT_DIRECTORIES;
 		//This requires a directory.json file in each folder.
 		const result: Path[] = [];
 		for (let basePath of basePaths) {
-			if (this.pathIsLocalWriteable(basePath)) {
-				const items = LocalStorageFilesystem.listDirectory(basePath, 'directory');
-				for (const item of items) {
-					result.push(joinPath(basePath, item));
-				}
-				continue;
-			}
 			basePath = makeFinalPath(basePath);
 			try {
 				const response = await this.fetch(`${basePath}/${DIRECTORY_LISTING_FILE}`);
