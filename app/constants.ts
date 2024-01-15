@@ -1,0 +1,1 @@
+export const LOCAL_SPROUTS_PATH = 'private';
