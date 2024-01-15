@@ -1,14 +1,24 @@
 import {
+	DirectoryInfo,
 	Fetcher,
 	FileListingType,
-	Path
+	PackagedSprout,
+	Path,
+	SproutName
 } from '../types.js';
 
 import {
 	readFileSync,
 	existsSync,
-	readdirSync
+	readdirSync,
+	mkdirSync,
+	writeFileSync,
+	rmdirSync
 } from 'fs';
+
+import {
+	dirname
+} from 'path';
 
 import {
 	Sprout
@@ -27,6 +37,30 @@ class NodeFetcher {
 
 	writeable(_path : Path) : boolean {
 		return true;
+	}
+
+	private writeFile(path : Path, data : string) : void {
+		const dir = dirname(path);
+		mkdirSync(dir, {recursive: true});
+		writeFileSync(path, data);
+	}
+
+	private writeDirectory(path : Path, info : DirectoryInfo) : void {
+		for (const [subPath, data] of Object.entries(info)) {
+			if (typeof data === 'string') {
+				this.writeFile(joinPath(path, subPath), data);
+			} else {
+				this.writeDirectory(joinPath(path, subPath), data);
+			}
+		}
+	}
+
+	async writeSprout(name : SproutName, pkg : PackagedSprout) : Promise<void> {
+		this.writeDirectory(name, pkg);
+	}
+
+	async deleteSprout(name : SproutName) : Promise<void> {
+		rmdirSync(name, {recursive: true});
 	}
 
 	async fileFetch(path : Path) : Promise<string> {

@@ -5,13 +5,23 @@ import {
 import {
 	Fetcher,
 	FileListingType,
-	Path
+	PackagedSprout,
+	Path,
+	SproutName
 } from '../types.js';
 
 export class LocalStorageFetcher {
 
 	writeable(_path : Path): boolean {
 		return true;
+	}
+
+	async writeSprout(name : SproutName, pkg : PackagedSprout): Promise<void> {
+		LocalStorageFilesystem.writeDirectoryInfo(pkg, name);
+	}
+
+	async deleteSprout(name : SproutName): Promise<void> {
+		LocalStorageFilesystem.deleteDirectory(name);
 	}
 
 	async fileFetch(path: string): Promise<string> {

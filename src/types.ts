@@ -123,6 +123,8 @@ export type Fetcher = {
 	listDirectory(path : Path, type: FileListingType) : Promise<Path[]>;
 	listSprouts() : Promise<Path[]>;
 	writeable(path : Path) : boolean;
+	writeSprout(sproutName : SproutName, pkg : PackagedSprout): Promise<void>;
+	deleteSprout(sproutName : SproutName) : Promise<void>;
 };
 
 export type MetaFetcherType = Fetcher & {

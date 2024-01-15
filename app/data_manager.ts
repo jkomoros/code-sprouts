@@ -3,10 +3,6 @@ import {
 } from '../src/constants.js';
 
 import {
-	LocalStorageFilesystem
-} from '../src/local_storage_filesystem.js';
-
-import {
 	ModelProvider,
 	PackagedSprout,
 	SproutName
@@ -58,8 +54,7 @@ export class DataManager {
 
 	async writeSprout(sproutName : SproutName, pkg : PackagedSprout) : Promise<void> {
 		if (!fetcher.writeable(sproutName)) throw new Error('Cannot write sprout');
-		//We can write every part because fetcher.writeFile will not update the file if the data is the same.
-		LocalStorageFilesystem.writeDirectoryInfo(pkg, sproutName);
+		fetcher.writeSprout(sproutName, pkg);
 		store.dispatch({
 			type: WRITE_SPROUT,
 			name: sproutName,
@@ -75,7 +70,7 @@ export class DataManager {
 		store.dispatch(removeSprouts({[sproutName]: true}));
 		if (fetcher.writeable(sproutName)) {
 			//Also remove from filesystem.
-			LocalStorageFilesystem.deleteDirectory(sproutName);
+			fetcher.deleteSprout(sproutName);
 		}
 	}
 }

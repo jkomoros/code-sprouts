@@ -2,7 +2,9 @@ import {
 	Fetcher,
 	MetaFetcherType,
 	FileListingType,
-	Path
+	Path,
+	SproutName,
+	PackagedSprout
 } from '../types.js';
 
 import browser from './browser.js';
@@ -48,6 +50,16 @@ export class MetaFetcher {
 
 	writeable(path : Path) : boolean {
 		return this.fetcherForPath(path).writeable(path);
+	}
+
+	writeSprout(name : SproutName, pkg : PackagedSprout) : Promise<void> {
+		if (!this.writeable(name)) throw new Error(`Cannot write sprout ${name}`);
+		return this.fetcherForPath(name).writeSprout(name, pkg);
+	}
+
+	deleteSprout(name : SproutName) : Promise<void> {
+		if (!this.writeable(name)) throw new Error(`Cannot write sprout ${name}`);
+		return this.fetcherForPath(name).deleteSprout(name);
 	}
 	
 	async listSprouts() : Promise<Path[]> {

@@ -1,7 +1,9 @@
 import {
 	Fetcher,
 	FileListingType,
+	PackagedSprout,
 	Path,
+	SproutName,
 	directoryListingFileSchema
 } from '../types.js';
 
@@ -102,6 +104,14 @@ export class BrowserFetcher {
 
 	writeable(_path : Path) : boolean {
 		return false;
+	}
+
+	writeSprout(_name : SproutName, _pkg : PackagedSprout) : Promise<void> {
+		throw new Error('BrowserFetcher doesn\'t support writeSprout');
+	}
+
+	deleteSprout(_name : SproutName) : Promise<void> {
+		throw new Error('BrowserFetcher doesn\'t support deleteSprout');
 	}
 
 	async fileFetch(path: Path): Promise<string> {

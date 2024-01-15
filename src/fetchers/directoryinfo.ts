@@ -2,12 +2,16 @@ import {
 	DirectoryInfo,
 	Fetcher,
 	Path,
-	FileListingType
+	FileListingType,
+	SproutName,
+	PackagedSprout
 } from '../types.js';
 
 import {
+	deleteDirectoryFromDirectoryInfo,
 	listDirectoryFromDirectoryInfo,
-	readFileFromDirectoryInfo
+	readFileFromDirectoryInfo,
+	writeDirectoryToDirectoryInfo
 } from '../util.js';
 
 export class DirectoryInfoFetcher {
@@ -22,6 +26,17 @@ export class DirectoryInfoFetcher {
 
 	writeable(_path : Path) : boolean {
 		return true;
+	}
+
+	async writeSprout(name : SproutName, pkg : PackagedSprout) : Promise<void> {
+		//We can write every part because fetcher.writeFile will not update the file if the data is the same.
+		writeDirectoryToDirectoryInfo(this._directory, this.internalPath(name), pkg);
+		this._hasWrites = true;
+	}
+
+	async deleteSprout(name : SproutName) : Promise<void> {
+		deleteDirectoryFromDirectoryInfo(this._directory, this.internalPath(name));
+		this._hasWrites = true;
 	}
 
 	get overlayHasWrites() : boolean {
