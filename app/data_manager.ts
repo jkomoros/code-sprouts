@@ -54,7 +54,7 @@ export class DataManager {
 
 	async writeSprout(sproutName : SproutName, pkg : PackagedSprout) : Promise<void> {
 		if (!fetcher.writeable(sproutName)) throw new Error('Cannot write sprout');
-		fetcher.writeSprout(sproutName, pkg);
+		await fetcher.writeSprout(sproutName, pkg);
 		store.dispatch({
 			type: WRITE_SPROUT,
 			name: sproutName,
@@ -70,7 +70,7 @@ export class DataManager {
 		store.dispatch(removeSprouts({[sproutName]: true}));
 		if (fetcher.writeable(sproutName)) {
 			//Also remove from filesystem.
-			fetcher.deleteSprout(sproutName);
+			await fetcher.deleteSprout(sproutName);
 		}
 	}
 }
