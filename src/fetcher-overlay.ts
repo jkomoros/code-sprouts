@@ -22,7 +22,7 @@ class OverlayFetcher {
 		this._directory = directory;
 	}
 
-	get writeable() : boolean {
+	writeable(_path : Path) : boolean {
 		return true;
 	}
 

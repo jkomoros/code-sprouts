@@ -124,7 +124,7 @@ export type Fetcher = {
 	//Returns items in the given directory, not including the directory itself.
 	listDirectory(path : Path, type: FileListingType) : Promise<Path[]>;
 	listSprouts() : Promise<Path[]>;
-	readonly writeable : boolean;
+	writeable(path : Path) : boolean;
 };
 
 export const directoryListingFileSchema = z.object({

@@ -106,7 +106,7 @@ export class BrowserFetcher {
 		});
 	}
 
-	get writeable() : boolean {
+	writeable(_path : Path) : boolean {
 		return false;
 	}
 

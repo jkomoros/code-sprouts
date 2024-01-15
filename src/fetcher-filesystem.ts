@@ -23,7 +23,7 @@ class FilesystemFetcher {
 		return false;
 	}
 
-	get writeable(): boolean {
+	writeable(_path : Path): boolean {
 		return true;
 	}
 
