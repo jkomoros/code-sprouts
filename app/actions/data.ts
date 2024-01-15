@@ -92,6 +92,7 @@ import {
 import fileSaver from 'file-saver';
 
 import dataManager from '../data_manager.js';
+import { LOCAL_SPROUTS_PATH } from '../constants.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch) => {
 	dispatch({
@@ -345,7 +346,7 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 		throw new Error(`${name} is not a legal sprout base name`);
 	}
 
-	const fullName = joinPath(fetcher.localWriteablePath, name);
+	const fullName = joinPath(LOCAL_SPROUTS_PATH, name);
 
 	const sproutExists = await dataManager.sproutExists(fullName);
 	if (sproutExists) throw new Error(`Sprout ${fullName} already exists`);
@@ -364,7 +365,7 @@ export const forkCurrentSprout = (newName : SproutName) : ThunkSomeAction => asy
 		throw new Error(`${newName} is not a legal sprout base name`);
 	}
 
-	const fullName = joinPath(fetcher.localWriteablePath, newName);
+	const fullName = joinPath(LOCAL_SPROUTS_PATH, newName);
 
 	const sproutExists = await dataManager.sproutExists(fullName);
 	if (sproutExists) throw new Error(`Sprout ${fullName} already exists`);
