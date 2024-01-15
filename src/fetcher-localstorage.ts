@@ -11,18 +11,6 @@ import {
 
 export class LocalStorageFetcher {
 
-	set localWriteablePath(path: string) {
-		throw new Error('FilesystemFetcher doesn\'t support localWriteablePath');
-	}
-
-	get localWriteablePath(): string {
-		throw new Error('FilesystemFetcher doesn\'t support localWriteablePath');
-	}
-
-	pathIsLocalWriteable(_path: string): boolean {
-		return false;
-	}
-
 	writeable(_path : Path): boolean {
 		return true;
 	}

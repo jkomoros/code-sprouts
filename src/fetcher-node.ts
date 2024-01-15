@@ -25,18 +25,6 @@ import {
 
 class NodeFetcher {
 
-	set localWriteablePath(_path : Path) {
-		throw new Error('NodeFetcher doesn\'t support localWriteablePath');
-	}
-
-	get localWriteablePath() : Path {
-		throw new Error('NodeFetcher doesn\'t support localWriteablePath');
-	}
-
-	pathIsLocalWriteable(_path : Path) : boolean {
-		return false;
-	}
-
 	writeable(_path : Path) : boolean {
 		return true;
 	}

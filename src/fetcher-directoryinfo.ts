@@ -24,14 +24,6 @@ export class DirectoryInfoFetcher {
 		return true;
 	}
 
-	get localWriteablePath() : Path {
-		return this._pathPrefix;
-	}
-	
-	set localWriteablePath(path : Path) {
-		throw new Error('OverlayFetcher doesn\'t support localWriteablePath');
-	}
-
 	get overlayHasWrites() : boolean {
 		return this._hasWrites;
 	}

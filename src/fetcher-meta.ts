@@ -17,18 +17,6 @@ export class MetaFetcher {
 		this._fetchers = {};
 	}
 
-	get localWriteablePath() : string {
-		throw new Error('MetaFetcher doesn\'t support localWriteablePath');
-	}
-
-	set localWriteablePath(path : string) {
-		throw new Error('MetaFetcher doesn\'t support localWriteablePath');
-	}
-
-	pathIsLocalWriteable(_path : string) : boolean {
-		return false;
-	}
-
 	private fetcherForPath(path : Path) : Fetcher {
 		for (const prefix of Object.keys(this._fetchers)) {
 			if (path.startsWith(prefix)) {
