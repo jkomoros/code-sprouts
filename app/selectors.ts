@@ -22,6 +22,10 @@ import {
 	APIKeys
 } from '../src/types.js';
 
+import {
+	LOCAL_SPROUTS_PATH
+} from './constants.js';
+
 export const selectPage = (state : RootState) => state.app ? state.app.page : '';
 export const selectPageExtra = (state : RootState) => state.app ? state.app.pageExtra : '';
 export const selectHash = (state : RootState) => state.app ? state.app.hash : '';
@@ -122,3 +126,6 @@ export const selectMayEditCurrentSprout = createSelector(
 	selectCurrentSproutName,
 	(sproutName) => fetcher.writeable(sproutName || '')
 );
+
+//This is a point of indirection for other embedding contexts.
+export const selectDefaultSproutDirectory = (_state : RootState) => LOCAL_SPROUTS_PATH;
