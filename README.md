@@ -263,6 +263,8 @@ Finally, ChatGPT is a proto-aggregator. That's convenient, but the more you inve
 
 Another benefit of this approach: by running locally on the user's browser, it requires the bot configuration to be fully public: view-source-able. This view-source-ability is one of the things that helps tinkerers learn from others and create cool new things, and is perfect for the "community gardening" phase.
 
+Finally, LLMs excel at text, so it's natural the first interface for them is "chat". But chat isn't the be-all-end-all interaction paradigm; it is rather a specific instantiation of a more general thing (see, for example https://komoroske.com/threads ). The way code sprouts are architected, it's more about the sprout suggesting a new thing to add to the shared output (which, to start, is a chat log). This format will allow more innovation in UX.
+
 ## What is the logic of doing it this way?
 
 This approach is in someways exactly the opposite of how most LLM-powered things are done.
