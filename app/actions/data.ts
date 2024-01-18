@@ -69,8 +69,7 @@ import {
 	addDirectoryListings,
 	joinPath,
 	makeFinalPath,
-	normalizeSproutPath,
-	sproutBaseNameLegal
+	normalizeSproutPath
 } from '../../src/util.js';
 
 import {
@@ -97,6 +96,11 @@ import {
 	selectDefaultSproutDirectory,
 	selectMayEditCurrentSprout
 } from '../selectors.js';
+
+//A separate import for a clean diff in embedded contexts.
+import {
+	sproutBaseNameLegal
+} from '../../src/util.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch) => {
 	dispatch({
