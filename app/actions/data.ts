@@ -35,7 +35,6 @@ import {
 	selectDraftMessage,
 	selectEditorOpen,
 	selectIsEditing,
-	selectMayEditCurrentSprout,
 	selectPreferredAIProvider,
 	selectSproutData,
 	selectSproutSnapshot,
@@ -96,6 +95,7 @@ import dataManager from '../data_manager.js';
 //A separate import for a clean diff in embedded contexts.
 import {
 	selectDefaultSproutDirectory,
+	selectMayEditCurrentSprout
 } from '../selectors.js';
 
 export const addSprouts = (sprouts : SproutDataMap) : ThunkSomeAction => (dispatch) => {

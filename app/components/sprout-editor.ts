@@ -48,7 +48,6 @@ import {
 	selectCurrentSproutName,
 	selectEditorOpen,
 	selectIsEditing,
-	selectMayEditCurrentSprout,
 	selectMobile,
 	selectSproutSnapshot
 } from '../selectors.js';
@@ -79,6 +78,11 @@ import {
 	eleFromEvent,
 	baseFileName
 } from '../util.js';
+
+//A separate import for a clean diff in embedded contexts.
+import {
+	selectMayEditCurrentSprout
+} from '../selectors.js';
 
 type ConfigFieldInfo = {
 	hidden: boolean,
