@@ -239,7 +239,9 @@ export const absoluteRegExp = (r : RegExp) : RegExp => {
 	return new RegExp('^' + r.source + '$');
 };
 
-export const sproutBaseNameLegal = (proposedName : string) : boolean => {
+export const sproutBaseNameLegal = async (proposedName : string) : Promise<boolean> => {
+	//This function does not need to be async, but some embedding contexts will
+	//override this in an async way.
 	const parseResult = sproutBaseNameSchema.safeParse(proposedName);
 	return parseResult.success;
 };

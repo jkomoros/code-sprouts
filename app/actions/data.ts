@@ -58,7 +58,7 @@ import {
 	ModelProvider,
 	Path,
 	Prompt,
-	SproutName,
+	SproutBaseName,
 	SproutState,
 	UncompiledPackagedSprout,
 	compiledSproutSchema,
@@ -349,8 +349,10 @@ export const editingModifySprout = (snapshot : UncompiledPackagedSprout) : Thunk
 	});
 };
 
-export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async (dispatch, getState) => {
-	if (!sproutBaseNameLegal(name)) {
+export const createNamedSprout = (name : SproutBaseName) : ThunkSomeAction =>  async (dispatch, getState) => {
+	const legal = await sproutBaseNameLegal(name);
+
+	if (!legal) {
 		throw new Error(`${name} is not a legal sprout base name`);
 	}
 
@@ -367,11 +369,13 @@ export const createNamedSprout = (name : SproutName) : ThunkSomeAction =>  async
 	dispatch(startEditing());
 };
 
-export const forkCurrentSprout = (newName : SproutName) : ThunkSomeAction => async (dispatch, getState) => {
+export const forkCurrentSprout = (newName : SproutBaseName) : ThunkSomeAction => async (dispatch, getState) => {
 	const currentSprout = selectCurrentSprout(getState());
 	if (!currentSprout) throw new Error('No current sprout');
 
-	if (!sproutBaseNameLegal(newName)) {
+	const legal = await sproutBaseNameLegal(newName);
+
+	if (!legal) {
 		throw new Error(`${newName} is not a legal sprout base name`);
 	}
 
