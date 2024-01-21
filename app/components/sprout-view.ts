@@ -293,7 +293,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					justify-content: flex-end;
 				}
 
-				.extras a .button.small {
+				.extras a.button.small {
 					display:inline-block;
 					margin-right: 0.5em;
 				}
