@@ -7,7 +7,7 @@ export const help = (message : string, disabled = false) : TemplateResult => {
 };
 
 export const ButtonSharedStyles = css`
-		button {
+		button, .button {
 			font-size: inherit;
 			vertical-align: middle;
 			color: var(--app-light-text-color);
@@ -22,46 +22,46 @@ export const ButtonSharedStyles = css`
 			transition: background-color var(--transition-fade), color var(--transition-fade), box-shadow var(--transition-fade);
 		}
 
-		button:disabled {
+		button:disabled, .button:disabled {
 			cursor:default;
             filter: var(--disabled-filter);
 		}
 
-		button:disabled:hover {
+		button:disabled:hover, .button:disabled:hover {
 			filter: var(--disabled-filter);
 		}
 
-		button.default {
+		button.default, .button.default {
 			background: var(--app-primary-color);
 		}
 
-        button.highlight {
+        button.highlight, .button.highlight {
             background: var(--app-secondary-color);
         }
 
-		button.help {
+		button.help, .button.help {
 			cursor:default;
 		}
 
-		button.round {
+		button.round, .button.round {
 			border-radius:50%;
 			height: 2.75em;
 			width: 2.75em;
 		}
 
-		button svg {
+		button svg, .button svg {
 			fill: var(--app-light-text-color);
 		}
 
-		button:hover {
+		button:hover, .button:hover {
 			filter: brightness(0.9);
 		}
 
-		button.small:disabled:hover {
+		button.small:disabled:hover, .button.small:disabled:hover {
 			filter: none;
 		}
 
-		button.emoji {
+		button.emoji, .button.emoji {
 			background:transparent;
 			padding: 0;
 			margin:0;
@@ -70,7 +70,7 @@ export const ButtonSharedStyles = css`
 			color: var(--dark-gray-color);
 		}
 
-		button.small {
+		button.small, .button.small {
 			background:transparent;
 			padding: 0;
 			margin:0;
@@ -79,21 +79,21 @@ export const ButtonSharedStyles = css`
 			color: var(--dark-gray-color);
 		}
 
-		button.small:disabled svg {
+		button.small:disabled svg, .button.small:disabled svg {
 			fill: var(--disabled-color);
 		}
 
-		button.emoji:disabled {
+		button.emoji:disabled, .button.emoji:disabled {
 			filter: grayscale(100%) opacity(30%);
 		}
 
-		button.small svg {
+		button.small svg, .button.small svg {
 			fill: var(--dark-gray-color);
 			height:1.0em;
 			width:1.0em;
 		}
 
-		button.small:disabled:hover svg {
+		button.small:disabled:hover svg, .button.small:disabled:hover svg {
 			fill: var(--disabled-color);
 		}
 
@@ -101,11 +101,11 @@ export const ButtonSharedStyles = css`
 			filter: grayscale(100%) opacity(30%);
 		}
 
-		button.small:hover svg {
+		button.small:hover svg, .button.small:hover svg {
 			fill: var(--disabled-color);
 		}
 
-		button.emoji:hover {
+		button.emoji:hover, .button.emoji:hover {
 			filter: grayscale(50%) drop-shadow(0.1em 0.1em 0.1em black);
 		}
 
