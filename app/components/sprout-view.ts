@@ -472,7 +472,7 @@ class SproutView extends connect(store)(PageViewElement) {
 							<a class='button small' href='https://discord.gg/2CMjve594M' target='_blank' title='Join the Discord'>
 								${DISCORD_ICON}
 							</a>
-						</div>
+					</div>
 					<div class='toolbar'>
 						<div class='controls'>
 							<label for='sprout-select'>Sprout:</label>
