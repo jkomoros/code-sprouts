@@ -6,6 +6,8 @@ You can see a live demo at https://code-sprouts.org.
 
 In the webapp, you can select a sprout to run from the dropdown, or add a sprout. You can paste a remote URL pointing to a sprout that lives elsewhere and it will run it. At any time, you can share your URL with someone else and it will run the same sprout you're running.
 
+Using Code Sprouts? Have a question? [Join the Discord](https://discord.gg/2CMjve594M)!
+
 ## Running
 
 Install dependencies with `npm install`.

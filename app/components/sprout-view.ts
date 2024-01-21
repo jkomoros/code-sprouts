@@ -86,7 +86,8 @@ import {
 	PREVIEW_ICON,
 	CLOUD_DOWNLOAD_ICON,
 	SETTINGS_ICON,
-	GITHUB_ICON
+	GITHUB_ICON,
+	DISCORD_ICON
 } from './my-icons.js';
 
 import {
@@ -292,6 +293,11 @@ class SproutView extends connect(store)(PageViewElement) {
 					justify-content: flex-end;
 				}
 
+				.extras a .button.small {
+					display:inline-block;
+					margin-right: 0.5em;
+				}
+
 				.mobile .toolbar {
 					flex-direction: column;
 					align-items: flex-start;
@@ -462,6 +468,9 @@ class SproutView extends connect(store)(PageViewElement) {
 					<div class='extras'>
 							<a class='button small' href='https://github.com/jkomoros/code-sprouts' target='_blank' title='View on GitHub'>
 								${GITHUB_ICON}
+							</a>
+							<a class='button small' href='https://discord.gg/2CMjve594M' target='_blank' title='Join the Discord'>
+								${DISCORD_ICON}
 							</a>
 						</div>
 					<div class='toolbar'>
