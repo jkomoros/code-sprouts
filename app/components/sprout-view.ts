@@ -85,7 +85,8 @@ import {
 	LOCK_ICON,
 	PREVIEW_ICON,
 	CLOUD_DOWNLOAD_ICON,
-	SETTINGS_ICON
+	SETTINGS_ICON,
+	GITHUB_ICON
 } from './my-icons.js';
 
 import {
@@ -284,6 +285,13 @@ class SproutView extends connect(store)(PageViewElement) {
 					border-bottom: var(--subtle-border);
 				}
 
+				.extras {
+					width: 100%;
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-end;
+				}
+
 				.mobile .toolbar {
 					flex-direction: column;
 					align-items: flex-start;
@@ -451,6 +459,11 @@ class SproutView extends connect(store)(PageViewElement) {
 			<api-key-dialog></api-key-dialog>
 			<div class=${classMap(classes)}>
 				<div class='column'>
+					<div class='extras'>
+							<a class='button small' href='https://github.com/jkomoros/code-sprouts' target='_blank' title='View on GitHub'>
+								${GITHUB_ICON}
+							</a>
+						</div>
 					<div class='toolbar'>
 						<div class='controls'>
 							<label for='sprout-select'>Sprout:</label>
