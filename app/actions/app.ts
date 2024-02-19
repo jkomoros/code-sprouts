@@ -48,12 +48,15 @@ export const canonicalizePath = () : ThunkSomeAction => (dispatch ,getState) => 
 
 	const path = [page];
 	
-	if (page != SPROUT_VIEW_PATH) {
-		path.push(pageExtra);
-	} else {
+	switch(page) {
+	case SPROUT_VIEW_PATH:
 		const sprout = selectCurrentSproutName(state);
 		if (sprout) path.push(sprout);
 		path.push(''); //Add a trailing slash
+		break;
+	default:
+		path.push(pageExtra);
+		break;
 	}
 
 	dispatch(navigatePathTo(path.join('/'), true));
