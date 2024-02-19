@@ -1,6 +1,5 @@
 import { html, css, TemplateResult, PropertyValues} from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -28,8 +27,8 @@ import {
 	selectMayCreateSprout,
 	selectIsEditing,
 	selectDialogOpen,
-	selectMobile,
 	selectAPIKeys,
+	selectMobile,
 } from '../selectors.js';
 
 // These are the shared styles needed by this element.
@@ -86,8 +85,6 @@ import {
 	PREVIEW_ICON,
 	CLOUD_DOWNLOAD_ICON,
 	SETTINGS_ICON,
-	GITHUB_ICON,
-	DISCORD_ICON
 } from './my-icons.js';
 
 import {
@@ -213,27 +210,22 @@ class SproutView extends connect(store)(PageViewElement) {
 	
 	@state()
 		_editing : boolean = false;
-	
+
 	@state()
-		_moblie : boolean = false;
+		_mobile : boolean = false;
 
 	static override get styles() {
 		return [
 			SharedStyles,
 			ButtonSharedStyles,
 			css`
+
 				:host {
-					position:relative;
-					height:100vh;
-					width: 100vw;
-					background-color: var(--override-app-background-color, var(--app-background-color, #356F9E));
-					overflow:scroll;
-					--stroke-width: 0px;
+					flex: 1;
 				}
 
 				.container {
-					height: 100vh;
-					width: 100%;
+					height: 100%;
 					display: flex;
 					flex-direction: column;
 					align-items: center;
@@ -243,19 +235,6 @@ class SproutView extends connect(store)(PageViewElement) {
 					display: flex;
 					flex-direction: row;
 					align-items: center;
-				}
-
-				.column {
-					max-width:60em;
-					width: 100%;
-					height: 100vh;
-					box-sizing: border-box;
-					display: flex;
-					flex-direction: column;
-					background-color: white;
-					padding: 1em;
-					//A subtle dropshadow spreading out left to right
-					box-shadow: 0px 0px 3em 3em rgba(0,0,0,1.0), 0px 0px 3em 3em rgba(0,0,0,1.0);
 				}
 
 				#conversation {
@@ -284,18 +263,7 @@ class SproutView extends connect(store)(PageViewElement) {
 					padding-bottom: 1em;
 					margin-bottom: 1em;
 					border-bottom: var(--subtle-border);
-				}
-
-				.extras {
 					width: 100%;
-					display: flex;
-					flex-direction: row;
-					justify-content: flex-end;
-				}
-
-				.extras a.button.small {
-					display:inline-block;
-					margin-right: 0.5em;
 				}
 
 				.mobile .toolbar {
@@ -455,157 +423,140 @@ class SproutView extends connect(store)(PageViewElement) {
 
 		const remoteDomain = pathIsRemote(this._currentSproutName || '');
 
-		const classes = {
-			container: true,
-			mobile: this._moblie
-		};
-
 		return html`
-			<sprout-editor></sprout-editor>
-			<api-key-dialog></api-key-dialog>
-			<div class=${classMap(classes)}>
-				<div class='column'>
-					<div class='extras'>
-							<a class='button small' href='https://github.com/jkomoros/code-sprouts' target='_blank' title='View on GitHub'>
-								${GITHUB_ICON}
-							</a>
-							<a class='button small' href='https://discord.gg/2CMjve594M' target='_blank' title='Join the Discord'>
-								${DISCORD_ICON}
-							</a>
-					</div>
-					<div class='toolbar'>
-						<div class='controls'>
-							<label for='sprout-select'>Sprout:</label>
-							<div class='row'>
-								<select
-									id='sprout-select'
-									.value=${this._currentSproutName || ''}
-									@change=${this._handleSproutChanged}
-								>
-									${Object.keys(this._sprouts).map((key) => html`
-										<option
-											.value=${key}
-											.selected=${key == this._currentSproutName}
-											.title=${key}
-										>
-											${shortenDisplayPath(key)}
-										</option>
-									`)}
-								</select>
-								<button
-									class='small'
-									@click=${this._handleAddSprout}
-									title='Import a sprout from another location'
-								>
-									${CLOUD_DOWNLOAD_ICON}
-								</button>
-								${this._mayCreateSprout ? 
-		html`
-								<button
-									class='small'
-									@click=${this._handleCreateSprout}
-									title='Create a sprout'
-								>
-									${PLUS_ICON}
-								</button>
-								` :
-		html``}
-							<!-- TODO: figure out a better place to put this ubtton that's less distracting -->
+			<div class='${this._mobile ? 'mobile' : ''} container'>
+				<div class='toolbar'>
+					<div class='controls'>
+						<label for='sprout-select'>Sprout:</label>
+						<div class='row'>
+							<select
+								id='sprout-select'
+								.value=${this._currentSproutName || ''}
+								@change=${this._handleSproutChanged}
+							>
+								${Object.keys(this._sprouts).map((key) => html`
+									<option
+										.value=${key}
+										.selected=${key == this._currentSproutName}
+										.title=${key}
+									>
+										${shortenDisplayPath(key)}
+									</option>
+								`)}
+							</select>
 							<button
 								class='small'
-								@click=${this._handleOpenSettingsClicked}
-								title='Manage API Keys'
-							>${SETTINGS_ICON}</button>
-							</div>
-						</div>
-						<div class='title'>
-							<h2>${this._currentSproutConfig?.title || this._currentSproutName}
-								<button
-									class='small'
-									@click=${this._handleViewSprout}
-									title='View the current sprout'
-								>
-									${PREVIEW_ICON}
-								</button>
-							</h2>			
-							<p class='description'>
-								${this._currentSproutConfig?.description || 'A sprout without a description'}
-							</p>
-							<p class='messages'>
-								${remoteDomain ? html`<span class='warning' .title=${`This domain does not vouch for the content you load from ${remoteDomain} or any other domain.`}>${WARNING_ICON} This is a remote sprout from <strong>${remoteDomain}</strong></span>` : ''}
-							</p>
-							<p class='messages'>
-								${remoteDomain ? html`<span .title=${`This site reaches out to openai.com directly and doesn't pass any information to ${remoteDomain}, other than that someone fetched the sprout definition.`}>${LOCK_ICON} <strong>${remoteDomain}</strong> cannot see any of your information from this page</span>` : ''}
-							</p>
+								@click=${this._handleAddSprout}
+								title='Import a sprout from another location'
+							>
+								${CLOUD_DOWNLOAD_ICON}
+							</button>
+							${this._mayCreateSprout ? 
+		html`
+							<button
+								class='small'
+								@click=${this._handleCreateSprout}
+								title='Create a sprout'
+							>
+								${PLUS_ICON}
+							</button>
+							` :
+		html``}
+						<!-- TODO: figure out a better place to put this ubtton that's less distracting -->
+						<button
+							class='small'
+							@click=${this._handleOpenSettingsClicked}
+							title='Manage API Keys'
+						>${SETTINGS_ICON}</button>
 						</div>
 					</div>
-					<div id='conversation'>
-						<div class='inner'>
-							${this._conversation.map((turn, index) => this._renderConversation(turn, {
+					<div class='title'>
+						<h2>${this._currentSproutConfig?.title || this._currentSproutName}
+							<button
+								class='small'
+								@click=${this._handleViewSprout}
+								title='View the current sprout'
+							>
+								${PREVIEW_ICON}
+							</button>
+						</h2>			
+						<p class='description'>
+							${this._currentSproutConfig?.description || 'A sprout without a description'}
+						</p>
+						<p class='messages'>
+							${remoteDomain ? html`<span class='warning' .title=${`This domain does not vouch for the content you load from ${remoteDomain} or any other domain.`}>${WARNING_ICON} This is a remote sprout from <strong>${remoteDomain}</strong></span>` : ''}
+						</p>
+						<p class='messages'>
+							${remoteDomain ? html`<span .title=${`This site reaches out to openai.com directly and doesn't pass any information to ${remoteDomain}, other than that someone fetched the sprout definition.`}>${LOCK_ICON} <strong>${remoteDomain}</strong> cannot see any of your information from this page</span>` : ''}
+						</p>
+					</div>
+				</div>
+				<div id='conversation'>
+					<div class='inner'>
+						${this._conversation.map((turn, index) => this._renderConversation(turn, {
 		lastTurn: index == this._conversation.length - 1,
 		showState: this._currentSproutManagesState
 	}))}
-						</div>
 					</div>
-					<div
-						id='conversation-input'
-						class='${this._renderDropTarget ? 'drop-target' : ''}'
-						@dragover=${this._handleDragOver}
-						@dragleave=${this._handleDragLeave}
-						@drop=${this._handleDrop}
-					>
-						<div class='drop-target-message'>
-							<span>${IMAGE_ICON} Drop images here</span>
-						</div>
-						<textarea
-							autofocus
-							id='conversation-input-textarea'
+				</div>
+				<div
+					id='conversation-input'
+					class='${this._renderDropTarget ? 'drop-target' : ''}'
+					@dragover=${this._handleDragOver}
+					@dragleave=${this._handleDragLeave}
+					@drop=${this._handleDrop}
+				>
+					<div class='drop-target-message'>
+						<span>${IMAGE_ICON} Drop images here</span>
+					</div>
+					<textarea
+						autofocus
+						id='conversation-input-textarea'
+						?disabled=${this._sproutStreaming}
+						.value=${this._draftMessage}
+						@input=${this._handleDraftMessageInput}
+					></textarea>
+					<input
+						type='file'
+						id='image-upload'
+						accept='image/*'
+						?hidden=${true}
+						@change=${this._handleConversationImageInputChanged}
+					></input>
+					${this._currentSproutAllowsImages ? html`
+						<button
+							class='button round ${this._imageUpload ? 'highlight' : ''}'
+							@click=${this._handleConversationImageInputClicked}
+							title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
 							?disabled=${this._sproutStreaming}
-							.value=${this._draftMessage}
-							@input=${this._handleDraftMessageInput}
-						></textarea>
-						<input
-							type='file'
-							id='image-upload'
-							accept='image/*'
-							?hidden=${true}
-							@change=${this._handleConversationImageInputChanged}
-						></input>
-						${this._currentSproutAllowsImages ? html`
+						>
+							${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
+						</button>
+					`: ''}
+					${this._sproutStreaming ? 
+		html`
 							<button
-								class='button round ${this._imageUpload ? 'highlight' : ''}'
-								@click=${this._handleConversationImageInputClicked}
-								title=${this._imageUpload ? 'Image uploaded' : 'Upload image'}
+								class='button round'
+								@click=${this._handleStopStreamingClicked}
+								title='Stop the bot from thinking more so you can send another message'
+							>	
+								<!-- TODO: stop icon -->
+								${CANCEL_ICON}
+							</button>
+	` : html`
+							<button
+								class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
+								@click=${this._handleConversationInputSubmit}
+								title=${'Send ' + shortcutDisplayString(sendShortcut.shortcut)}
 								?disabled=${this._sproutStreaming}
 							>
-								${this._imageUpload ? ATTACH_FILE_ICON : IMAGE_ICON}
+								${SEND_ICON}
 							</button>
-						`: ''}
-						${this._sproutStreaming ? 
-		html`
-								<button
-									class='button round'
-									@click=${this._handleStopStreamingClicked}
-									title='Stop the bot from thinking more so you can send another message'
-								>	
-									<!-- TODO: stop icon -->
-									${CANCEL_ICON}
-								</button>
-		` : html`
-								<button
-									class='button round ${this._draftMessage || this._imageUpload ? 'default' : ''}'
-									@click=${this._handleConversationInputSubmit}
-									title=${'Send ' + shortcutDisplayString(sendShortcut.shortcut)}
-									?disabled=${this._sproutStreaming}
-								>
-									${SEND_ICON}
-								</button>
-							`
+						`
 }
 
 					</div>
-				</div>
-			</div>
+		</div>
 		`;
 	}
 
@@ -623,7 +574,7 @@ class SproutView extends connect(store)(PageViewElement) {
 		this._imageUpload = selectAttachedImage(state);
 		this._mayCreateSprout = selectMayCreateSprout(state);
 		this._editing = selectIsEditing(state);
-		this._moblie = selectMobile(state);
+		this._mobile = selectMobile(state);
 	}
 
 	override firstUpdated() {
