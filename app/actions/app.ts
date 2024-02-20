@@ -24,6 +24,14 @@ import {
 	urlHashArgs
 } from '../types.js';
 
+import {
+	SproutName
+} from '../../src/types.js';
+
+export const navigateToSproutByName = (name : SproutName) : ThunkSomeAction => (dispatch) => {
+	dispatch(navigatePathTo(SPROUT_VIEW_PATH + '/' + name));
+};
+
 //if silent is true, then just passively updates the URL to reflect what it should be.
 export const navigatePathTo = (path : string, silent = false): ThunkSomeAction => (dispatch) => {
 	//If we're already pointed there, no need to navigate
