@@ -29,7 +29,7 @@ import {
 } from '../../src/types.js';
 
 export const navigateToSproutByName = (name : SproutName) : ThunkSomeAction => (dispatch) => {
-	dispatch(navigatePathTo(SPROUT_VIEW_PATH + '/' + name));
+	dispatch(navigatePathTo(SPROUT_VIEW_PATH + '/' + name + '/'));
 };
 
 //if silent is true, then just passively updates the URL to reflect what it should be.
