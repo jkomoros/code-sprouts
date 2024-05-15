@@ -100,6 +100,23 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 		maxOutputTokens: 4096,
 		supportsImages: true
 	},
+	'openai.com:gpt-4-turbo': {
+		...BASE_OPENAI_COMPLETION_INFO,
+		maxInputTokens: 128000,
+		//TODO: figure out how the input and output limits differ
+		maxOutputTokens: 128000,
+		supportsJSONResponseFormat: true,
+		supportsFunctionCalling: true
+	},
+	'openai.com:gpt-4o': {
+		...BASE_OPENAI_COMPLETION_INFO,
+		//TODO: figure out how the input and output limits differ
+		maxInputTokens: 128000,
+		maxOutputTokens: 128000,
+		supportsFunctionCalling:true,
+		supportsImages: true,
+		supportsJSONResponseFormat: true
+	},
 	'anthropic.com:claude-2.1': {
 		...BASE_ANTHROPIC_COMPLETION_INFO,
 		//TODO: figure out what the actual limits are
@@ -109,12 +126,10 @@ export const COMPLETIONS_BY_MODEL : {[name in CompletionModelID] : CompletionInf
 };
 
 export const DEFAULT_MODEL_STACK : CompletionModelID[] = [
+	//Use the default, fast, new model
+	'openai.com:gpt-4o',
 	//Use the default small model
 	'openai.com:gpt-4',
-	//Use the new one if necessary
-	'openai.com:gpt-4-1106-preview',
-	//Use the long one if necessary
-	'openai.com:gpt-4-32k',
 	//Use the image one if necessary
 	'openai.com:gpt-4-vision-preview'
 ];

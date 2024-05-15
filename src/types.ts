@@ -147,6 +147,8 @@ export const completionModelID = z.enum([
 	'openai.com:gpt-4-32k',
 	'openai.com:gpt-4-1106-preview',
 	'openai.com:gpt-4-vision-preview',
+	'openai.com:gpt-4-turbo',
+	'openai.com:gpt-4o',
 	'anthropic.com:claude-2.1'
 ]);
 
